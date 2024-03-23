@@ -9,7 +9,7 @@ declare global {
 		// interface Locals {}
 
 		interface PageData {
-			frame?: Omit<FrameMeta, 'image'>,
+			frame?: Omit<FrameMeta, 'image'> & { image?: Omit<FrameMeta['image'], 'url'> & { url?: string } },
 		}
 
 		// interface PageState {}
