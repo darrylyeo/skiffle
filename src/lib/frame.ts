@@ -52,6 +52,7 @@ export type FrameMeta = {
 
 // Functions
 import { isTruthy } from '$/lib/isTruthy'
+import { resolveUrl } from '$/lib/resolveUrl'
 
 export const serializeFrameMeta = (
 	frameMeta: FrameMeta,
@@ -64,7 +65,7 @@ export const serializeFrameMeta = (
 		},
 		{
 			property: 'fc:frame:image',
-			content: new URL(frameMeta.image.url, baseUrl).href,
+			content: resolveUrl(frameMeta.image.url, baseUrl),
 		},
 		frameMeta.image.aspectRatio && {
 			property: 'fc:frame:image:aspect_ratio',
@@ -88,7 +89,7 @@ export const serializeFrameMeta = (
 						},
 						button.targetUrl && {
 							property: `fc:frame:button:${index + 1}:target`,
-							content: new URL(button.targetUrl, baseUrl).href,
+							content: resolveUrl(button.targetUrl, baseUrl),
 						},
 					]
 					: []
@@ -96,7 +97,7 @@ export const serializeFrameMeta = (
 			?? [],
 		frameMeta.postUrl && {
 			property: 'fc:frame:post_url',
-			content: new URL(frameMeta.postUrl, baseUrl).href,
+			content: resolveUrl(frameMeta.postUrl, baseUrl),
 		},
 		frameMeta.state && {
 			property: 'fc:frame:state',
