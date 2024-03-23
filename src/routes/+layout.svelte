@@ -15,12 +15,15 @@
 
 
 {#if $page.data.frame}
-	<FrameMetadata metadata={{
-		image: {
-			url: $page.url.href,
-		},
-		...$page.data.frame,
-	}} />
+	<FrameMetadata
+		metadata={{
+			image: {
+				url: $page.url.href,
+			},
+			...$page.data.frame,
+		}}
+		baseUrl={$page.url}
+	/>
 {/if}
 
 

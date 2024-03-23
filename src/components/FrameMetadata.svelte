@@ -10,13 +10,15 @@
 	// Props
 	const {
 		metadata,
+		baseUrl,
 	}: {
 		metadata: FrameMeta,
+		baseUrl: URL | string,
 	} = $props()
 
 
 	// Derived
-	const metaTags = $derived(serializeFrameMeta(metadata))
+	const metaTags = $derived(serializeFrameMeta(metadata, baseUrl))
 </script>
 
 
