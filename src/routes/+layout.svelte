@@ -1,8 +1,27 @@
 <script lang="ts">
+	// Context
+	import { page } from '$app/stores'
+
+
+	// Props
 	const {
 		children,
 	} = $props()
+
+
+	// Components
+	import FrameMetadata from '$/components/FrameMetadata.svelte'
 </script>
+
+
+{#if $page.data.frame}
+	<FrameMetadata metadata={{
+		image: {
+			url: $page.url.href,
+		},
+		...$page.data.frame,
+	}} />
+{/if}
 
 
 <main
