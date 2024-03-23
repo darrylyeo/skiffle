@@ -47,3 +47,53 @@ export type FrameMeta = {
 		0 | 1 | 2 | 3 | 4
 	>,
 }
+
+
+// Functions
+import { isTruthy } from '$/lib/isTruthy'
+
+export const serializeFrameMeta = (frameMeta: FrameMeta) => (
+	[
+		{
+			property: 'fc:frame',
+			content: frameMeta.version ?? 'vNext',
+		},
+		{
+			property: 'fc:frame:image',
+			content: frameMeta.image.url,
+		},
+		frameMeta.image.aspectRatio && {
+			property: 'fc:frame:image:aspect_ratio',
+			content: frameMeta.image.aspectRatio,
+		},
+		frameMeta.textInput && {
+			property: 'fc:frame:input:text',
+			content: frameMeta.textInput,
+		},
+		...frameMeta.buttons
+			?.flatMap((button, index) => (
+				button
+					? [
+						{
+							property: `fc:frame:button:${index + 1}`,
+							content: button.label,
+						},
+						button.action && {
+							property: `fc:frame:button:${index + 1}:action`,
+							content: button.action,
+						},
+						button.targetUrl && {
+							property: `fc:frame:button:${index + 1}:target`,
+							content: button.targetUrl,
+						},
+					]
+					: []
+			))
+			?? [],
+		frameMeta.postUrl && {
+			property: 'fc:frame:post_url',
+			content: frameMeta.postUrl,
+		},
+	]
+		.filter(isTruthy)
+)
