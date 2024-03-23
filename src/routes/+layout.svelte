@@ -1,4 +1,9 @@
 <script lang="ts">
+	// Styles
+	import '$/styles/app.css'
+	import '$/styles/fonts.css'
+
+
 	// Context
 	import { page } from '$app/stores'
 
@@ -37,7 +42,7 @@
 
 <style>
 	main {
-		font-family: Ubuntu;
+		font-family: 'Ubuntu';
 		padding: 1em;
 	}
 </style>
