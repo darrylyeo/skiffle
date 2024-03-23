@@ -30,7 +30,7 @@ export type FrameSignaturePacket<
 
 export type FrameButton = {
 	label: string,
-	action?: 'post' | 'post_redirect' | 'mint' | 'link',
+	action?: 'post' | 'post_redirect' | 'link' | 'mint' | 'tx',
 	targetUrl?: string,
 }
 
@@ -46,6 +46,7 @@ export type FrameMeta = {
 		FrameButton | undefined,
 		0 | 1 | 2 | 3 | 4
 	>,
+	state?: Record<string, string>,
 }
 
 
@@ -93,6 +94,10 @@ export const serializeFrameMeta = (frameMeta: FrameMeta) => (
 		frameMeta.postUrl && {
 			property: 'fc:frame:post_url',
 			content: frameMeta.postUrl,
+		},
+		frameMeta.state && {
+			property: 'fc:frame:state',
+			content: JSON.stringify(frameMeta.state),
 		},
 	]
 		.filter(isTruthy)
