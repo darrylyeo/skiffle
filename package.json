@@ -34,5 +34,10 @@
 		"vite": "^5.0.3",
 		"vitest": "^1.2.0"
 	},
+	"dependencies": {
+		"@resvg/resvg-js": "^2.6.0",
+		"satori": "^0.10.13",
+		"satori-html": "^0.3.2"
+	},
 	"type": "module"
 }
