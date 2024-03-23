@@ -7,3 +7,43 @@
 div {
 	display: flex;
 }
+
+
+h1, h2, h3, h4, h5, h6 {
+	font-weight: 600;
+}
+
+h1, h2, output, pre, code {
+	font-family: 'Fira Code', monospace;
+	font-feature-settings: "liga", "calt";
+	word-spacing: -0.2em;
+}
+
+pre {
+	white-space: pre-wrap;
+}
+
+.row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1.25em;
+}
+.row.wrap {
+	flex-wrap: wrap;
+}
+.row.inline {
+	align-items: flex-end;
+	column-gap: 0.25em;
+}
+.row > :last-child {
+	text-align: right;
+}
+
+.column {
+	display: flex;
+	align-items: stretch;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 1em;
+}

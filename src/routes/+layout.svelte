@@ -32,17 +32,21 @@
 {/if}
 
 
-<main
-	style:width={400}
-	style:height={400}
+<div
+	style:width="400px"
+	style:height="400px"
 >
 	{@render children()}
-</main>
+</div>
 
 
 <style>
-	main {
+	div {
+		display: flex;
+		flex-direction: column;
+
+		background-image: linear-gradient(135deg, #8a63d2, #ff3e00);
+
 		font-family: 'Ubuntu';
-		padding: 1em;
 	}
 </style>
