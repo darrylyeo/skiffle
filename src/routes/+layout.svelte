@@ -7,6 +7,22 @@
 	// Context
 	import { page } from '$app/stores'
 
+	let {
+		url,
+		data: {
+			frame,
+			width = 764,
+		},
+	} = $derived($page)
+
+	let aspectRatio = $derived(
+		(frame?.image?.aspectRatio ?? '1.91:1')?.split(':').map(Number)
+	)
+
+	let height = $derived(
+		width * aspectRatio[1] / aspectRatio[0]
+	)
+
 
 	// Props
 	const {
@@ -19,13 +35,14 @@
 </script>
 
 
-{#if $page.data.frame}
+{#if frame}
 	<FrameMetadata
 		metadata={{
+			...frame,
 			image: {
-				url: $page.url.href,
+				...frame.image,
+				url: `${url.href}`,
 			},
-			...$page.data.frame,
 		}}
 		baseUrl={$page.url}
 	/>
@@ -33,8 +50,8 @@
 
 
 <div
-	style:width="400px"
-	style:height="400px"
+	style:width={`${width}px`}
+	style:height={`${height}px`}
 >
 	{@render children()}
 </div>
