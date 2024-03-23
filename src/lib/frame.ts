@@ -53,7 +53,10 @@ export type FrameMeta = {
 // Functions
 import { isTruthy } from '$/lib/isTruthy'
 
-export const serializeFrameMeta = (frameMeta: FrameMeta) => (
+export const serializeFrameMeta = (
+	frameMeta: FrameMeta,
+	baseUrl?: URL | string,
+) => (
 	[
 		{
 			property: 'fc:frame',
@@ -61,7 +64,7 @@ export const serializeFrameMeta = (frameMeta: FrameMeta) => (
 		},
 		{
 			property: 'fc:frame:image',
-			content: frameMeta.image.url,
+			content: new URL(frameMeta.image.url, baseUrl).href,
 		},
 		frameMeta.image.aspectRatio && {
 			property: 'fc:frame:image:aspect_ratio',
@@ -85,7 +88,7 @@ export const serializeFrameMeta = (frameMeta: FrameMeta) => (
 						},
 						button.targetUrl && {
 							property: `fc:frame:button:${index + 1}:target`,
-							content: button.targetUrl,
+							content: new URL(button.targetUrl, baseUrl).href,
 						},
 					]
 					: []
@@ -93,7 +96,7 @@ export const serializeFrameMeta = (frameMeta: FrameMeta) => (
 			?? [],
 		frameMeta.postUrl && {
 			property: 'fc:frame:post_url',
-			content: frameMeta.postUrl,
+			content: new URL(frameMeta.postUrl, baseUrl).href,
 		},
 		frameMeta.state && {
 			property: 'fc:frame:state',
