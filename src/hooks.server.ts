@@ -21,47 +21,53 @@ export const handle: Handle = async ({
 	event,
 	resolve,
 }) => {
-	const result = await resolve(event)
+	const contentTypes = event.request.headers.get('accept')
 
-	const html = await result.text()
+	if (contentTypes && contentTypes.includes('image/') && !contentTypes.includes('text/html')) {
+		const result = await resolve(event)
 
-	const reactNode = toReactNode(`<style>${css}</style>${html}`)
+		const html = await result.text()
 
-	const content = (
-		reactNode
-			.props.children.find((child) => child?.type === 'html')
-			.props.children.find((child) => child?.type === 'body')
-			.props.children.find((child) => child?.type === 'div')
-			.props.children.find((child) => child)
-	) as unknown as ReturnType<typeof toReactNode>
+		const reactNode = toReactNode(`<style>${css}</style>${html}`)
 
-	const width = Number(content.props.style.width.match(/\d+/)![0])
-	const height = Number(content.props.style.height.match(/\d+/)![0])
+		const content = (
+			reactNode
+				.props.children.find((child) => child?.type === 'html')
+				.props.children.find((child) => child?.type === 'body')
+				.props.children.find((child) => child?.type === 'div')
+				.props.children.find((child) => child)
+		) as unknown as ReturnType<typeof toReactNode>
 
-	const svg = await satori(
-		content,
-		{
-			fonts,
-			width,
-			height,
-		}
-	)
+		const width = Number(content.props.style.width.match(/\d+/)![0])
+		const height = Number(content.props.style.height.match(/\d+/)![0])
 
-	const png = new Resvg(svg, {
-		fitTo: {
-			mode: 'width',
-			value: width,
-		}
-	})
-		.render()
-		.asPng()
+		const svg = await satori(
+			content,
+			{
+				fonts,
+				width,
+				height,
+			}
+		)
 
-	return new Response(
-		png,
-		{
-			headers: {
-				'content-type': 'image/png',
+		const png = new Resvg(svg, {
+			fitTo: {
+				mode: 'width',
+				value: width,
+			}
+		})
+			.render()
+			.asPng()
+
+		return new Response(
+			png,
+			{
+				headers: {
+					'content-type': 'image/png',
+				},
 			},
-		},
-	)
+		)
+	}
+
+	return await resolve(event)
 }
