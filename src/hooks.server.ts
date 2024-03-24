@@ -16,6 +16,14 @@ import { fonts } from '$/styles/fonts'
 import css from '$/styles/app.css?raw'
 
 
+// Form Actions
+import { deserialize } from '$app/forms'
+
+
+// Frames
+import { createFrameResponse, type FrameMeta } from './lib/frame'
+
+
 // Hooks
 export const handle: Handle = async ({
 	event,
@@ -78,6 +86,18 @@ export const handle: Handle = async ({
 		event.request.method === 'POST'
 		&& event.request.headers.get('content-type') === 'application/json'
 	) {
+		// Handle with SvelteKit Form Action
+		event.request.headers.set('content-type', 'text/plain')
+
+		const response = await resolve(event)
+
+		if(response.ok){
+			const { data } = deserialize(await response.text()) as { data: { frame: FrameMeta } }
+
+			return createFrameResponse(data.frame, event.request.url)
+		}
+
+
 		// Handle with SvelteKit GET request
 		event.request = new Request(event.request.url, {
 			method: 'GET',
