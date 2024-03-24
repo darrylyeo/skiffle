@@ -5,6 +5,7 @@
 
 
 	// Context
+	import { dev } from '$app/environment'
 	import { page } from '$app/stores'
 
 	let {
@@ -50,20 +51,30 @@
 
 
 <div
+	id="root"
 	style:width={`${width}px`}
 	style:height={`${height}px`}
 >
 	{@render children()}
 </div>
 
+{#if dev}
+	<img src={`${$page.url.href}`} alt="Frame" />
+{/if}
+
 
 <style>
+	:global(body) {
+		height: 100dvh;
+		display: flex;
+		flex-wrap: wrap;
+		place-content: center;
+		place-items: center;
+		gap: 1em;
+	}
+
 	div {
 		display: flex;
 		flex-direction: column;
-
-		background-image: linear-gradient(135deg, #8a63d2, #ff3e00);
-
-		font-family: 'Ubuntu';
 	}
 </style>
