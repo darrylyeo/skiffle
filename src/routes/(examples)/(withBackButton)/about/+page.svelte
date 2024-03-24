@@ -29,11 +29,11 @@
 
 			<p>Load page data and render content as you normally would, using Svelte template syntax, <code>style</code> tags, <code>+layout.svelte</code> / <code>+page.svelte</code> components, and <code>load()</code> functions in <code>+layout.server.ts</code> / <code>+layout.ts</code> / <code>+page.server.ts</code> / <code>+page.ts</code> (or <code>.js</code>) files.</p>
 
-			<p>Link frame buttons to other frame routes using relative URLs, or handle signature packets<wbr> using Form Actions (define <code>actions</code> in <code>+page.server.ts</code>, then target <code>?/actionName</code>).</p>
+			<p>Link frame buttons to other frame routes using relative URLs, or handle signature packets<wbr> using <b>Form Actions</b> (define <code>actions</code> in <code>+page.server.ts</code>, then target <code>?/actionName</code>).</p>
 		{:else if currentPage === 1}
-			<p>To render a SvelteKit page as a frame, export a <code>frames</code> object from <code>+page.server.ts</code> or<wbr> <code>+page.ts</code> matching the <code>FrameMeta</code> type (also defined under the global <code>PageData</code> type).</p>
+			<p>To render a SvelteKit page as a frame, <b>export a <code>frames</code> object</b> from <code>+page.server.ts</code> or<wbr> <code>+page.ts</code> matching the <code>FrameMeta</code> type (also defined under the global <code>PageData</code> type).</p>
 
-			<p>Page route URLs double as frame image URLs and share common <code>load()</code> functions. This<wbr> overloading behavior is made possible by the <code>handle</code> server hook in <code>hooks.server.ts</code>.</p>
+			<p><b>Page route URLs double as frame image URLs</b> and share common <code>load()</code> functions. This<wbr> overloading behavior is made possible by the <code>handle</code> server hook in <code>hooks.server.ts</code>.</p>
 
 			<p>A page route request with an <code>Accept</code> HTTP header containing <code>image/</code> yields this pipeline:<wbr> compile Svelte to HTML/CSS, convert to SVG with <code>satori</code>, render to PNG with <code>resvg-js</code>.</p>
 		{:else if currentPage === 2}
@@ -60,15 +60,13 @@
 		overflow: hidden;
 	}
 
-	p {
+	p,
+	p b {
 		line-height: 1.75;
 		align-items: flex-end;
 		flex-wrap: wrap;
 		column-gap: 0.2em;
 		align-items: baseline;
-	}
-	p b {
-		line-height: 1.66;
 	}
 	p code {
 		/* line-height: 1.15;
