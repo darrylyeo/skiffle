@@ -1,5 +1,5 @@
 // Functions
-import { getCasts } from '../../../api/pinata/farcaster'
+import { getCasts } from '../../../../api/pinata/farcaster'
 
 
 // Data
