@@ -34,7 +34,7 @@ export const handle: Handle = async ({
 
 		const reactNode = toReactNode(`<style>${css}</style>${html}`)
 
-		const content = (
+		const contentRoot = (
 			reactNode
 				.props.children.find((child) => child?.type === 'html')
 				.props.children.find((child) => child?.type === 'body')
@@ -42,11 +42,11 @@ export const handle: Handle = async ({
 				.props.children.find((child) => child)
 		) as unknown as ReturnType<typeof toReactNode>
 
-		const width = Number(content.props.style.width.match(/\d+/)![0])
-		const height = Number(content.props.style.height.match(/\d+/)![0])
+		const width = Number(contentRoot.props.style.width.match(/\d+/)![0])
+		const height = Number(contentRoot.props.style.height.match(/\d+/)![0])
 
 		const svg = await satori(
-			content,
+			contentRoot,
 			{
 				fonts,
 				width,
