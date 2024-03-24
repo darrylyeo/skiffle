@@ -106,3 +106,26 @@ export const serializeFrameMeta = (
 	]
 		.filter(isTruthy)
 )
+
+
+import { text } from '@sveltejs/kit'
+
+export const createFrameResponse = (
+	frameMeta: FrameMeta,
+	baseUrl?: URL | string,
+) => text(
+	`
+		<!DOCTYPE html>
+		<html>
+			<head>
+				${
+					serializeFrameMeta(frameMeta, baseUrl)
+						.map(({ property, content }) => (
+							`<meta property="${property.replace(/"/, '&quot;')}" content="${content.replace(/"/, '&quot;')}" />`
+						))
+						.join('\n')
+				}
+			</head>
+		</html>
+	`.trim()
+)
