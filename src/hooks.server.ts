@@ -55,7 +55,18 @@ export const handle: Handle = async ({
 
 		const html = await response.text()
 
-		const reactNode = toReactNode(`<style>${css}</style>${html}`)
+		const styles = [
+			css,
+			...await Promise.all(
+				[...html.matchAll(/<link href="([^"]+)" rel="stylesheet">/g)].map((match) => match[1])
+					.map(async (href) => {
+						const response = await fetch(new URL(href, event.request.url).href)
+						return response.text()
+					})
+			)
+		]
+
+		const reactNode = toReactNode(`<style>${styles.join('\n')}</style>${html}`)
 
 		const contentRoot = (
 			reactNode
