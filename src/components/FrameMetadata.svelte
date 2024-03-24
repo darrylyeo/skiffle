@@ -24,6 +24,10 @@
 
 <svelte:head>
 	{#each metaTags as { property, content }}
+		{#if property === 'fc:frame:image'}
+			<meta property="og:image" content={content} />
+		{/if}
+
 		<meta property={property} content={content} />
 	{/each}
 </svelte:head>
