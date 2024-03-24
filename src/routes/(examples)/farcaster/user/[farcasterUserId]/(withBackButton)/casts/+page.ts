@@ -1,6 +1,9 @@
+// Types
 import type { PageLoad } from './$types'
 import type { FrameMeta } from '$/lib/frame'
 
+
+// Data
 export const load: PageLoad = async ({
 	parent,
 	data,
