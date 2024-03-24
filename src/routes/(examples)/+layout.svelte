@@ -2,17 +2,24 @@
 	// Context
 	import { page } from '$app/stores'
 
+	let url = $page.url
+
 
 	// Props
 	import type { Snippet } from 'svelte'
+	import type { PageData } from './$types'
 
 	let {
 		children,
+		data,
 	}: {
 		children: Snippet,
+		data: PageData,
 	} = $props()
 
-	let url = $page.url
+	let {
+		frameSignaturePacket,
+	} = data
 </script>
 
 
@@ -37,7 +44,11 @@
 				</p>
 			</div>
 
-			<p class="annotation">@darrylyeo</p>
+			{#if frameSignaturePacket}
+				<p class="annotation">gm, FID #{frameSignaturePacket.untrustedData.fid}</p>
+			{:else}
+				<p class="annotation">by @darrylyeo</p>
+			{/if}
 		</footer>
 	</div>
 </div>
