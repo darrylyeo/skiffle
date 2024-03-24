@@ -33,10 +33,15 @@ pre {
 	flex-wrap: wrap;
 }
 .row.inline {
+	justify-content: flex-start;
 	align-items: flex-end;
 	column-gap: 0.25em;
+	row-gap: 0.25em;
 }
-.row > :last-child {
+.row > * {
+	max-width: 100%;
+}
+.row > :not(:first-child):last-child {
 	text-align: right;
 }
 
