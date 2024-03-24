@@ -41,5 +41,8 @@
 		"satori": "^0.10.13",
 		"satori-html": "^0.3.2"
 	},
+	"optionalDependencies": {
+		"@oazapfts/runtime": "^1.0.2"
+	},
 	"type": "module"
 }
