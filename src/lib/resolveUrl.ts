@@ -3,6 +3,6 @@ export const resolveUrl = (
 	baseUrl?: URL | string
 ) => (
 	baseUrl
-		? new URL(url, baseUrl).href
+		? new URL(url, String(baseUrl).replace(/\/?$/, '/')).href.replace(/\/?$/, '')
 		: new URL(url).href
 )
