@@ -76,10 +76,10 @@
 
 	.url {
 		font-size: 12px;
-		color: rgba(255, 255, 255, 0.5);
+		color: rgba(255, 255, 255, 0.75);
 	}
 	.url strong {
-		color: rgba(255, 255, 255, 0.75);
+		color: rgba(255, 255, 255, 0.85);
 	}
 
 	.annotation {
