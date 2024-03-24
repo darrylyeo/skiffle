@@ -1,14 +1,44 @@
+<script lang="ts">
+	// Data
+	let {
+		data,
+	} = $props()
+
+	let {
+		currentPage,
+	} = data
+</script>
+
+
 <article class="column">
 	<header>
-		<h2>What is SKIFFLE?</h2>
+		<h2>
+			{#if currentPage === 0}
+				<span>What is SKIFFLE?</span>
+			{:else if currentPage === 1}
+				<span>How do I render a page as a frame with SKIFFLE?</span>
+			{:else if currentPage === 2}
+				<span>That's all, folks!</span>
+			{/if}
+		</h2>
 	</header>
 
 	<div class="card column">
-		<p><b>SKIFFLE</b> lets you render images for <b>Farcaster Frames</b> using <b>SvelteKit</b> routes and layouts.</p>
+		{#if currentPage === 0}
+			<p><b>SKIFFLE</b> lets you render images for <b>Farcaster Frames</b> using <b>SvelteKit</b> routes and layouts.</p>
 
-		<p>Load page data and render content as you normally would, using Svelte template syntax, <code>style</code> tags, <code>+layout.svelte</code> / <code>+page.svelte</code> components, and <code>load()</code> functions in <code>+layout.server.ts</code> / <code>+layout.ts</code> / <code>+page.server.ts</code> / <code>+page.ts</code> (or <code>.js</code>) files.</p>
+			<p>Load page data and render content as you normally would, using Svelte template syntax, <code>style</code> tags, <code>+layout.svelte</code> / <code>+page.svelte</code> components, and <code>load()</code> functions in <code>+layout.server.ts</code> / <code>+layout.ts</code> / <code>+page.server.ts</code> / <code>+page.ts</code> (or <code>.js</code>) files.</p>
 
-		<p>Whenever a page route is requested with an <code>Accept</code> HTTP header containing <code>image/</code>,<wbr> its HTML page content will be rendered as an image using <code>satori</code> and <code>resvg-js</code>.</p>
+			<p>Link frame buttons to other frame routes using relative URLs, or handle signature packets<wbr> using Form Actions (define <code>actions</code> in <code>+page.server.ts</code>, then target <code>?/actionName</code>).</p>
+		{:else if currentPage === 1}
+			<p>To render a SvelteKit page as a frame, export a <code>frames</code> object from <code>+page.server.ts</code> or<wbr> <code>+page.ts</code> matching the <code>FrameMeta</code> type (also defined under the global <code>PageData</code> type).</p>
+
+			<p>Page route URLs double as frame image URLs and share common <code>load()</code> functions. This<wbr> overloading behavior is made possible by the <code>handle</code> server hook in <code>hooks.server.ts</code>.</p>
+
+			<p>A page route request with an <code>Accept</code> HTTP header containing <code>image/</code> yields this pipeline:<wbr> compile Svelte to HTML/CSS, convert to SVG with <code>satori</code>, render to PNG with <code>resvg-js</code>.</p>
+		{:else if currentPage === 2}
+			<p>That's all, folks!</p>
+		{/if}
 	</div>
 </article>
 
@@ -41,8 +71,10 @@
 		line-height: 1.66;
 	}
 	p code {
-		line-height: 1.5;
-		font-size: 0.85em;
+		/* line-height: 1.15;
+		font-size: 0.9em; */
+		line-height: 1.6;
+		font-size: 0.825em;
 		padding: 0.05em 0.4em;
 		border-radius: 0.25em;
 		background-color: rgba(255, 255, 255, 0.1);
