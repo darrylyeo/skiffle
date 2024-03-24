@@ -1,5 +1,6 @@
 // Types
-import { type FrameMeta, type FrameSignaturePacket } from '$/lib/frame'
+import { type FrameMeta } from '$/lib/frame'
+import { resolveRoute } from '$app/paths'
 
 
 // Actions
@@ -7,9 +8,9 @@ import type { Actions } from './$types'
 
 export const actions: Actions = {
 	demos: async ({
-		request,
+		locals: { frameSignaturePacket },
 	}) => {
-		const frameSignaturePacket = await request.json() as FrameSignaturePacket
+		const farcasterUserId = frameSignaturePacket?.untrustedData.fid ?? 3
 
 		return {
 			frame: {
@@ -26,7 +27,7 @@ export const actions: Actions = {
 					{
 						label: 'Farcaster Users',
 						action: 'post',
-						targetUrl: '/farcaster/user/3',
+						targetUrl: resolveRoute(`/farcaster/user/[farcasterUserId]`, { farcasterUserId: String(farcasterUserId) }),
 					},
 					{
 						label: 'Top Frames',
