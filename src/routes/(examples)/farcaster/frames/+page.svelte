@@ -1,4 +1,9 @@
 <script lang="ts">
+	// Shims
+	import shimObjectGroupBy from 'object.groupby'
+	shimObjectGroupBy.shim()
+
+
 	// Props
 	const {
 		data,
