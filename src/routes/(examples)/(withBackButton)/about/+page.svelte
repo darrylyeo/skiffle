@@ -18,6 +18,8 @@
 			{:else if currentPage === 1}
 				<span>How do I render a page as a frame with SKIFFLE?</span>
 			{:else if currentPage === 2}
+				<span>What's next for SKIFFLE?</span>
+			{:else if currentPage === 3}
 				<span>That's all, folks!</span>
 			{/if}
 		</h2>
@@ -37,7 +39,15 @@
 
 			<p>A page route request with an <code>Accept</code> HTTP header containing <code>image/</code> yields this pipeline:<wbr> compile Svelte to HTML/CSS, convert to SVG with <code>satori</code>, render to PNG with <code>resvg-js</code>.</p>
 		{:else if currentPage === 2}
-			<p>That's all, folks!</p>
+			<p>Try the demo – cast <b>skiffle.dev</b> on Warpcast or your Farcaster client of choice!</p>
+
+			<p>Check out SKIFFLE on GitHub – <b>github.com/darrylyeo/skiffle</b></p>
+
+			<p>Follow <b>@darrylyeo</b> on Farcaster and GitHub for project updates.</p>
+
+			<p>More documentation and examples to come!</p>
+		{:else if currentPage === 3}
+			<span>You've reached the last page. Want to read it again?</span>
 		{/if}
 	</div>
 </article>
@@ -69,8 +79,6 @@
 		align-items: baseline;
 	}
 	p code {
-		/* line-height: 1.15;
-		font-size: 0.9em; */
 		line-height: 1.6;
 		font-size: 0.825em;
 		padding: 0.05em 0.4em;
