@@ -32,7 +32,7 @@
 					<output
 						class="url"
 					>
-						<strong>{url.host}</strong>{url.pathname.replace(/\/$/, '')}
+						<strong>{url.host}</strong>{url.pathname.replace(/\/$/, '')}{url.search}
 					</output>
 				</p>
 			</div>
