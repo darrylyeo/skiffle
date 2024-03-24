@@ -1,4 +1,4 @@
-import type { FrameMeta } from './lib/frame'
+import type { FrameMeta, FrameSignaturePacket } from './lib/frame'
 
 
 // See https://kit.svelte.dev/docs/types#app
@@ -6,9 +6,18 @@ import type { FrameMeta } from './lib/frame'
 declare global {
 	namespace App {
 		// interface Error {}
-		// interface Locals {}
+
+		interface Locals {
+			/**
+			 * The last frame signature packet received from a Farcaster client as a result of the user clicking a frame button.
+			 */
+			frameSignaturePacket?: FrameSignaturePacket,
+		}
 
 		interface PageData {
+			/**
+			 * Farcaster frame metadata associated with this page, including image aspect ratio and buttons to render when this page's URL is embedded in a Farcaster cast.
+			 */
 			frame?: Omit<FrameMeta, 'image'> & { image?: Omit<FrameMeta['image'], 'url'> & { url?: string } },
 		}
 
