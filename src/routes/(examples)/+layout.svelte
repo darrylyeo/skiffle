@@ -36,6 +36,8 @@
 					</output>
 				</p>
 			</div>
+
+			<p class="annotation">@darrylyeo</p>
 		</footer>
 	</div>
 </div>
@@ -78,5 +80,12 @@
 	}
 	.url strong {
 		color: rgba(255, 255, 255, 0.75);
+	}
+
+	.annotation {
+		opacity: 0.75;
+		font-size: 14px;
+		font-weight: 600;
+		color: rgba(0, 0, 0, 0.6);
 	}
 </style>
