@@ -73,5 +73,19 @@ export const handle: Handle = async ({
 		)
 	}
 
+	// Frame Button "post" Action
+	if (
+		event.request.method === 'POST'
+		&& event.request.headers.get('content-type') === 'application/json'
+	) {
+		// Handle with SvelteKit GET request
+		event.request = new Request(event.request.url, {
+			method: 'GET',
+			headers: event.request.headers,
+		})
+
+		return await resolve(event)
+	}
+
 	return await resolve(event)
 }
