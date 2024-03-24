@@ -26,6 +26,10 @@ export const handle: Handle = async ({
 	if (contentTypes && contentTypes.includes('image/') && !contentTypes.includes('text/html')) {
 		const result = await resolve(event)
 
+		if(result.status !== 200) {
+			return result
+		}
+
 		const html = await result.text()
 
 		const reactNode = toReactNode(`<style>${css}</style>${html}`)
