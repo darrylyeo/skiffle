@@ -19,6 +19,11 @@ export const load: PageLoad = async () => {
 					action: 'tx',
 					targetUrl: '/tx',
 				},
+				{
+					label: 'Demos...',
+					action: 'post',
+					targetUrl: '?/demos',
+				},
 			]
 		}
 	}
