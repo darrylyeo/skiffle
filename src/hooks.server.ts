@@ -31,18 +31,29 @@ export const handle: Handle = async ({
 }) => {
 	const contentTypes = event.request.headers.get('accept')
 
+	console.info('\nHANDLE\n' + event.url.pathname, event.route, {
+		method: event.request.method,
+		contentTypes,
+	})
+
 	// Svelte → HTML → Image
 	if (
 		event.request.method === 'GET'
 		&& (contentTypes && contentTypes.includes('image/') && !contentTypes.includes('text/html'))
 	) {
-		const result = await resolve(event)
+		console.info(event.url.pathname, 'Rendering Svelte → HTML...')
 
-		if(result.status !== 200) {
-			return result
+		const response = await resolve(event)
+
+		if(response.status !== 200) {
+			const result = await response.text()
+			console.error('Error rendering Svelte → HTML:', result)
+			return response
 		}
 
-		const html = await result.text()
+		console.info(event.url.pathname, 'Rendering HTML → SVG...')
+
+		const html = await response.text()
 
 		const reactNode = toReactNode(`<style>${css}</style>${html}`)
 
@@ -65,6 +76,7 @@ export const handle: Handle = async ({
 				height,
 			}
 		)
+		console.info(event.url.pathname, 'Rendering SVG → PNG...')
 
 		const png = new Resvg(svg, {
 			fitTo: {
@@ -74,6 +86,8 @@ export const handle: Handle = async ({
 		})
 			.render()
 			.asPng()
+
+		console.info(event.url.pathname, 'Rendered.')
 
 		return new Response(
 			png,
@@ -90,19 +104,26 @@ export const handle: Handle = async ({
 		event.request.method === 'POST'
 		&& event.request.headers.get('content-type') === 'application/json'
 	) {
+		console.info('Frame Button Action')
+
 		// Handle with SvelteKit Form Action
 		event.request.headers.set('content-type', 'text/plain')
 
 		const response = await resolve(event)
 
 		if(response.ok){
+			console.info('Handling with SvelteKit Form Action...')
+
 			const { data } = deserialize(await response.text()) as { data: { frame: FrameMeta } }
+
+			console.info('Frame:', data.frame)
 
 			return createFrameResponse(data.frame, event.request.url)
 		}
 
 
 		// Handle with SvelteKit GET request
+		console.info('Handling with SvelteKit GET request...')
 		event.request = new Request(event.request.url, {
 			method: 'GET',
 			headers: event.request.headers,
