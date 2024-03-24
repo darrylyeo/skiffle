@@ -31,7 +31,11 @@ export const handle: Handle = async ({
 }) => {
 	const contentTypes = event.request.headers.get('accept')
 
-	if (contentTypes && contentTypes.includes('image/') && !contentTypes.includes('text/html')) {
+	// Svelte → HTML → Image
+	if (
+		event.request.method === 'GET'
+		&& (contentTypes && contentTypes.includes('image/') && !contentTypes.includes('text/html'))
+	) {
 		const result = await resolve(event)
 
 		if(result.status !== 200) {
