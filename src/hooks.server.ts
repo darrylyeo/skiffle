@@ -117,6 +117,11 @@ export const handle: Handle = async ({
 	) {
 		console.info('Frame Button Action')
 
+		// Parse Frame Signature Packet
+		const frameSignaturePacket = await event.request.json() as FrameSignaturePacket
+		event.locals.frameSignaturePacket = frameSignaturePacket
+
+
 		// Handle with SvelteKit Form Action
 		event.request.headers.set('content-type', 'text/plain')
 
