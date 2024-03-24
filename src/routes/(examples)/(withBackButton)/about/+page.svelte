@@ -39,13 +39,13 @@
 
 			<p>A page route request with an <code>Accept</code> HTTP header containing <code>image/</code> yields this pipeline:<wbr> compile Svelte to HTML/CSS, convert to SVG with <code>satori</code>, render to PNG with <code>resvg-js</code>.</p>
 		{:else if currentPage === 2}
-			<p>Try the demo – cast <b>skiffle.dev</b> on Warpcast or your Farcaster client of choice!</p>
+			<p>Try the SKIFFLE demo – cast <b>skiffle.dev</b> on Warpcast or your Farcaster client of choice!</p>
 
 			<p>Check out SKIFFLE on GitHub – <b>github.com/darrylyeo/skiffle</b></p>
 
 			<p>Follow <b>@darrylyeo</b> on Farcaster and GitHub for project updates.</p>
 
-			<p>More documentation and examples to come!</p>
+			<p>More documentation and examples coming soon!</p>
 		{:else if currentPage === 3}
 			<span>You've reached the last page. Want to read it again?</span>
 		{/if}
