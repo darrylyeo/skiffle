@@ -12,7 +12,7 @@ export const load: PageServerLoad = async () => {
 		weights: 'L1C10R5',
 		details: true,
 		offset: 0,
-		limit: 100,
+		limit: 10,
 	})
 
 	return {
