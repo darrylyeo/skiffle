@@ -60,16 +60,32 @@ export const serializeFrameMeta = (
 ) => (
 	[
 		{
+			property: 'of:accepts:farcaster',
+			content: frameMeta.version ?? 'vNext',
+		},
+		{
 			property: 'fc:frame',
 			content: frameMeta.version ?? 'vNext',
+		},
+		{
+			property: 'of:image',
+			content: resolveUrl(frameMeta.image.url, baseUrl),
 		},
 		{
 			property: 'fc:frame:image',
 			content: resolveUrl(frameMeta.image.url, baseUrl),
 		},
 		frameMeta.image.aspectRatio && {
+			property: 'of:image:aspect_ratio',
+			content: frameMeta.image.aspectRatio,
+		},
+		frameMeta.image.aspectRatio && {
 			property: 'fc:frame:image:aspect_ratio',
 			content: frameMeta.image.aspectRatio,
+		},
+		frameMeta.textInput && {
+			property: 'of:input:text',
+			content: frameMeta.textInput,
 		},
 		frameMeta.textInput && {
 			property: 'fc:frame:input:text',
@@ -80,12 +96,24 @@ export const serializeFrameMeta = (
 				button
 					? [
 						{
+							property: `of:button:${index + 1}`,
+							content: button.label,
+						},
+						{
 							property: `fc:frame:button:${index + 1}`,
 							content: button.label,
 						},
 						button.action && {
+							property: `of:button:${index + 1}:action`,
+							content: button.action,
+						},
+						button.action && {
 							property: `fc:frame:button:${index + 1}:action`,
 							content: button.action,
+						},
+						button.targetUrl && {
+							property: `of:button:${index + 1}:target`,
+							content: resolveUrl(button.targetUrl, baseUrl),
 						},
 						button.targetUrl && {
 							property: `fc:frame:button:${index + 1}:target`,
@@ -96,8 +124,16 @@ export const serializeFrameMeta = (
 			))
 			?? [],
 		frameMeta.postUrl && {
+			property: 'of:post_url',
+			content: resolveUrl(frameMeta.postUrl, baseUrl),
+		},
+		frameMeta.postUrl && {
 			property: 'fc:frame:post_url',
 			content: resolveUrl(frameMeta.postUrl, baseUrl),
+		},
+		frameMeta.state && {
+			property: 'of:state',
+			content: JSON.stringify(frameMeta.state),
 		},
 		frameMeta.state && {
 			property: 'fc:frame:state',
