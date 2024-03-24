@@ -19,37 +19,45 @@
 </script>
 
 
-<div class="column">
+<article class="column">
 	<header class="row">
 		<div class="row">
 			<img src={user.pfp_url} />
 
-			<div id="name" class="row">
-				<h1>{user.display_name}</h1>
+			<div class="column">
+				<div id="name" class="row">
+					<h2>{user.display_name}</h2>
 
-				<span>@{user.username}</span>
+					<span>@{user.username}</span>
+				</div>
+
+				<p>{user.bio}</p>
 			</div>
 		</div>
 
 		<div class="annotation">
-			#{user.fid}
+			FID #{user.fid}
 		</div>
 	</header>
 
-	<p>{user.bio}</p>
-
 	{@render children()}
-</div>
+</article>
 
 
 <style>
+	article {
+		row-gap: 2rem;
+	}
+
 	#name {
+		justify-content: flex-start;
 		gap: 0.75em;
 	}
 
 	img {
-		width: 2.5em;
-		height: 2.5em;
+		width: 4em;
+		height: 4em;
+		border-radius: 0.5em;
 	}
 
 	.annotation {
