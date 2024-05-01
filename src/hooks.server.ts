@@ -40,6 +40,7 @@ export const handle: Handle = async ({
 	if (
 		event.request.method === 'GET'
 		&& (contentTypes && contentTypes.includes('image/') && !contentTypes.includes('text/html'))
+		|| new URL(event.request.url).searchParams.has('frameImage')
 	) {
 		console.info(event.url.pathname, 'Rendering Svelte → HTML...')
 
