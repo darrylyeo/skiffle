@@ -36,11 +36,24 @@ export const handle: Handle = async ({
 		contentTypes,
 	})
 
+	// Image redirect
+	if(event.url.searchParams.has('frameImage')) {
+		const url = new URL(event.url)
+
+		url.searchParams.delete('frameImage')
+
+		return fetch(url, {
+			method: 'GET',
+			headers: new Headers({
+				'accept': 'image/png',
+			}),
+		})
+	}
+
 	// Svelte → HTML → Image
 	if (
 		event.request.method === 'GET'
 		&& (contentTypes && contentTypes.includes('image/') && !contentTypes.includes('text/html'))
-		|| new URL(event.request.url).searchParams.has('frameImage')
 	) {
 		console.info(event.url.pathname, 'Rendering Svelte → HTML...')
 
