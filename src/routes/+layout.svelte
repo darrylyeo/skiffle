@@ -58,9 +58,9 @@
 	{@render children()}
 </div>
 
-{#if dev}
+<!-- {#if dev} -->
 	<img src={`${$page.url.href}`} alt="Frame" />
-{/if}
+<!-- {/if} -->
 
 
 <style>
