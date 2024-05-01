@@ -23,6 +23,10 @@
 	let height = $derived(
 		width * aspectRatio[1] / aspectRatio[0]
 	)
+	
+	let frameImageUrl = $derived(
+		`${url.href}?frameImage`
+	)
 
 
 	// Props
@@ -42,7 +46,7 @@
 			...frame,
 			image: {
 				...frame.image,
-				url: `${url.href}`,
+				url: frameImageUrl,
 			},
 		}}
 		baseUrl={$page.url}
@@ -59,7 +63,7 @@
 </div>
 
 <!-- {#if dev} -->
-	<img src={`${$page.url.href}`} alt="Frame" />
+	<img src={frameImageUrl} alt="Frame" />
 <!-- {/if} -->
 
 
