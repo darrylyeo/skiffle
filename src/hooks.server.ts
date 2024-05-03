@@ -41,6 +41,8 @@ export const handle: Handle = async ({
 
 	// Image redirect
 	if(event.url.searchParams.has('frameImage')) {
+		console.info('Redirect to image generator from `frameImage` query parameter...')
+
 		const url = new URL(event.url)
 
 		url.searchParams.delete('frameImage')
