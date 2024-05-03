@@ -53,7 +53,7 @@ export const handle: Handle = async ({
 	// Svelte → HTML → Image
 	if (
 		event.request.method === 'GET'
-		&& (contentTypes && contentTypes.includes('image/') && !contentTypes.includes('text/html'))
+		&& (contentTypes && contentTypes.includes('image/') && !contentTypes.includes('text/html') && !contentTypes.includes('*/*'))
 	) {
 		console.info(event.url.pathname, 'Rendering Svelte → HTML...')
 
