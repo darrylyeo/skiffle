@@ -143,13 +143,10 @@ export const serializeFrameMeta = (
 		.filter(isTruthy)
 )
 
-
-import { text } from '@sveltejs/kit'
-
-export const createFrameResponse = (
+export const renderFrameMeta = (
 	frameMeta: FrameMeta,
 	baseUrl?: URL | string,
-) => text(
+) => (
 	`
 		<!DOCTYPE html>
 		<html>
@@ -164,4 +161,17 @@ export const createFrameResponse = (
 			</head>
 		</html>
 	`.trim()
+)
+
+
+import { text } from '@sveltejs/kit'
+
+export const createFrameResponse = (
+	frameMeta: FrameMeta,
+	baseUrl?: URL | string,
+) => text(
+	renderFrameMeta(
+		frameMeta,
+		baseUrl,
+	)
 )
