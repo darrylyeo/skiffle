@@ -52,6 +52,8 @@
 
 {#if showPreview}
 	<div class="frame-preview">
+		{title}
+
 		<img src={metadata.image.url} alt="Frame" />
 	</div>
 {/if}
