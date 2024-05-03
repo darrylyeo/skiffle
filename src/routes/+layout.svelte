@@ -11,6 +11,7 @@
 	let {
 		url,
 		data: {
+			title,
 			frame,
 			width = 764,
 		},
@@ -44,6 +45,7 @@
 
 {#if frame}
 	<FrameMetadata
+		{title}
 		metadata={{
 			...frame,
 			image: {
