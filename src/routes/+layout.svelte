@@ -24,9 +24,11 @@
 		width * aspectRatio[1] / aspectRatio[0]
 	)
 	
-	let frameImageUrl = $derived(
-		`${url.href}?frameImage`
-	)
+	let frameImageUrl = $derived.by(() => {
+		const _url = new URL(url)
+		_url.searchParams.set('frameImage', '')
+		return _url.href
+	})
 
 
 	// Props
