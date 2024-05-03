@@ -32,8 +32,11 @@ export const handle: Handle = async ({
 	const contentTypes = event.request.headers.get('accept')
 
 	console.info('\nHANDLE\n' + event.url.pathname, event.route, {
+		url: event.url,
 		method: event.request.method,
 		contentTypes,
+		isDataRequest: event.isDataRequest,
+		isSubRequest: event.isSubRequest,
 	})
 
 	// Image redirect
