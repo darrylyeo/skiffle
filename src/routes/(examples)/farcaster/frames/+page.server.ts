@@ -1,6 +1,6 @@
 // Functions
 import '../api/karma3labs'
-import { ScoreAgg, getTopFramesFramesGlobalRankingsGet } from '../api/karma3labs/farcaster-graph'
+import { ScoreAgg, getTopFramesFramesGlobalRankingsGet } from '../api/openrank/farcaster-graph'
 
 
 // Data
