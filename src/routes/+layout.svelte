@@ -43,6 +43,15 @@
 </script>
 
 
+<div
+	id="root"
+	style:width={`${width}px`}
+	style:height={`${height}px`}
+>
+	{@render children()}
+</div>
+
+
 {#if frame}
 	<FrameMetadata
 		{title}
@@ -54,21 +63,9 @@
 			},
 		}}
 		baseUrl={$page.url}
+		showPreview={true}
 	/>
 {/if}
-
-
-<div
-	id="root"
-	style:width={`${width}px`}
-	style:height={`${height}px`}
->
-	{@render children()}
-</div>
-
-<!-- {#if dev} -->
-	<img src={frameImageUrl} alt="Frame" />
-<!-- {/if} -->
 
 
 <style>
@@ -81,7 +78,7 @@
 		gap: 1em;
 	}
 
-	div {
+	#root {
 		display: flex;
 		flex-direction: column;
 	}
