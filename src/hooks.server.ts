@@ -45,7 +45,7 @@ export const handle: Handle = async ({
 
 		url.searchParams.delete('frameImage')
 
-		return fetch(url, {
+		return event.fetch(url, {
 			method: 'GET',
 			headers: new Headers({
 				'accept': 'image/png',
