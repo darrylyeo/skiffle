@@ -31,6 +31,8 @@ export const handle: Handle = async ({
 }) => {
 	const contentTypes = event.request.headers.get('accept')
 
+	console.info('event', event)
+
 	console.info('\nHANDLE\n' + event.url.pathname, event.route, {
 		url: event.url,
 		method: event.request.method,
