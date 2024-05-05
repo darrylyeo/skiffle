@@ -27,7 +27,7 @@
 	
 	let frameImageUrl = $derived.by(() => {
 		const _url = new URL(url)
-		_url.searchParams.set('frameImage', '')
+		// _url.searchParams.set('frameImage', '')
 		return _url.href
 	})
 
