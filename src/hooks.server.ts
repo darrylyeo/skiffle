@@ -155,6 +155,12 @@ export const handle: Handle = async ({
 
 			console.info('Frame:', data.frame)
 
+			if(!data.frame.image.url){
+				const frameImageUrl = new URL(event.url)
+				frameImageUrl.searchParams.set('frameImage', '')
+				data.frame.image.url = frameImageUrl.href
+			}
+
 			return createFrameResponse(data.frame, event.request.url)
 		}
 
