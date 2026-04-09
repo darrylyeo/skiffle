@@ -37,11 +37,9 @@
 
 			<p><b>Page route URLs double as frame image URLs</b> and share common <code>load()</code> functions. This<wbr> overloading behavior is made possible by the <code>handle</code> server hook in <code>hooks.server.ts</code>.</p>
 
-			<p><b>Farcaster Snaps</b> use the same URLs with <code>Accept: application/vnd.farcaster.snap+json</code>. The hook returns JSON (<code>version</code>, <code>theme</code>, <code>ui</code>) per the <a href="https://docs.farcaster.xyz/snap">snap spec</a>. Snap button <code>submit</code> actions POST a JFS-signed body; set <code>SKIP_JFS_VERIFICATION=1</code> for local testing or use the <a href="https://farcaster.xyz/~/developers/snaps">snap emulator</a>.</p>
-
 			<p>A page route request with an <code>Accept</code> HTTP header containing <code>image/</code> yields this pipeline:<wbr> compile Svelte to HTML/CSS, convert to SVG with <code>satori</code>, render to PNG with <code>resvg-js</code>.</p>
 		{:else if currentPage === 2}
-			<p>Try the SKIFFLE demo – cast <b>skiffle.dev</b> in the Farcaster app on <b>farcaster.xyz</b> or your Farcaster client of choice.</p>
+			<p>Try the SKIFFLE demo – cast <b>skiffle.dev</b> on Warpcast or your Farcaster client of choice!</p>
 
 			<p>Check out SKIFFLE on GitHub – <b>github.com/darrylyeo/skiffle</b></p>
 
