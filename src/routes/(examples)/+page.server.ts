@@ -24,7 +24,7 @@ export const actions: Actions = {
 			{
 				label: 'Channels',
 				action: 'post',
-				targetUrl: '/farcaster/channels',
+				targetUrl: '/farcaster/channels?/open',
 			},
 			{
 				label: 'Mint',
