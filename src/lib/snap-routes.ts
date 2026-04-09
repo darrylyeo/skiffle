@@ -17,13 +17,20 @@ import { resolveUrl } from '$/lib/resolveUrl'
 
 type Resolve = Parameters<Handle>[0]['resolve']
 
-/** SvelteKit encodes `?/actionName` as a search param key like `/demos`. */
-const isSvelteKitInternalActionUrl = (url: URL) => (
-	[...url.searchParams.keys()].some((key) => (
+/**
+ * SvelteKit form actions use `?/actionName` (search param key `/actionName`, often empty value).
+ * Prefer `url.search` because some stacks parse `?/…` inconsistently for `URLSearchParams`.
+ */
+const isSvelteKitInternalActionUrl = (url: URL) => {
+	const q = url.search
+	if (q.startsWith('?/') && q.length > 2) {
+		return true
+	}
+	return [...url.searchParams.keys()].some((key) => (
 		key.startsWith('/')
 		&& key.length > 1
 	))
-)
+}
 
 const htmlRequest = (request: Request) => {
 	const headers = new Headers(request.headers)
