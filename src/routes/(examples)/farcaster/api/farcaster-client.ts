@@ -104,6 +104,15 @@ export type DemoChannel = {
 	imageUrl: string,
 }
 
+const isValidHttpUrl = (href: string) => {
+	try {
+		const u = new URL(href)
+		return u.protocol === 'https:' || u.protocol === 'http:'
+	} catch {
+		return false
+	}
+}
+
 export const getPopularChannels = async () => (
 	fcJson<{
 		result: {
@@ -121,7 +130,6 @@ export const getPopularChannels = async () => (
 		.then(({ result: { channels } }) => (
 			[...channels]
 				.sort((a, b) => b.followerCount - a.followerCount)
-				.slice(0, 30)
 				.map((channel) => (
 					{
 						id: channel.id,
@@ -133,5 +141,7 @@ export const getPopularChannels = async () => (
 						imageUrl: channel.imageUrl,
 					} satisfies DemoChannel
 				))
+				.filter((channel) => isValidHttpUrl(channel.url))
+				.slice(0, 30)
 		))
 )
