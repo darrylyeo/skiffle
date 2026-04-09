@@ -12,6 +12,11 @@ declare global {
 			 * The last frame signature packet received from a Farcaster client as a result of the user clicking a frame button.
 			 */
 			frameSignaturePacket?: FrameSignaturePacket,
+
+			/**
+			 * FID of the user who triggered this request (frame `untrustedData.fid` or Snap JFS payload `fid`).
+			 */
+			farcasterViewerFid?: number,
 		}
 
 		interface PageData {

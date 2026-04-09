@@ -4,6 +4,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
+		"tunnel:ngrok": "ngrok http http://127.0.0.1:5173",
 		"build": "vite build",
 		"preview": "vite preview",
 		"test": "npm run test:integration && npm run test:unit",
@@ -35,15 +36,13 @@
 		"vitest": "^1.2.0"
 	},
 	"dependencies": {
+		"@farcaster/jfs": "^0.3.0",
 		"@fontsource/fira-code": "^5.0.17",
 		"@fontsource/ubuntu": "^5.0.12",
 		"@resvg/resvg-js": "^2.6.0",
 		"satori": "^0.10.13",
-		"satori-html": "^0.3.2"
-	},
-	"optionalDependencies": {
-		"@oazapfts/runtime": "^1.0.2",
-		"object.groupby": "^1.0.3"
+		"satori-html": "^0.3.2",
+		"viem": "^2.47.10"
 	},
 	"type": "module"
 }

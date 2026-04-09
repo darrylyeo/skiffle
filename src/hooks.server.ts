@@ -24,6 +24,17 @@ import { deserialize } from '$app/forms'
 import { createFrameResponse, type FrameMeta } from './lib/frame'
 
 
+// Snaps
+import {
+	hasSnapJfsEnvelope,
+	isLikelyJfsCompact,
+	parseFrameSignatureJson,
+	readSnapJfsPayload,
+	wantsSnapJson,
+} from './lib/snap'
+import { snapGetResponse, snapPostResponse } from './lib/snap-routes'
+
+
 // Hooks
 export const handle: Handle = async ({
 	event,
@@ -55,6 +66,14 @@ export const handle: Handle = async ({
 				'accept': 'image/png',
 			}),
 		})
+	}
+
+	// Farcaster Snap (content negotiation)
+	if (event.request.method === 'GET' && wantsSnapJson(event.request)) {
+		const snap = await snapGetResponse(event, resolve)
+		if (snap) {
+			return snap
+		}
 	}
 
 	// Svelte → HTML → Image
@@ -131,46 +150,83 @@ export const handle: Handle = async ({
 		)
 	}
 
-	// Frame Button "post" Action
-	if (
-		event.request.method === 'POST'
-		&& event.request.headers.get('content-type') === 'application/json'
-	) {
-		console.info('Frame Button Action')
+	// Frame POST (JSON signature packet) or Snap POST (JFS compact)
+	if (event.request.method === 'POST') {
+		const bodyText = await event.request.text()
+		const frameSignaturePacket = parseFrameSignatureJson(bodyText)
 
-		// Parse Frame Signature Packet
-		const frameSignaturePacket = await event.request.json() as FrameSignaturePacket
-		event.locals.frameSignaturePacket = frameSignaturePacket
+		if (frameSignaturePacket) {
+			console.info('Frame Button Action')
 
+			event.locals.frameSignaturePacket = frameSignaturePacket
+			event.locals.farcasterViewerFid = frameSignaturePacket.untrustedData.fid
 
-		// Handle with SvelteKit Form Action
-		event.request.headers.set('content-type', 'text/plain')
+			event.request = new Request(
+				event.request.url,
+				{
+					method: 'POST',
+					headers: (() => {
+						const h = new Headers(event.request.headers)
+						h.set('content-type', 'text/plain')
+						return h
+					})(),
+					body: bodyText,
+				},
+			)
 
-		const response = await resolve(event)
+			const response = await resolve(event)
 
-		if(response.ok){
-			console.info('Handling with SvelteKit Form Action...')
+			if (response.ok) {
+				console.info('Handling with SvelteKit Form Action...')
 
-			const { data } = deserialize(await response.text()) as { data: { frame: FrameMeta } }
+				const { data } = deserialize(await response.text()) as { data: { frame: FrameMeta } }
 
-			console.info('Frame:', data.frame)
+				console.info('Frame:', data.frame)
 
-			if(!data.frame.image.url){
-				const frameImageUrl = new URL(event.url)
-				frameImageUrl.searchParams.set('frameImage', '')
-				data.frame.image.url = frameImageUrl.href
+				if (!data.frame.image.url) {
+					const frameImageUrl = new URL(event.url)
+					frameImageUrl.searchParams.set('frameImage', '')
+					data.frame.image.url = frameImageUrl.href
+				}
+
+				return createFrameResponse(data.frame, event.request.url)
 			}
 
-			return createFrameResponse(data.frame, event.request.url)
+			console.info('Handling with SvelteKit GET request...')
+			event.request = new Request(
+				event.request.url,
+				{
+					method: 'GET',
+					headers: event.request.headers,
+				},
+			)
+
+			return await resolve(event)
 		}
 
+		if (isLikelyJfsCompact(bodyText) || hasSnapJfsEnvelope(bodyText)) {
+			try {
+				const payload = await readSnapJfsPayload(bodyText.trim())
+				event.locals.farcasterViewerFid = payload.fid
+				const snapRes = await snapPostResponse(event, resolve, payload)
+				if (snapRes) {
+					return snapRes
+				}
+			} catch (err) {
+				console.error('Snap JFS error', err)
+				return new Response('Unauthorized', { status: 401 })
+			}
+			return new Response('Snap POST not supported for this URL', { status: 404 })
+		}
 
-		// Handle with SvelteKit GET request
-		console.info('Handling with SvelteKit GET request...')
-		event.request = new Request(event.request.url, {
-			method: 'GET',
-			headers: event.request.headers,
-		})
+		event.request = new Request(
+			event.request.url,
+			{
+				method: 'POST',
+				headers: event.request.headers,
+				body: bodyText,
+			},
+		)
 
 		return await resolve(event)
 	}
