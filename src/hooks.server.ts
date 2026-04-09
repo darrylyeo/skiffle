@@ -21,7 +21,7 @@ const childrenOf = (node: SatoriNode) => (
 )
 
 const findTag = (node: SatoriNode, type: string) => (
-	childrenOf(node).find((child) => child.type === type)
+	childrenOf(node).find((child) => child?.type === type)
 )
 
 
@@ -103,7 +103,7 @@ export const handle: Handle = async ({
 		const response = await resolve(event)
 
 		if(response.status !== 200) {
-			const result = await response.text()
+			const result = await response.clone().text()
 			console.error('Error rendering Svelte → HTML:', result)
 			return response
 		}
@@ -112,15 +112,18 @@ export const handle: Handle = async ({
 
 		const html = await response.text()
 
+		const stylesheetHrefs = [...new Set([
+			...[...html.matchAll(/<link\s+href="([^"]+)"[^>]*rel="stylesheet"/gi)].map((m) => m[1]),
+			...[...html.matchAll(/<link\s+rel="stylesheet"[^>]*href="([^"]+)"/gi)].map((m) => m[1]),
+		])]
 		const styles = [
 			css,
 			...await Promise.all(
-				[...html.matchAll(/<link href="([^"]+)" rel="stylesheet">/g)].map((match) => match[1])
-					.map(async (href) => {
-						const response = await fetch(new URL(href, event.request.url).href)
-						return response.text()
-					})
-			)
+				stylesheetHrefs.map(async (href) => {
+					const response = await fetch(new URL(href, event.request.url).href)
+					return response.text()
+				})
+			),
 		]
 
 		const reactNode = toReactNode(`<style>${styles.join('\n')}</style>${html}`)
