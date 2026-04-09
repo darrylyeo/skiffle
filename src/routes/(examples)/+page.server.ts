@@ -1,6 +1,6 @@
 // Types
 import { type FrameMeta } from '$/lib/frame'
-import { resolveRoute } from '$app/paths'
+import { resolve } from '$app/paths'
 
 
 // Actions
@@ -19,7 +19,7 @@ export const actions: Actions = {
 			{
 				label: 'My Profile',
 				action: 'post',
-				targetUrl: resolveRoute(`/farcaster/user/[farcasterUserId]`, { farcasterUserId: String(farcasterUserId) }),
+				targetUrl: resolve('/(examples)/farcaster/user/[farcasterUserId]', { farcasterUserId: String(farcasterUserId) }),
 			},
 			{
 				label: 'Channels',

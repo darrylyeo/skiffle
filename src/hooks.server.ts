@@ -7,6 +7,23 @@ import satori from 'satori'
 import { html as toReactNode } from 'satori-html'
 import { Resvg } from '@resvg/resvg-js'
 
+type SatoriNode = ReturnType<typeof toReactNode>
+
+const childrenOf = (node: SatoriNode) => (
+	(
+		(c) => (
+			c === undefined ? []
+			: typeof c === 'string' ? []
+			: Array.isArray(c) ? c
+			: [c]
+		)
+	)(node.props.children)
+)
+
+const findTag = (node: SatoriNode, type: string) => (
+	childrenOf(node).find((child) => child.type === type)
+)
+
 
 // Fonts
 import { fonts } from '$/styles/fonts'
@@ -108,16 +125,23 @@ export const handle: Handle = async ({
 
 		const reactNode = toReactNode(`<style>${styles.join('\n')}</style>${html}`)
 
+		const htmlEl = findTag(reactNode, 'html')
+		const bodyEl = htmlEl && findTag(htmlEl, 'body')
+		const divEl = bodyEl && findTag(bodyEl, 'div')
 		const contentRoot = (
-			reactNode
-				.props.children.find((child) => child?.type === 'html')
-				.props.children.find((child) => child?.type === 'body')
-				.props.children.find((child) => child?.type === 'div')
-				.props.children.find((child) => child)
-		) as unknown as ReturnType<typeof toReactNode>
+			(divEl && childrenOf(divEl).find((child) => Boolean(child)))
+			?? divEl
+			?? bodyEl
+			?? htmlEl
+			?? reactNode
+		)
 
-		const width = Number(contentRoot.props.style.width.match(/\d+/)![0])
-		const height = Number(contentRoot.props.style.height.match(/\d+/)![0])
+		const style = contentRoot.props.style
+		if (style === undefined) {
+			throw new Error('expected frame content root to declare width and height')
+		}
+		const width = Number(style.width.match(/\d+/)![0])
+		const height = Number(style.height.match(/\d+/)![0])
 
 		const svg = await satori(
 			contentRoot,
@@ -141,7 +165,7 @@ export const handle: Handle = async ({
 		console.info(event.url.pathname, 'Rendered.')
 
 		return new Response(
-			png,
+			new Uint8Array(png),
 			{
 				headers: {
 					'content-type': 'image/png',
