@@ -9,22 +9,22 @@ import type { Actions } from './$types'
 export const actions: Actions = {
 	demos: async ({
 		url,
-		locals: { frameSignaturePacket },
+		locals: { farcasterViewerFid },
 	}) => {
-		const farcasterUserId = frameSignaturePacket?.untrustedData.fid ?? 3
+		const farcasterUserId = farcasterViewerFid ?? 1
 
 		const currentPage = Number(url.searchParams.get('page') ?? 0)
 
 		const demos = [
 			{
-				label: 'Farcaster Users',
+				label: 'My Profile',
 				action: 'post',
 				targetUrl: resolveRoute(`/farcaster/user/[farcasterUserId]`, { farcasterUserId: String(farcasterUserId) }),
 			},
 			{
-				label: 'Top Frames',
+				label: 'Channels',
 				action: 'post',
-				targetUrl: '/farcaster/frames',
+				targetUrl: '/farcaster/channels',
 			},
 			{
 				label: 'Mint',

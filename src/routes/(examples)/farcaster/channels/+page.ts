@@ -15,9 +15,12 @@ export const load: PageLoad = async ({
 }) => {
 	const currentPage = Number(url.searchParams.get('page') ?? 0)
 	const itemsPerPage = 2
-	const totalPages = Math.ceil(data.topFrames.length / itemsPerPage)
+	const totalPages = Math.max(1, Math.ceil(data.channels.length / itemsPerPage))
 
-	const shownFrames = data.topFrames.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage)
+	const shownChannels = data.channels.slice(
+		currentPage * itemsPerPage,
+		(currentPage + 1) * itemsPerPage,
+	)
 
 	return {
 		...data,
@@ -29,16 +32,16 @@ export const load: PageLoad = async ({
 				{
 					label: '‹ Back',
 					action: 'post',
-					targetUrl: '/farcaster',
+					targetUrl: '/?/demos',
 				},
-				...shownFrames.map((frame) => ({
-					label: new URL(frame.url).host,
-					action: 'link',
-					targetUrl: frame.warpcast_urls[0],
+				...shownChannels.map((channel) => ({
+					label: channel.name.slice(0, 32),
+					action: 'link' as const,
+					targetUrl: channel.url,
 				})),
 				currentPage < totalPages - 1
 					? {
-						label: 'More Frames ›',
+						label: 'More ›',
 						action: 'post',
 						targetUrl: `?page=${currentPage + 1}`,
 					}
@@ -48,6 +51,6 @@ export const load: PageLoad = async ({
 						targetUrl: `?page=${0}`,
 					},
 			].filter(isTruthy),
-		} as FrameMeta
+		} as FrameMeta,
 	}
 }

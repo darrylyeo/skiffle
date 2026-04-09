@@ -1,10 +1,10 @@
-import { getUserByFID } from '../../api/pinata/farcaster'
+import { getDemoUserByFid } from '../../api/farcaster-client'
 import type { LayoutServerLoad } from './$types'
 
 export const load: LayoutServerLoad = async ({
 	params: { farcasterUserId },
 }) => {
-	const { data: user } = await getUserByFID({
+	const user = await getDemoUserByFid({
 		fid: Number(farcasterUserId),
 	})
 

@@ -1,8 +1,4 @@
-// Functions
-import { getCasts } from '../../../../api/pinata/farcaster'
-
-
-// Data
+import { getDemoCastsByFid } from '../../../../api/farcaster-client'
 import type { PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async ({
@@ -11,7 +7,7 @@ export const load: PageServerLoad = async ({
 }) => {
 	const data = await parent()
 
-	const { data: { casts } } = await getCasts({
+	const { casts } = await getDemoCastsByFid({
 		fid: Number(farcasterUserId),
 	})
 

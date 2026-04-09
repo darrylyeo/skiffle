@@ -17,7 +17,7 @@ export const load: PageLoad = async () => {
 				{
 					label: 'Follow',
 					action: 'link',
-					targetUrl: 'https://warpcast.com/darrylyeo',
+					targetUrl: 'https://farcaster.xyz/darrylyeo',
 				},
 				{
 					label: 'Demos...',
