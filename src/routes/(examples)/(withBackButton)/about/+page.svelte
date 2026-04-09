@@ -16,7 +16,7 @@
 			{#if currentPage === 0}
 				<span>What is SKIFFLE?</span>
 			{:else if currentPage === 1}
-				<span>How do Frames and Snaps work in SKIFFLE?</span>
+				<span>How do I render a page as a frame with SKIFFLE?</span>
 			{:else if currentPage === 2}
 				<span>What's next for SKIFFLE?</span>
 			{:else if currentPage === 3}
@@ -27,13 +27,13 @@
 
 	<div class="card column">
 		{#if currentPage === 0}
-			<p><b>SKIFFLE</b> is a <b>SvelteKit</b> demo for <b>Farcaster Frames</b> (PNG previews + frame meta) and <b>Farcaster Snaps</b> (JSON embeds on the same routes).</p>
+			<p><b>SKIFFLE</b> lets you render images for <b>Farcaster Frames</b> using <b>SvelteKit</b> routes and layouts.</p>
 
 			<p>Load page data and render content as you normally would, using Svelte template syntax, <code>style</code> tags, <code>+layout.svelte</code> / <code>+page.svelte</code> components, and <code>load()</code> functions in <code>+layout.server.ts</code> / <code>+layout.ts</code> / <code>+page.server.ts</code> / <code>+page.ts</code> (or <code>.js</code>) files.</p>
 
 			<p>Link frame buttons to other frame routes using relative URLs, or handle signature packets<wbr> using <b>Form Actions</b> (define <code>actions</code> in <code>+page.server.ts</code>, then target <code>?/actionName</code>).</p>
 		{:else if currentPage === 1}
-			<p>To render a SvelteKit page as a frame, <b>export a <code>frame</code> object</b> from <code>+page.server.ts</code> or<wbr> <code>+page.ts</code> matching the <code>FrameMeta</code> type (also defined under the global <code>PageData</code> type).</p>
+			<p>To render a SvelteKit page as a frame, <b>export a <code>frames</code> object</b> from <code>+page.server.ts</code> or<wbr> <code>+page.ts</code> matching the <code>FrameMeta</code> type (also defined under the global <code>PageData</code> type).</p>
 
 			<p><b>Page route URLs double as frame image URLs</b> and share common <code>load()</code> functions. This<wbr> overloading behavior is made possible by the <code>handle</code> server hook in <code>hooks.server.ts</code>.</p>
 
