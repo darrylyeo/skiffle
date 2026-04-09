@@ -4,6 +4,8 @@
 		"allowJs": true,
 		"checkJs": true,
 		"esModuleInterop": true,
+		"jsx": "react-jsx",
+		"jsxImportSource": "satori/jsx",
 		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true,
 		"skipLibCheck": true,

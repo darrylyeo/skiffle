@@ -27,15 +27,35 @@ export const actions: Actions = {
 				targetUrl: '/farcaster/channels?/open',
 			},
 			{
-				label: 'Mint',
-				action: 'mint',
-				targetUrl: 'eip155:7777777:0x55f5a5d980992e01256d86e7ef03a22fd5fe84af',
+				label: 'Counter',
+				action: 'post',
+				targetUrl: '/farcaster/demos/counter?/open',
 			},
 			{
-				label: 'Useless Tx',
-				action: 'tx',
-				targetUrl: '/tx',
+				label: 'Tips',
+				action: 'post',
+				targetUrl: '/farcaster/demos/tips?/open',
 			},
+			{
+				label: 'Tic-tac-toe',
+				action: 'post',
+				targetUrl: '/farcaster/demos/tic-tac-toe?/open',
+			},
+			{
+				label: 'Coin Flip',
+				action: 'post',
+				targetUrl: '/farcaster/demos/coin-flip?/open',
+			},
+			// {
+			// 	label: 'Mint',
+			// 	action: 'mint',
+			// 	targetUrl: 'eip155:7777777:0x55f5a5d980992e01256d86e7ef03a22fd5fe84af',
+			// },
+			// {
+			// 	label: 'Useless Tx',
+			// 	action: 'tx',
+			// 	targetUrl: '/tx',
+			// },
 		]
 
 		const itemsPerPage = 2

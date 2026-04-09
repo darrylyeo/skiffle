@@ -102,9 +102,10 @@ export type DemoChannel = {
 	followerCount: number,
 	memberCount: number,
 	imageUrl: string,
+	headerImageUrl: string,
 }
 
-const isValidHttpUrl = (href: string) => {
+export const isValidHttpUrl = (href: string) => {
 	try {
 		const u = new URL(href)
 		return u.protocol === 'https:' || u.protocol === 'http:'
@@ -124,6 +125,7 @@ export const getPopularChannels = async () => (
 				followerCount: number,
 				memberCount: number,
 				imageUrl: string,
+				headerImageUrl?: string,
 			}[],
 		},
 	}>('/v2/all-channels')
@@ -139,6 +141,7 @@ export const getPopularChannels = async () => (
 						followerCount: channel.followerCount,
 						memberCount: channel.memberCount,
 						imageUrl: channel.imageUrl,
+						headerImageUrl: channel.headerImageUrl ?? '',
 					} satisfies DemoChannel
 				))
 				.filter((channel) => isValidHttpUrl(channel.url))

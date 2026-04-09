@@ -1,13 +1,25 @@
 // Types
 import { type Handle } from '@sveltejs/kit'
 
+import type { JSXElement } from 'satori/jsx'
+
 
 // Rendering
 import satori from 'satori'
-import { html as toReactNode } from 'satori-html'
 import { Resvg } from '@resvg/resvg-js'
 
-type SatoriNode = ReturnType<typeof toReactNode>
+import { styledHtmlDocumentForSatori } from '$/lib/frame-satori'
+
+
+type SatoriNode = JSXElement
+
+/** `JSXElement.props` is typed `unknown`; Satori vnode children match this shape at runtime. */
+const vnodeProps = (node: SatoriNode) => (
+	node.props as {
+		children?: unknown,
+		style?: Record<string, string | undefined>,
+	}
+)
 
 const childrenOf = (node: SatoriNode) => (
 	(
@@ -17,11 +29,21 @@ const childrenOf = (node: SatoriNode) => (
 			: Array.isArray(c) ? c
 			: [c]
 		)
-	)(node.props.children)
+	)(vnodeProps(node).children)
 )
 
 const findTag = (node: SatoriNode, type: string) => (
 	childrenOf(node).find((child) => child?.type === type)
+)
+
+/** `html()` from satori-html always wraps the document in a synthetic root `div`; with `Fragment` + `<style>`, that wrapper is a sibling of `style`, not `html`. */
+const vnodeTreeForFrameExtract = (root: SatoriNode) => (
+	(
+		findTag(root, 'html')
+			? root
+			: childrenOf(root).find((child) => child?.type === 'div')
+	)
+	?? root
 )
 
 
@@ -126,9 +148,10 @@ export const handle: Handle = async ({
 			),
 		]
 
-		const reactNode = toReactNode(`<style>${styles.join('\n')}</style>${html}`)
+		const reactNode = styledHtmlDocumentForSatori(styles.join('\n'), html)
 
-		const htmlEl = findTag(reactNode, 'html')
+		const extractRoot = vnodeTreeForFrameExtract(reactNode)
+		const htmlEl = findTag(extractRoot, 'html')
 		const bodyEl = htmlEl && findTag(htmlEl, 'body')
 		const divEl = bodyEl && findTag(bodyEl, 'div')
 		const contentRoot = (
@@ -139,8 +162,12 @@ export const handle: Handle = async ({
 			?? reactNode
 		)
 
-		const style = contentRoot.props.style
-		if (style === undefined) {
+		const style = vnodeProps(contentRoot).style
+		if (
+			style === undefined
+			|| style.width === undefined
+			|| style.height === undefined
+		) {
 			throw new Error('expected frame content root to declare width and height')
 		}
 		const width = Number(style.width.match(/\d+/)![0])

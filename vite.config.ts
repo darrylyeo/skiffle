@@ -3,6 +3,10 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	plugins: [sveltekit()],
+	esbuild: {
+		jsx: 'automatic',
+		jsxImportSource: 'satori/jsx',
+	},
 	server: {
 		host: true,
 		allowedHosts: true,

@@ -45,31 +45,36 @@ const frameMetaFromPaginationState = ({
 }: ReturnType<typeof channelsPagination>): FrameMeta => (
 	{
 		image: {
+			url: '.',
 			aspectRatio: '1:1',
 		},
-		buttons: [
-			{
-				label: '‹ Back',
-				action: 'post',
-				targetUrl: '/?/demos',
-			},
-			...shownForFrame.map((channel) => ({
-				label: channel.name.slice(0, 32),
-				action: 'link' as const,
-				targetUrl: channel.url,
-			})),
-			currentPage < totalPages - 1
-				? {
-					label: 'More ›',
+		buttons: (
+			[
+				{
+					label: '‹ Back',
 					action: 'post',
-					targetUrl: `/farcaster/channels?/paginate&page=${currentPage + 1}`,
-				}
-				: {
-					label: 'Back to Top ›',
-					action: 'post',
-					targetUrl: '/farcaster/channels?/paginate&page=0',
+					targetUrl: '/?/demos',
 				},
-		].filter(isTruthy),
+				...shownForFrame.map((channel) => ({
+					label: channel.name.slice(0, 32),
+					action: 'link' as const,
+					targetUrl: channel.url,
+				})),
+				currentPage < totalPages - 1
+					? {
+						label: 'More ›',
+						action: 'post',
+						targetUrl: `/farcaster/channels?/paginate&page=${currentPage + 1}`,
+					}
+					: {
+						label: 'Back to Top ›',
+						action: 'post',
+						targetUrl: '/farcaster/channels?/paginate&page=0',
+					},
+			] as const
+		)
+			.filter(isTruthy)
+			.slice(0, 4) as FrameMeta['buttons'],
 	}
 )
 

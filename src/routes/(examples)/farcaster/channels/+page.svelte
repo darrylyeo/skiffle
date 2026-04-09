@@ -1,5 +1,7 @@
 <script lang="ts">
 	// Functions
+	import { isValidHttpUrl } from '../api/farcaster-client'
+
 	const channelHostname = (href: string) => {
 		try {
 			return new URL(href).hostname
@@ -33,10 +35,47 @@
 
 	<div id="channels" class="row wrap">
 		{#each displayChannels as channel (channel.id)}
+			{@const headerOk = (
+				Boolean(channel.headerImageUrl)
+				&& isValidHttpUrl(channel.headerImageUrl)
+			)}
+			{@const imageOk = (
+				Boolean(channel.imageUrl)
+				&& isValidHttpUrl(channel.imageUrl)
+			)}
+			{@const bannerUrl = (
+				headerOk
+					? channel.headerImageUrl
+				: imageOk
+					? channel.imageUrl
+				:
+					''
+			)}
+			{@const showAvatar = headerOk && imageOk}
 			{@const hostname = channelHostname(channel.url)}
 
-			<div class="card row">
-				<div class="column">
+			<section class="card column">
+				{#if bannerUrl}
+					<div class="media">
+						<img
+							class="banner"
+							src={bannerUrl}
+							alt=""
+						/>
+						{#if showAvatar}
+							<img
+								class="image"
+								src={channel.imageUrl}
+								alt={channel.name}
+							/>
+						{/if}
+					</div>
+				{/if}
+
+				<div
+					class="body column"
+					class:pad-for-avatar={showAvatar}
+				>
 					<p class="url row inline">
 						<strong>{channel.name}</strong>
 						<span>{hostname}</span>
@@ -50,7 +89,7 @@
 
 					<p class="description">{channel.description}</p>
 				</div>
-			</div>
+			</section>
 		{/each}
 	</div>
 </article>
@@ -70,10 +109,40 @@
 	}
 
 	.card {
-		padding: 1.25em;
+		overflow: hidden;
 		border-radius: 1em;
 		background-color: rgba(255, 255, 255, 0.05);
-		overflow: hidden;
+	}
+
+	.card > .media {
+		position: relative;
+	}
+
+	.card > .media > .banner {
+		display: block;
+		width: 100%;
+		aspect-ratio: 2 / 1;
+		object-fit: cover;
+	}
+
+	.card > .media > .image {
+		position: absolute;
+		left: 1rem;
+		bottom: -2.25rem;
+		width: 4.5rem;
+		height: 4.5rem;
+		border-radius: 0.75rem;
+		object-fit: cover;
+		box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.45);
+	}
+
+	.card > .body {
+		padding: 1.25em;
+		gap: 0.65em;
+	}
+
+	.card > .body.pad-for-avatar {
+		padding-top: 2.85rem;
 	}
 
 	p {

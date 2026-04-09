@@ -72,17 +72,16 @@ export type FramePage = {
 	frame: FrameMeta,
 }
 
+/** Per https://docs.farcaster.xyz/snap/actions (submit, open_url, view_token, …). */
 type SnapPressAction = {
 	action: string,
-	params: {
-		target: string,
-	},
+	params?: Record<string, unknown>,
 }
 
 type SupportedButton = {
 	button: FrameButton,
 	index: number,
-	action: SnapPressAction,
+	press: SnapPressAction,
 }
 
 export const wantsSnapJson = (request: Request) => (
@@ -235,7 +234,24 @@ const frameAspectRatioToSnapAspect = (
 	)
 }
 
-const snapActionFromFrameButton = (
+/**
+ * Frame mint targets use `eip155:chain:0x…`; Snap `view_token` expects CAIP-19 `eip155:chain/erc20:0x…`.
+ * @see https://docs.farcaster.xyz/snap/actions#view_token
+ */
+const frameMintTargetToViewToken = (mint: string) => {
+	const t = mint.trim()
+	if (t.startsWith('eip155:') && t.includes('/erc20:'))
+		return t
+
+	const m = t.match(/^eip155:(\d+):(0x[a-fA-F0-9]+)$/)
+	return (
+		m
+			? `eip155:${m[1]}/erc20:${m[2]}`
+			: undefined
+	)
+}
+
+const snapPressFromFrameButton = (
 	button: FrameButton,
 	baseUrl: URL | string,
 ): SnapPressAction | undefined => {
@@ -243,25 +259,71 @@ const snapActionFromFrameButton = (
 		return undefined
 	}
 
+	const target = snapResolvedUrl(button.targetUrl, baseUrl)
+
 	if (button.action === 'post' || button.action === 'post_redirect') {
 		return {
 			action: 'submit',
-			params: {
-				target: snapResolvedUrl(button.targetUrl, baseUrl),
-			},
+			params: { target },
 		}
 	}
 
 	if (button.action === 'link' || button.action === undefined) {
 		return {
 			action: 'open_url',
-			params: {
-				target: snapResolvedUrl(button.targetUrl, baseUrl),
-			},
+			params: { target },
+		}
+	}
+
+	if (button.action === 'mint') {
+		const token = frameMintTargetToViewToken(button.targetUrl)
+		return (
+			token
+				? {
+					action: 'view_token',
+					params: { token },
+				}
+				: {
+					action: 'open_url',
+					params: {
+						target: 'https://docs.farcaster.xyz/reference/frames/spec',
+					},
+				}
+		)
+	}
+
+	if (button.action === 'tx') {
+		return {
+			action: 'open_url',
+			params: { target },
 		}
 	}
 
 	return undefined
+}
+
+const snapButtonIcon = (press: SnapPressAction) => (
+	press.action === 'open_url'
+		? 'external-link'
+	: press.action === 'view_token'
+		? 'wallet'
+	:
+		undefined
+)
+
+const snapCaptionForFrame = (
+	baseUrl: URL | string,
+	supportedCount: number,
+) => {
+	try {
+		const path = new URL(String(baseUrl)).pathname
+		const where = path === '/' ? 'SKIFFLE' : path
+		const n = supportedCount
+		const line = `${where} · ${n} action${n === 1 ? '' : 's'}`
+		return line.length > 320 ? `${line.slice(0, 317)}…` : line
+	} catch {
+		return `${supportedCount} action(s)`
+	}
 }
 
 export const framePageToSnap = (
@@ -276,28 +338,37 @@ export const framePageToSnap = (
 			continue
 		}
 
-		const action = snapActionFromFrameButton(button, baseUrl)
-		if (action) {
+		const press = snapPressFromFrameButton(button, baseUrl)
+		if (press) {
 			supportedButtons.push({
 				button,
 				index,
-				action,
+				press,
 			})
 		}
 	}
 
 	const unsupportedButtonCount = buttons.length - supportedButtons.length
+
+	const pageChildren = (
+		[
+			'hero',
+			'sep-hero',
+			...(title ? ['title-text'] : []),
+			'caption',
+			...(frame.textInput ? ['input'] : []),
+			...(supportedButtons.length ? ['actions'] : []),
+			...(unsupportedButtonCount ? ['unsupported'] : []),
+		]
+	)
+
 	const elements: SnapResponse['ui']['elements'] = {
 		page: {
 			type: 'stack',
-			props: {},
-			children: [
-				'hero',
-				...(title ? ['title'] : []),
-				...(frame.textInput ? ['input'] : []),
-				...(supportedButtons.length ? ['actions'] : []),
-				...(unsupportedButtonCount ? ['unsupported'] : []),
-			],
+			props: {
+				gap: 'md',
+			},
+			children: pageChildren,
 		},
 		hero: {
 			type: 'image',
@@ -307,14 +378,27 @@ export const framePageToSnap = (
 				alt: title ?? 'SKIFFLE preview',
 			},
 		},
+		'sep-hero': {
+			type: 'separator',
+			props: {},
+		},
+		caption: {
+			type: 'text',
+			props: {
+				content: snapCaptionForFrame(baseUrl, supportedButtons.length),
+				size: 'sm',
+				align: 'center',
+			},
+		},
 	}
 
 	if (title) {
-		elements.title = {
+		elements['title-text'] = {
 			type: 'text',
 			props: {
-				content: title,
+				content: title.length > 320 ? `${title.slice(0, 317)}…` : title,
 				weight: 'bold',
+				align: 'center',
 			},
 		}
 	}
@@ -325,29 +409,38 @@ export const framePageToSnap = (
 			props: {
 				name: 'text',
 				label: frame.textInput,
+				placeholder: 'Optional',
+				maxLength: 280,
 			},
 		}
 	}
 
 	if (supportedButtons.length) {
+		const useHorizontalActions = supportedButtons.length <= 3
 		elements.actions = {
 			type: 'stack',
 			props: {
-				direction: supportedButtons.length <= 2 ? 'horizontal' : 'vertical',
+				direction: useHorizontalActions ? 'horizontal' : 'vertical',
 				gap: 'sm',
+				...(useHorizontalActions
+					? { justify: 'center' as const }
+					: {}),
 			},
 			children: supportedButtons.map(({ index }) => `button-${index}`),
 		}
 
-		for (const { button, index, action } of supportedButtons) {
+		for (const { button, index, press } of supportedButtons) {
+			const icon = snapButtonIcon(press)
+			const primary = supportedButtons.findIndex((s) => s.index === index) === 0
 			elements[`button-${index}`] = {
 				type: 'button',
 				props: {
-					label: button.label,
-					variant: index === 0 ? 'primary' : 'secondary',
+					label: button.label.slice(0, 30),
+					variant: primary ? 'primary' : 'secondary',
+					...(icon ? { icon } : {}),
 				},
 				on: {
-					press: action,
+					press,
 				},
 			}
 		}
@@ -357,8 +450,9 @@ export const framePageToSnap = (
 		elements.unsupported = {
 			type: 'text',
 			props: {
-				content: `${unsupportedButtonCount} frame action${unsupportedButtonCount === 1 ? '' : 's'} omitted in snap.`,
+				content: `${unsupportedButtonCount} frame action${unsupportedButtonCount === 1 ? '' : 's'} not mapped to Snap.`,
 				size: 'sm',
+				align: 'center',
 			},
 		}
 	}
