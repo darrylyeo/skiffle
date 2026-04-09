@@ -1,11 +1,22 @@
 <script lang="ts">
+	// Functions
+	const channelHostname = (href: string) => {
+		try {
+			return new URL(href).hostname
+		} catch {
+			return ''
+		}
+	}
+
+
+
 	// Props
 	const {
 		data,
 	} = $props()
 
 	let {
-		channels,
+		displayChannels,
 	} = data
 </script>
 
@@ -21,14 +32,14 @@
 	</header>
 
 	<div id="channels" class="row wrap">
-		{#each channels.slice(0, 10) as channel (channel.url)}
-			{@const channelUrl = new URL(channel.url)}
+		{#each displayChannels as channel (channel.id)}
+			{@const hostname = channelHostname(channel.url)}
 
 			<div class="card row">
 				<div class="column">
 					<p class="url row inline">
 						<strong>{channel.name}</strong>
-						<span>{channelUrl.hostname}</span>
+						<span>{hostname}</span>
 					</p>
 
 					<p class="annotation row inline wrap">
