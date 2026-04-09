@@ -41,7 +41,7 @@
 		<title>{title}</title>
 	{/if}
 
-	{#each metaTags as { property, content }}
+	{#each metaTags as { property, content } (`${property}:${content}`)}
 		{#if property === 'fc:frame:image'}
 			<meta property="og:image" content={content} />
 		{/if}

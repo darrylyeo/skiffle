@@ -21,7 +21,7 @@
 	</header>
 
 	<div id="channels" class="row wrap">
-		{#each channels.slice(0, 10) as channel}
+		{#each channels.slice(0, 10) as channel (channel.url)}
 			{@const channelUrl = new URL(channel.url)}
 
 			<div class="card row">
