@@ -10,10 +10,8 @@
 <article class="column">
 	<section class="panel column">
 		<header class="column">
-			<p class="eyebrow">SKIFFLE demo</p>
-
 			<div class="meta row inline">
-				<h2>Slideshow</h2>
+				<h2>SKIFFLE Tips</h2>
 				<p class="annotation">Slide {data.tipIndex + 1} of {data.tipCount}</p>
 			</div>
 		</header>
@@ -61,15 +59,6 @@
 
 	header.column {
 		gap: 0.55em;
-	}
-
-	.eyebrow {
-		margin: 0;
-		font-size: 0.72em;
-		font-weight: 800;
-		letter-spacing: 0.18em;
-		text-transform: uppercase;
-		color: rgba(255, 219, 199, 0.74);
 	}
 
 	.meta {

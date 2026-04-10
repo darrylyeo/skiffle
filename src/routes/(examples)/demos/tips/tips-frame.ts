@@ -78,7 +78,7 @@ const snapFromPaginationState = ({
 	const nextPage = normTipIndex(currentPage + 1)
 
 	return {
-		shareText: `Viewing slide ${currentPage + 1} of ${totalPages} in the SKIFFLE slideshow demo. ${message}`,
+		shareText: `Viewing slide ${currentPage + 1} of ${totalPages} in SKIFFLE Tips. ${message}`,
 		theme: {
 			accent: SnapPaletteColors.Amber,
 		},

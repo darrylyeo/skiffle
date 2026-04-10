@@ -55,52 +55,43 @@
 	{/if}
 
 	<header class='column'>
-		<p class='eyebrow'>
-			{
-				data.outcome === 'win' ? 'You win'
-				: data.outcome === 'loss' ? 'CPU wins'
-				: data.outcome === 'draw' ? 'Draw'
-				:
-					'Best of instinct'
-			}
-		</p>
 		<h2>
-			<span class='title-main'>Rock Paper Scissors</span>
+			<div class='title-main'>Rock Paper Scissors</div>
 		</h2>
 		<p class='annotation'>{data.summary}</p>
 	</header>
 
 	<section class='matchup' aria-label='Last round'>
 		<div class='choice column' data-role='player'>
-			<span class='contestant'>You</span>
-			<span class='glyph'>{playerPick?.glyph ?? '❔'}</span>
+			<p class='contestant'>You</p>
+			<p class='glyph'>{playerPick?.glyph ?? '❔'}</p>
 			<strong class='move'>{playerPick?.name ?? '?'}</strong>
 		</div>
 		<p class='versus'>
-			<span class='versus-inner'>VS</span>
+			<strong class='versus-inner'>VS</strong>
 		</p>
 		<div class='choice column' data-role='cpu'>
-			<span class='contestant'>CPU</span>
-			<span class='glyph'>{cpuPick?.glyph ?? '❔'}</span>
+			<p class='contestant'>CPU</p>
+			<p class='glyph'>{cpuPick?.glyph ?? '❔'}</p>
 			<strong class='move'>{cpuPick?.name ?? '?'}</strong>
 		</div>
 	</section>
 
 	<section class='stats row' aria-label='Scoreboard'>
 		<div class='metric column'>
-			<span>Rounds</span>
+			<p>Rounds</p>
 			<strong>{data.rounds}</strong>
 		</div>
 		<div class='metric column'>
-			<span>Wins</span>
+			<p>Wins</p>
 			<strong>{data.wins}</strong>
 		</div>
 		<div class='metric column'>
-			<span>Losses</span>
+			<p>Losses</p>
 			<strong>{data.losses}</strong>
 		</div>
 		<div class='metric column'>
-			<span>Draws</span>
+			<p>Draws</p>
 			<strong>{data.draws}</strong>
 		</div>
 	</section>
@@ -135,24 +126,62 @@
 		gap: 1.5em;
 		padding: 1.1em 0.85em 1.15em;
 		overflow: hidden;
-		background: rgba(28, 14, 58, 0.96);
+		background:
+			radial-gradient(circle at 20% 16%, rgba(255, 186, 56, 0.28), transparent 24%),
+			radial-gradient(circle at 82% 14%, rgba(141, 99, 255, 0.3), transparent 26%),
+			radial-gradient(circle at 50% 100%, rgba(255, 186, 56, 0.14), transparent 38%),
+			linear-gradient(180deg, rgba(28, 14, 58, 0.98), rgba(18, 10, 40, 0.98));
 		box-shadow:
 			inset 0 0 0 1px rgba(255, 255, 255, 0.1),
 			inset 0 -2em 3em rgba(0, 0, 0, 0.35),
+			0 0 2.4em rgba(255, 196, 72, 0.34),
+			0 1.2em 2.8em rgba(8, 0, 24, 0.55);
+	}
+
+	article[data-outcome="win"] {
+		border-color: rgba(255, 168, 112, 0.42);
+		background:
+			radial-gradient(circle at 20% 16%, rgba(255, 139, 77, 0.3), transparent 24%),
+			radial-gradient(circle at 82% 14%, rgba(52, 211, 153, 0.28), transparent 26%),
+			radial-gradient(circle at 50% 100%, rgba(255, 139, 77, 0.16), transparent 38%),
+			linear-gradient(180deg, rgba(28, 14, 58, 0.98), rgba(18, 10, 40, 0.98));
+		box-shadow:
+			inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+			inset 0 -2em 3em rgba(0, 0, 0, 0.35),
+			0 0 2.4em rgba(255, 136, 77, 0.3),
+			0 1.2em 2.8em rgba(8, 0, 24, 0.55);
+	}
+
+	article[data-outcome="loss"] {
+		border-color: rgba(180, 160, 255, 0.34);
+		background:
+			radial-gradient(circle at 20% 16%, rgba(141, 99, 255, 0.26), transparent 24%),
+			radial-gradient(circle at 82% 14%, rgba(96, 165, 250, 0.28), transparent 26%),
+			radial-gradient(circle at 50% 100%, rgba(141, 99, 255, 0.12), transparent 38%),
+			linear-gradient(180deg, rgba(28, 14, 58, 0.98), rgba(18, 10, 40, 0.98));
+		box-shadow:
+			inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+			inset 0 -2em 3em rgba(0, 0, 0, 0.35),
+			0 0 2.4em rgba(122, 99, 255, 0.3),
+			0 1.2em 2.8em rgba(8, 0, 24, 0.55);
+	}
+
+	article[data-outcome="draw"] {
+		border-color: rgba(180, 210, 255, 0.32);
+		background:
+			radial-gradient(circle at 20% 16%, rgba(125, 211, 252, 0.24), transparent 24%),
+			radial-gradient(circle at 82% 14%, rgba(192, 132, 252, 0.24), transparent 26%),
+			radial-gradient(circle at 50% 100%, rgba(125, 211, 252, 0.1), transparent 38%),
+			linear-gradient(180deg, rgba(28, 14, 58, 0.98), rgba(18, 10, 40, 0.98));
+		box-shadow:
+			inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+			inset 0 -2em 3em rgba(0, 0, 0, 0.35),
+			0 0 2.4em rgba(125, 211, 252, 0.24),
 			0 1.2em 2.8em rgba(8, 0, 24, 0.55);
 	}
 
 	header {
 		gap: 0.55em;
-	}
-
-	.eyebrow {
-		font-size: 0.98em;
-		font-weight: 800;
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
-		color: rgba(255, 220, 140, 0.92);
-		text-shadow: 0 0 1.2em rgba(255, 200, 80, 0.45);
 	}
 
 	h2 {
@@ -165,7 +194,7 @@
 		text-shadow:
 			0 0.06em 0 rgba(120, 40, 180, 0.9),
 			0 0.12em 0 rgba(40, 10, 80, 0.85),
-			0 0 0.35em rgba(255, 120, 200, 0.35);
+			0 0 0.45em rgba(255, 120, 200, 0.35);
 	}
 
 	.title-main {
@@ -174,6 +203,7 @@
 		border-radius: 0.15em;
 		background: rgba(255, 255, 255, 0.08);
 		border: 1px solid rgba(255, 255, 255, 0.12);
+		box-shadow: 0 0 1.6em rgba(255, 196, 72, 0.34);
 	}
 
 	.annotation {
@@ -193,7 +223,8 @@
 		max-width: 26em;
 		padding: 0.5em 0;
 		border-radius: 1.2em;
-		border: 2px dashed rgba(255, 200, 120, 0.22);
+		border: 2px dashed rgba(255, 220, 160, 0.2);
+		box-shadow: inset 0 0 2.2em rgba(141, 99, 255, 0.08);
 	}
 
 	.stats {
@@ -213,9 +244,12 @@
 		padding: 1.05em 1.05em 1.15em;
 		gap: 0.45em;
 		border-radius: 1em;
-		background: rgba(48, 20, 86, 0.76);
+		background:
+			linear-gradient(180deg, rgba(255, 186, 56, 0.12), rgba(255, 255, 255, 0.03)),
+			rgba(48, 20, 86, 0.76);
 		box-shadow:
 			inset 0 1px 0 rgba(255, 255, 255, 0.18),
+			0 0 1.2em rgba(255, 186, 56, 0.14),
 			0 0.35em 0 rgba(0, 0, 0, 0.35),
 			0 1em 2em rgba(48, 12, 90, 0.45);
 		border: 1px solid rgba(255, 220, 160, 0.2);
@@ -238,9 +272,11 @@
 
 	.glyph {
 		display: block;
-		font-size: clamp(3.2rem, 15vw, 5.5rem);
+		font-size: clamp(4.1rem, 19vw, 6.7rem);
 		line-height: 1;
-		filter: drop-shadow(0 0.12em 0.08em rgba(0, 0, 0, 0.45));
+		filter:
+			drop-shadow(0 0.12em 0.08em rgba(0, 0, 0, 0.45))
+			drop-shadow(0 0 0.45em rgba(255, 186, 56, 0.28));
 	}
 
 	.move,
@@ -270,13 +306,27 @@
 	}
 
 	.choice[data-role="player"] {
-		background: rgba(112, 46, 95, 0.82);
-		border-color: rgba(255, 160, 100, 0.45);
+		background:
+			linear-gradient(180deg, rgba(255, 171, 112, 0.18), rgba(255, 255, 255, 0.03)),
+			rgba(112, 46, 95, 0.82);
+		border-color: rgba(255, 210, 120, 0.35);
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.18),
+			0 0 1.4em rgba(255, 186, 56, 0.14),
+			0 0.35em 0 rgba(0, 0, 0, 0.35),
+			0 1em 2em rgba(48, 12, 90, 0.45);
 	}
 
 	.choice[data-role="cpu"] {
-		background: rgba(76, 44, 129, 0.84);
-		border-color: rgba(180, 150, 255, 0.4);
+		background:
+			linear-gradient(180deg, rgba(141, 99, 255, 0.2), rgba(255, 255, 255, 0.03)),
+			rgba(76, 44, 129, 0.84);
+		border-color: rgba(255, 220, 160, 0.2);
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.18),
+			0 0 1.4em rgba(141, 99, 255, 0.3),
+			0 0.35em 0 rgba(0, 0, 0, 0.35),
+			0 1em 2em rgba(48, 12, 90, 0.45);
 	}
 
 	article[data-outcome="win"] > section.matchup > .choice[data-role="player"] {
@@ -316,7 +366,7 @@
 		border: 3px solid rgba(255, 255, 255, 0.65);
 		box-shadow:
 			0 0.25em 0 rgba(120, 50, 0, 0.55),
-			0 0 1.2em rgba(255, 200, 60, 0.55);
+			0 0 1.4em rgba(255, 196, 72, 0.34);
 		text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
 	}
 
@@ -324,7 +374,7 @@
 		background: #ff8b4d;
 		box-shadow:
 			0 0.25em 0 rgba(120, 40, 0, 0.5),
-			0 0 1.4em rgba(255, 140, 60, 0.65);
+			0 0 1.6em rgba(255, 136, 77, 0.3);
 	}
 
 	article[data-outcome="loss"] .versus-inner {
@@ -334,7 +384,7 @@
 	}
 
 	article[data-outcome="draw"] .versus-inner {
-		background: #b29aff;
+		background: #7dd3fc;
 		color: rgba(28, 12, 48, 0.95);
 	}
 
@@ -353,11 +403,17 @@
 		opacity: 0.9;
 	}
 
-	.metric > span {
+	.metric > p {
+		margin: 0;
 		font-size: 0.8em;
 		font-weight: 800;
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
 		color: rgba(255, 220, 200, 0.72);
+	}
+
+	.contestant,
+	.glyph {
+		margin: 0;
 	}
 </style>

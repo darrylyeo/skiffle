@@ -223,7 +223,7 @@ const buildRockPaperScissorsSnap = ({
 					targetUrl: '/?/demos',
 				}),
 				snapTargetButton({
-					label: '/reset',
+					label: 'Reset',
 					action: 'post',
 					targetUrl: '/demos/rock-paper-scissors?/open',
 				}),

@@ -15,7 +15,7 @@ export const load: PageServerLoad = async ({ url }) => {
 		tipIndex: currentPage,
 		tipCount: totalPages,
 		message,
-		title: `Slideshow · Slide ${currentPage + 1} of ${totalPages}`,
+		title: `SKIFFLE Tips · Slide ${currentPage + 1} of ${totalPages}`,
 		frame,
 		snap,
 	}
