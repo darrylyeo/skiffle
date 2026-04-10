@@ -4,12 +4,17 @@
 
 // Types/constants
 import type { FrameButton, FrameMeta, FrameSignaturePacket } from '$/lib/frame'
+import type { SnapExtraElements } from '$/lib/snap-page-extra'
 
 import { decode, verify } from '@farcaster/jfs'
 
 import { resolveUrl } from '$/lib/resolveUrl'
+import { frameStateUrlFromFrame } from '$/lib/snap-page-extra'
+import { hangmanSnapExtraElements } from '$/routes/(examples)/farcaster/demos/hangman/snap'
+import { wordleSnapExtraElements } from '$/routes/(examples)/farcaster/demos/wordle/snap'
 
 export const SNAP_MEDIA_TYPE = 'application/vnd.farcaster.snap+json' as const
+export const SNAP_VERSION = '2.0' as const
 
 export type SnapPaletteColor = (
 	| 'purple'
@@ -48,7 +53,7 @@ export type SnapUi = {
 }
 
 export type SnapResponse = {
-	version: '1.0',
+	version: typeof SNAP_VERSION,
 	theme?: SnapTheme,
 	effects?: string[],
 	ui: SnapUi,
@@ -57,8 +62,9 @@ export type SnapResponse = {
 export type SnapJfsPayload = {
 	fid: number,
 	inputs: Record<string, unknown>,
-	button_index: number,
 	timestamp: number,
+	nonce: string,
+	audience: string,
 }
 
 type SnapJfsEnvelope = {
@@ -84,54 +90,17 @@ type SupportedButton = {
 	press: SnapPressAction,
 }
 
+type SnapExtraElementProvider = (
+	frame: FrameMeta,
+	baseUrl: URL | string,
+) => SnapExtraElements | undefined
+
 export const wantsSnapJson = (request: Request) => (
 	(request.headers.get('accept') ?? '')
 		.includes(SNAP_MEDIA_TYPE)
 )
 
 const LOOPBACK_HOST = /^(localhost|127\.0\.0\.1|\[::1\]|::1)(:\d+)?$/
-
-const firstHeaderValue = (value: string | null) => (
-	value
-		?.split(',')[0]
-		?.trim()
-)
-
-export const snapBaseUrlFromRequest = (request: Request) => {
-	const fromEnv = process.env.SNAP_PUBLIC_BASE_URL?.trim()
-	if (fromEnv) {
-		return fromEnv.replace(/\/$/, '')
-	}
-
-	const forwardedHost = firstHeaderValue(request.headers.get('x-forwarded-host'))
-	const host = (
-		forwardedHost
-		?? firstHeaderValue(request.headers.get('host'))
-	)
-	if (!host) {
-		return `http://localhost:${process.env.PORT ?? '5173'}`
-	}
-
-	const proto = (
-		firstHeaderValue(request.headers.get('x-forwarded-proto'))
-		?? (LOOPBACK_HOST.test(host) ? 'http' : 'https')
-	)
-	return `${proto}://${host}`.replace(/\/$/, '')
-}
-
-export const snapTargetUrl = (
-	request: Request,
-	pathname: string,
-	searchParams?: Record<string, string | number | boolean | undefined>,
-) => {
-	const url = new URL(pathname, `${snapBaseUrlFromRequest(request)}/`)
-	for (const [key, value] of Object.entries(searchParams ?? {})) {
-		if (value !== undefined) {
-			url.searchParams.set(key, String(value))
-		}
-	}
-	return url.href
-}
 
 const frameImageUrlForCurrentPage = (url: URL | string) => {
 	const frameImageUrl = new URL(String(url))
@@ -326,17 +295,16 @@ const snapCaptionForFrame = (
 	}
 }
 
+const snapCurrentPageUrl = (baseUrl: URL | string) => (
+	snapResolvedUrl(String(baseUrl), baseUrl)
+)
+
 const snapEffectsForFrame = (
 	frame: FrameMeta,
 	baseUrl: URL | string,
 ) => {
 	try {
-		const stateUrl = new URL(
-			resolveUrl(
-				frame.image.url || String(baseUrl),
-				baseUrl,
-			),
-		)
+		const stateUrl = frameStateUrlFromFrame(frame, baseUrl)
 
 		return (
 			stateUrl.searchParams.get('status') === 'x-win'
@@ -349,6 +317,117 @@ const snapEffectsForFrame = (
 		return undefined
 	}
 }
+
+const snapThemeAccentResolvers = {
+	'/farcaster/channels': () => (
+		'blue'
+	),
+	'/farcaster/demos/wordle': (stateUrl: URL) => (
+		stateUrl.searchParams.get('status') === 'win' ?
+			'green'
+		: stateUrl.searchParams.get('status') === 'loss' || stateUrl.searchParams.get('status') === 'invalid' ?
+			'red'
+		:
+			'amber'
+	),
+	'/farcaster/demos/hangman': (stateUrl: URL) => (
+		stateUrl.searchParams.get('status') === 'win' ?
+			'green'
+		: stateUrl.searchParams.get('status') === 'loss' || stateUrl.searchParams.get('status') === 'invalid' || stateUrl.searchParams.get('status') === 'repeat' ?
+			'red'
+		:
+			'amber'
+	),
+	'/farcaster/demos/tic-tac-toe': (stateUrl: URL) => (
+		stateUrl.searchParams.get('status') === 'x-win' ?
+			'green'
+		: stateUrl.searchParams.get('status') === 'o-win' || stateUrl.searchParams.get('status') === 'invalid' ?
+			'red'
+		:
+			'purple'
+	),
+	'/farcaster/demos/rock-paper-scissors': (stateUrl: URL) => (
+		stateUrl.searchParams.get('outcome') === 'win' ?
+			'green'
+		: stateUrl.searchParams.get('outcome') === 'loss' ?
+			'red'
+		: stateUrl.searchParams.get('outcome') === 'draw' ?
+			'blue'
+		:
+			'purple'
+	),
+	'/farcaster/demos/tips': () => (
+		'amber'
+	),
+	'/farcaster/demos/counter': () => (
+		'teal'
+	),
+} satisfies Record<string, (stateUrl: URL) => SnapPaletteColor>
+
+const snapExtraElementProviders = [
+	hangmanSnapExtraElements,
+	wordleSnapExtraElements,
+] satisfies SnapExtraElementProvider[]
+
+const snapExtraElementsForFrame = (
+	frame: FrameMeta,
+	baseUrl: URL | string,
+) => (
+	snapExtraElementProviders
+		.map((provider) => provider(frame, baseUrl))
+		.find((value) => value !== undefined)
+)
+
+const snapThemeAccentForFrame = (
+	frame: FrameMeta,
+	baseUrl: URL | string,
+): SnapPaletteColor => {
+	try {
+		const stateUrl = frameStateUrlFromFrame(frame, baseUrl)
+		const resolveAccent = snapThemeAccentResolvers[stateUrl.pathname]
+		if (resolveAccent) {
+			return resolveAccent(stateUrl)
+		}
+	} catch {
+		/* default below */
+	}
+
+	return 'purple'
+}
+
+const snapButtonPriority = ({
+	button,
+	press,
+}: SupportedButton) => {
+	const label = button.label.trim().toLowerCase()
+
+	return (
+		label.includes('guess') || label.includes('play') || label.includes('submit') ?
+			4
+		: label.includes('more') || label.includes('next') || label.includes('continue') ?
+			3
+		: press.action === 'submit' && !label.includes('back') && !label.includes('reset') ?
+			2
+		: press.action === 'open_mini_app' || press.action === 'view_token' ?
+			1
+		:
+			0
+	)
+}
+
+const snapButtonVariant = (
+	supported: SupportedButton,
+	supportedButtons: SupportedButton[],
+) => (
+	snapButtonPriority(supported) > 0
+	&& supportedButtons.every((candidate) => (
+			candidate.index === supported.index
+			|| snapButtonPriority(supported) >= snapButtonPriority(candidate)
+		)) ?
+		'primary'
+	:
+		'secondary'
+)
 
 export const framePageToSnap = (
 	{ title, frame }: FramePage,
@@ -373,6 +452,7 @@ export const framePageToSnap = (
 	}
 
 	const unsupportedButtonCount = buttons.length - supportedButtons.length
+	const extraElements = snapExtraElementsForFrame(frame, baseUrl)
 
 	const pageChildren = (
 		[
@@ -380,9 +460,12 @@ export const framePageToSnap = (
 			'sep-hero',
 			...(title ? ['title-text'] : []),
 			'caption',
+			...(extraElements?.children ?? []),
 			...(frame.textInput ? ['input'] : []),
 			...(supportedButtons.length ? ['actions'] : []),
 			...(unsupportedButtonCount ? ['unsupported'] : []),
+			'sep-page-link',
+			'page-link',
 		]
 	)
 
@@ -422,6 +505,27 @@ export const framePageToSnap = (
 				align: 'center',
 			},
 		},
+		'sep-page-link': {
+			type: 'separator',
+			props: {},
+		},
+		'page-link': {
+			type: 'button',
+			props: {
+				label: 'Open current page',
+				variant: 'secondary',
+				icon: 'external-link',
+			},
+			on: {
+				press: {
+					action: 'open_url',
+					params: {
+						target: snapCurrentPageUrl(baseUrl),
+					},
+				},
+			},
+		},
+		...(extraElements?.elements ?? {}),
 	}
 
 	if (title) {
@@ -439,7 +543,7 @@ export const framePageToSnap = (
 		elements.input = {
 			type: 'input',
 			props: {
-				name: 'text',
+				name: 'inputText',
 				label: frame.textInput,
 				placeholder: 'Optional',
 				maxLength: 280,
@@ -463,12 +567,14 @@ export const framePageToSnap = (
 
 		for (const { button, index, press } of supportedButtons) {
 			const icon = snapButtonIcon(press)
-			const primary = supportedButtons.findIndex((s) => s.index === index) === 0
 			elements[`button-${index}`] = {
 				type: 'button',
 				props: {
 					label: button.label.slice(0, 30),
-					variant: primary ? 'primary' : 'secondary',
+					variant: snapButtonVariant(
+						{ button, index, press },
+						supportedButtons,
+					),
 					...(icon ? { icon } : {}),
 				},
 				on: {
@@ -490,9 +596,9 @@ export const framePageToSnap = (
 	}
 
 	return {
-		version: '1.0',
+		version: SNAP_VERSION,
 		effects: snapEffectsForFrame(frame, baseUrl),
-		theme: { accent: 'purple' },
+		theme: { accent: snapThemeAccentForFrame(frame, baseUrl) },
 		ui: {
 			root: 'page',
 			elements,
@@ -657,7 +763,10 @@ export const parseFrameSignatureJson = (
 	return undefined
 }
 
-export const readSnapJfsPayload = async (jfsBody: string) => {
+export const readSnapJfsPayload = async (
+	jfsBody: string,
+	requestUrl: URL | string,
+) => {
 	const envelope = parseSnapJfsEnvelope(jfsBody)
 	if (!envelope) {
 		throw new Error('snap: invalid JFS body')
@@ -681,6 +790,13 @@ export const readSnapJfsPayload = async (jfsBody: string) => {
 			) as SnapJfsPayload
 			: decode<SnapJfsPayload>(compactJfs).payload
 	)
+	const requestOrigin = new URL(String(requestUrl)).origin
+	if (payload.audience !== requestOrigin) {
+		throw new Error('snap: invalid audience')
+	}
+	if (!payload.nonce.trim()) {
+		throw new Error('snap: missing nonce')
+	}
 	if (!skip) {
 		await verify({ data: compactJfs })
 		const now = Math.floor(Date.now() / 1000)

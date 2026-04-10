@@ -81,24 +81,10 @@ export const handle: Handle = async ({
 }) => {
 	const contentTypes = event.request.headers.get('accept')
 
-	console.info('event', event)
-
-	console.info('\nHANDLE\n' + event.url.pathname, event.route, {
-		url: event.url,
-		method: event.request.method,
-		contentTypes,
-		isDataRequest: event.isDataRequest,
-		isSubRequest: event.isSubRequest,
-	})
-
 	// Image redirect
-	if(event.url.searchParams.has('frameImage')) {
-		console.info('Redirect to image generator from `frameImage` query parameter...')
-
+	if (event.url.searchParams.has('frameImage')) {
 		const url = new URL(event.url)
-
 		url.searchParams.delete('frameImage')
-
 		return event.fetch(url, {
 			method: 'GET',
 			headers: new Headers({
@@ -120,17 +106,13 @@ export const handle: Handle = async ({
 		event.request.method === 'GET'
 		&& (contentTypes && contentTypes.includes('image/') && !contentTypes.includes('text/html') && !contentTypes.includes('*/*'))
 	) {
-		console.info(event.url.pathname, 'Rendering Svelte → HTML...')
-
 		const response = await resolve(event)
 
-		if(response.status !== 200) {
+		if (response.status !== 200) {
 			const result = await response.clone().text()
 			console.error('Error rendering Svelte → HTML:', result)
 			return response
 		}
-
-		console.info(event.url.pathname, 'Rendering HTML → SVG...')
 
 		const html = await response.text()
 
@@ -181,7 +163,6 @@ export const handle: Handle = async ({
 				height,
 			}
 		)
-		console.info(event.url.pathname, 'Rendering SVG → PNG...')
 
 		const png = new Resvg(svg, {
 			fitTo: {
@@ -191,8 +172,6 @@ export const handle: Handle = async ({
 		})
 			.render()
 			.asPng()
-
-		console.info(event.url.pathname, 'Rendered.')
 
 		return new Response(
 			new Uint8Array(png),
@@ -210,8 +189,6 @@ export const handle: Handle = async ({
 		const frameSignaturePacket = parseFrameSignatureJson(bodyText)
 
 		if (frameSignaturePacket) {
-			console.info('Frame Button Action')
-
 			event.locals.frameSignaturePacket = frameSignaturePacket
 			event.locals.farcasterViewerFid = frameSignaturePacket.untrustedData.fid
 
@@ -231,11 +208,7 @@ export const handle: Handle = async ({
 			const response = await resolve(event)
 
 			if (response.ok) {
-				console.info('Handling with SvelteKit Form Action...')
-
 				const { data } = deserialize(await response.text()) as { data: { frame: FrameMeta } }
-
-				console.info('Frame:', data.frame)
 
 				if (!data.frame.image.url) {
 					const frameImageUrl = new URL(event.url)
@@ -246,7 +219,6 @@ export const handle: Handle = async ({
 				return createFrameResponse(data.frame, event.request.url)
 			}
 
-			console.info('Handling with SvelteKit GET request...')
 			event.request = new Request(
 				event.request.url,
 				{
@@ -260,7 +232,7 @@ export const handle: Handle = async ({
 
 		if (isLikelyJfsCompact(bodyText) || hasSnapJfsEnvelope(bodyText)) {
 			try {
-				const payload = await readSnapJfsPayload(bodyText.trim())
+				const payload = await readSnapJfsPayload(bodyText.trim(), event.request.url)
 				event.locals.farcasterViewerFid = payload.fid
 				const snapRes = await snapPostResponse(event, resolve, payload)
 				if (snapRes) {
