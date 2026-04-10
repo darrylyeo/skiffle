@@ -1,3 +1,7 @@
+import type { DemoFarcasterCast } from '$/lib/farcaster-casts'
+
+import { farcasterCastUrl } from '$/lib/farcaster-casts'
+
 const baseUrl = 'https://api.farcaster.xyz'
 const farcasterAppApiBaseUrl = 'https://farcaster.xyz/~api'
 
@@ -80,11 +84,6 @@ export const getDemoUserByFid = async ({
 		))
 )
 
-export type DemoCast = {
-	content: string,
-	timestamp: number,
-}
-
 export const getDemoCastsByFid = async ({
 	fid,
 	limit = 25,
@@ -95,6 +94,21 @@ export const getDemoCastsByFid = async ({
 	fcJson<{
 		result: {
 			casts: {
+				hash: string,
+				author: {
+					displayName: string,
+					username: string,
+					pfp: { url: string },
+				},
+				reactions: {
+					count: number,
+				},
+				recasts: {
+					count: number,
+				},
+				replies: {
+					count: number,
+				},
 				text: string,
 				timestamp: number,
 			}[],
@@ -104,9 +118,17 @@ export const getDemoCastsByFid = async ({
 			{
 				casts: casts.map((cast) => (
 					{
+						hash: cast.hash,
+						url: farcasterCastUrl(cast.author.username, cast.hash),
+						authorDisplayName: cast.author.displayName,
+						authorUsername: cast.author.username,
+						authorPfpUrl: cast.author.pfp.url,
 						content: cast.text,
+						reactionCount: cast.reactions.count,
+						recastCount: cast.recasts.count,
+						replyCount: cast.replies.count,
 						timestamp: cast.timestamp,
-					} satisfies DemoCast
+					} satisfies DemoFarcasterCast
 				)),
 			}
 		))
@@ -133,18 +155,6 @@ export type DemoChannelLead = {
 	username: string,
 	pfpUrl: string,
 	bio: string,
-}
-
-export type DemoChannelCast = {
-	hash: string,
-	authorDisplayName: string,
-	authorUsername: string,
-	authorPfpUrl: string,
-	content: string,
-	reactionCount: number,
-	recastCount: number,
-	replyCount: number,
-	timestamp: number,
 }
 
 const fallbackPopularChannels = [
@@ -379,6 +389,7 @@ export const getDemoChannelCasts = async ({
 			items.map(({ cast }) => (
 				{
 					hash: cast.hash,
+					url: farcasterCastUrl(cast.author.username, cast.hash),
 					authorDisplayName: cast.author.displayName,
 					authorUsername: cast.author.username,
 					authorPfpUrl: cast.author.pfp.url,
@@ -387,7 +398,7 @@ export const getDemoChannelCasts = async ({
 					recastCount: cast.recasts.count,
 					replyCount: cast.replies.count,
 					timestamp: cast.timestamp,
-				} satisfies DemoChannelCast
+				} satisfies DemoFarcasterCast
 			))
 		))
 )

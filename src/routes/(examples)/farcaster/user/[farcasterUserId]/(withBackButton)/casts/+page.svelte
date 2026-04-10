@@ -1,4 +1,7 @@
 <script lang="ts">
+	// Components
+	import FarcasterCastList from '$/lib/FarcasterCastList.svelte'
+
 	// Types
 	import type { PageData } from './$types'
 
@@ -13,15 +16,7 @@
 
 
 <div class="column card">
-	{#each data.casts.slice(0, 15) as cast (`${cast.timestamp}:${cast.content}`)}
-		<div class="cast row">
-			<p>{cast.content}</p>
-
-			<span>
-				<date>{new Date(cast.timestamp).toLocaleString()}</date>
-			</span>
-		</div>
-	{/each}
+	<FarcasterCastList casts={data.casts.slice(0, 15)} />
 </div>
 
 
@@ -33,13 +28,4 @@
 		overflow: hidden;
 	}
 
-	p {
-		line-height: 1.5;
-	}
-
-	date {
-		opacity: 0.75;
-		font-size: 0.75em;
-		white-space: nowrap;
-	}
 </style>

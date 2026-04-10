@@ -1,17 +1,9 @@
 <script lang="ts">
 	// Types/constants
+	import FarcasterCastList from '$/lib/FarcasterCastList.svelte'
+	import { farcasterInitials } from '$/lib/farcaster-casts'
+	import { resolve } from '$app/paths'
 	import type { PageData } from './$types'
-
-	const castContent = (content: string) => (
-		content
-			.replaceAll(/\s+/g, ' ')
-			.trim()
-			.slice(0, 220)
-	)
-
-	const castDate = (timestamp: number) => (
-		new Date(timestamp).toLocaleString()
-	)
 
 	// Props
 	let { data }: { data: PageData } = $props()
@@ -20,15 +12,21 @@
 
 <article class="column">
 	<section class="hero column">
-		{#if data.channel.headerImageUrl}
+		{#if !data.isFrameImage && data.channel.headerImageUrl}
 			<img class="banner" src={data.channel.headerImageUrl} alt="" />
+		{:else if data.isFrameImage}
+			<div class="banner banner-placeholder" role="presentation"></div>
 		{/if}
 
 		<div class="hero-body column">
 			<div class="row hero-top">
 				<div class="row inline identity">
-					{#if data.channel.imageUrl}
+					{#if !data.isFrameImage && data.channel.imageUrl}
 						<img class="icon" src={data.channel.imageUrl} alt={`${data.channel.name} icon`} />
+					{:else if data.isFrameImage}
+						<div class="icon icon-placeholder" aria-hidden="true">
+							<span class="initials">{farcasterInitials(data.channel.name, data.channel.key)}</span>
+						</div>
 					{/if}
 
 					<div class="column">
@@ -48,8 +46,12 @@
 
 			{#if data.channel.lead}
 				<div class="lead row inline">
-					{#if data.channel.lead.pfpUrl}
+					{#if !data.isFrameImage && data.channel.lead.pfpUrl}
 						<img class="lead-avatar" src={data.channel.lead.pfpUrl} alt={`${data.channel.lead.displayName} avatar`} />
+					{:else if data.isFrameImage}
+						<div class="lead-avatar avatar-placeholder" aria-hidden="true">
+							<span class="initials">{farcasterInitials(data.channel.lead.displayName, data.channel.lead.username)}</span>
+						</div>
 					{/if}
 
 					<p class="annotation">
@@ -66,45 +68,14 @@
 			<p class="annotation">{data.displayCasts.length} shown</p>
 		</header>
 
-		{#if data.displayCasts.length > 0}
-			<div class="column list">
-				{#each data.displayCasts as cast (cast.hash)}
-					{@const content = castContent(cast.content)}
+		<FarcasterCastList casts={data.displayCasts} isFrameImage={data.isFrameImage} />
 
-					<article class="cast column">
-						<div class="row cast-top">
-							<div class="row inline identity">
-								<img class="lead-avatar" src={cast.authorPfpUrl} alt={`${cast.authorDisplayName} avatar`} />
-
-								<div class="column">
-									<p><strong>{cast.authorDisplayName}</strong> @{cast.authorUsername}</p>
-									<p class="annotation">{castDate(cast.timestamp)}</p>
-								</div>
-							</div>
-
-							<p class="annotation row inline wrap counts">
-								<span>{cast.replyCount} replies</span>
-								<span>·</span>
-								<span>{cast.reactionCount} reacts</span>
-								<span>·</span>
-								<span>{cast.recastCount} recasts</span>
-							</p>
-						</div>
-
-						<p class="content">
-							{content}{content.length < cast.content.trim().length ? '...' : ''}
-						</p>
-					</article>
-				{/each}
-			</div>
-
-			{#if data.hasMoreCasts}
-				<p class="more row">
-					<a href={`?count=${data.visibleCount + 5}`}>Load more casts</a>
-				</p>
-			{/if}
-		{:else}
-			<p class="annotation empty">No casts available yet.</p>
+		{#if data.hasMoreCasts}
+			<form class="more row" method="GET" action={resolve('/(examples)/farcaster/channels/channel/[channelId]', {
+				channelId: data.channel.id,
+			})}>
+				<button name="count" value={data.visibleCount + 5}>Load more casts</button>
+			</form>
 		{/if}
 	</section>
 </article>
@@ -128,6 +99,16 @@
 		object-fit: cover;
 	}
 
+	.banner-placeholder {
+		flex-shrink: 0;
+		background: linear-gradient(
+			125deg,
+			rgba(140, 90, 220, 0.55) 0%,
+			rgba(45, 22, 78, 0.95) 45%,
+			rgba(90, 50, 160, 0.5) 100%
+		);
+	}
+
 	.hero-body {
 		padding: 1.15em;
 		gap: 0.9em;
@@ -148,10 +129,42 @@
 		border-radius: 0.9rem;
 	}
 
+	.icon-placeholder {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		box-sizing: border-box;
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		background: rgba(255, 255, 255, 0.1);
+		color: rgba(255, 255, 255, 0.92);
+		font-size: 1rem;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+	}
+
 	.lead-avatar {
 		width: 2rem;
 		height: 2rem;
 		border-radius: 999px;
+	}
+
+	.avatar-placeholder {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		box-sizing: border-box;
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		background: rgba(255, 255, 255, 0.1);
+		color: rgba(255, 255, 255, 0.9);
+		font-size: 0.55rem;
+		font-weight: 600;
+		letter-spacing: 0.06em;
+	}
+
+	.initials {
+		line-height: 1;
 	}
 
 	.description {
@@ -163,8 +176,7 @@
 		color: rgba(255, 255, 255, 0.7);
 	}
 
-	.stats,
-	.counts {
+	.stats {
 		justify-content: flex-end;
 	}
 
@@ -172,38 +184,17 @@
 		gap: 1em;
 	}
 
-	.list {
-		gap: 0.85em;
-	}
-
-	.cast {
-		gap: 0.8em;
-		padding: 1em;
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		border-radius: 1em;
-		background: rgba(255, 255, 255, 0.05);
-	}
-
-	.cast-top {
-		align-items: flex-start;
-	}
-
-	.content {
-		line-height: 1.45;
-		color: rgba(255, 255, 255, 0.9);
-	}
-
-	.more,
-	.empty {
+	.more {
 		justify-content: center;
 	}
 
-	.more a {
+	.more button {
 		padding: 0.75em 1.1em;
 		border: 1px solid rgba(255, 255, 255, 0.14);
 		border-radius: 999px;
 		background: rgba(255, 255, 255, 0.06);
 		color: rgba(255, 255, 255, 0.9);
-		text-decoration: none;
+		font: inherit;
+		cursor: pointer;
 	}
 </style>

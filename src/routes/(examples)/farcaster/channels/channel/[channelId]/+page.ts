@@ -14,6 +14,7 @@ export const load: PageLoad = async ({
 		displayCasts,
 		frame,
 		hasMoreCasts,
+		isFrameImage: url.searchParams.has('frameImage'),
 		snap,
 		title: `/${data.channel.key}`,
 		visibleCount,

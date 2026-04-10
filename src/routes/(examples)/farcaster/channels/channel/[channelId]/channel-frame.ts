@@ -1,5 +1,6 @@
 // Types/constants
 import { AppSnapButtonRoles } from '$/lib/app-snap-tokens'
+import type { DemoFarcasterCast } from '$/lib/farcaster-casts'
 import type { AppSnapPage } from '$/lib/snap-components'
 import type { FrameMeta } from '$/lib/frame'
 
@@ -8,7 +9,7 @@ import { isTruthy } from '$/lib/isTruthy'
 import { snapButtonGroup, snapTargetButton } from '$/lib/snap-components'
 import { SnapButtonVariants, SnapDirections, SnapGaps, SnapJustifyValues, SnapPaletteColors } from '$/lib/snap-spec'
 
-import type { DemoChannel, DemoChannelCast } from '../../../api/farcaster-client'
+import type { DemoChannel } from '../../../api/farcaster-client'
 
 export const CHANNEL_CASTS_WEB_STEP = 5
 export const CHANNEL_CASTS_FRAME_STEP = 3
@@ -30,7 +31,7 @@ const channelRoute = (channelId: string) => (
 )
 
 export const channelPagination = (
-	casts: DemoChannelCast[],
+	casts: DemoFarcasterCast[],
 	url: URL,
 ) => {
 	const visibleCount = normalizedVisibleCount(Number(url.searchParams.get('count') ?? CHANNEL_CASTS_WEB_STEP), CHANNEL_CASTS_WEB_STEP, casts.length)
@@ -121,29 +122,71 @@ const snapFromPaginationState = (
 					action: 'link',
 					targetUrl: channel.url,
 				}),
-				frameCasts.length > 0 && hasMoreFrameCasts
-					? snapTargetButton({
-						label: 'More Casts ›',
-						role: AppSnapButtonRoles.Pager,
-						action: 'post',
-						targetUrl: `${channelRoute(channel.id)}?/paginate&page=${frameVisibleCount + CHANNEL_CASTS_FRAME_STEP}`,
-					})
-					: frameCasts.length > 0 && frameVisibleCount > CHANNEL_CASTS_FRAME_STEP
-						? snapTargetButton({
-							label: 'Back to Top ›',
-							role: AppSnapButtonRoles.Pager,
-							action: 'post',
-							targetUrl: `${channelRoute(channel.id)}?/paginate&page=${CHANNEL_CASTS_FRAME_STEP}`,
-						})
-						: undefined,
 			].filter(isTruthy),
 		}),
+		...(
+			frameCasts.length > 0 ?
+				[
+					snapButtonGroup({
+						direction: SnapDirections.Horizontal,
+						gap: SnapGaps.Sm,
+						justify: SnapJustifyValues.Center,
+						children: frameCasts.map((cast) => (
+							snapTargetButton({
+								label: `@${cast.authorUsername}`,
+								role: AppSnapButtonRoles.External,
+								variant: SnapButtonVariants.Primary,
+								action: 'link',
+								targetUrl: cast.url,
+							})
+						)),
+					}),
+				]
+			:
+				[]
+		),
+		...(
+			frameCasts.length > 0 && hasMoreFrameCasts ?
+				[
+					snapButtonGroup({
+						direction: SnapDirections.Horizontal,
+						gap: SnapGaps.Sm,
+						justify: SnapJustifyValues.Center,
+						children: [
+							snapTargetButton({
+								label: 'More Casts ›',
+								role: AppSnapButtonRoles.Pager,
+								action: 'post',
+								targetUrl: `${channelRoute(channel.id)}?/paginate&page=${frameVisibleCount + CHANNEL_CASTS_FRAME_STEP}`,
+							}),
+						],
+					}),
+				]
+			: frameCasts.length > 0 && frameVisibleCount > CHANNEL_CASTS_FRAME_STEP ?
+				[
+					snapButtonGroup({
+						direction: SnapDirections.Horizontal,
+						gap: SnapGaps.Sm,
+						justify: SnapJustifyValues.Center,
+						children: [
+							snapTargetButton({
+								label: 'Back to Top ›',
+								role: AppSnapButtonRoles.Pager,
+								action: 'post',
+								targetUrl: `${channelRoute(channel.id)}?/paginate&page=${CHANNEL_CASTS_FRAME_STEP}`,
+							}),
+						],
+					}),
+				]
+			:
+				[]
+		),
 	],
 })
 
 export const channelPageView = (
 	channel: DemoChannel,
-	casts: DemoChannelCast[],
+	casts: DemoFarcasterCast[],
 	url: URL,
 ) => {
 	const state = channelPagination(casts, url)
@@ -159,7 +202,7 @@ export const channelPageView = (
 
 export const buildChannelFrame = (
 	channel: DemoChannel,
-	casts: DemoChannelCast[],
+	casts: DemoFarcasterCast[],
 	url: URL,
 ): FrameMeta => (
 	channelPageView(channel, casts, url).frame
@@ -167,7 +210,7 @@ export const buildChannelFrame = (
 
 export const buildChannelSnap = (
 	channel: DemoChannel,
-	casts: DemoChannelCast[],
+	casts: DemoFarcasterCast[],
 	url: URL,
 ): AppSnapPage => (
 	channelPageView(channel, casts, url).snap
