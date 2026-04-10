@@ -35,6 +35,16 @@ export const actions: Actions = {
 				targetUrl: '/demos/counter?/open',
 			},
 			{
+				label: 'Coin Flip',
+				action: 'post',
+				targetUrl: '/demos/coin-flip?/open',
+			},
+			{
+				label: 'Abstract Art',
+				action: 'post',
+				targetUrl: '/demos/abstract-art?/open',
+			},
+			{
 				label: 'Rock Paper Scissors',
 				action: 'post',
 				targetUrl: '/demos/rock-paper-scissors?/open',
