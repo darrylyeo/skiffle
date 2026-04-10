@@ -1,12 +1,33 @@
 <script lang="ts">
-	// Data
-	let {
-		data,
-	} = $props()
+	// Types/constants
+	import type { PageData } from './$types'
+
+	// Components
+	import AbstractArtBackground from '$lib/AbstractArtBackground.svelte'
+
+	// Functions
+	import { abstractArtBackgroundView } from '../../demos/abstract-art/abstract-art-frame'
+
+	// Props
+	let { data }: { data: PageData } = $props()
+
+	// (Derived)
+	let background = $derived(
+		abstractArtBackgroundView(
+			7301 + data.currentPage * 173,
+			data.currentPage,
+		)
+	)
 </script>
 
 
-<article class="column">
+<article class={['column', data.currentPage === 3 && 'slide-magic-url']}>
+	<AbstractArtBackground
+		{background}
+		inset="-10%"
+		opacity={0.24}
+	/>
+
 	<header>
 		<h2>
 			{#if data.currentPage === 0}
@@ -44,26 +65,33 @@
 		{:else if data.currentPage === 2}
 			<p>To render any SvelteKit page as a Snap response, <b>return a <code>snap</code> object</b> from <code>load()</code> in <code>+page.server.ts</code> or <code>+page.ts</code>.</p>
 
-			<p>Use provided helper functions to construct relative URL navigation buttons and Snap elements / configuration, including button groups, badges, and theme settings.</p>
+			<p>Use the provided helper functions to construct responses for Snap elements and configuration, including relative URL navigation buttons, button groups, badges, and theme settings.</p>
 
-			<p>The same route can also return <code>frame</code> metadata for image/post behavior, so Snap JSON and frame previews stay aligned while sharing the same route data.</p>
+			<p>Legacy Farcaster Frames v1 metadata is also supported via <code>frame</code>.</p>
 
 		{:else if data.currentPage === 3}
-			<p>A snap-enabled page URL will return different responses depending on HTTP <code>Accept</code> headers:</p>
+			<p class="accept-lead">
+				A snap-enabled page URL returns different responses depending on HTTP <code>Accept</code> headers:
+			</p>
 
-			<ul class="column">
-				<li>
-					<code>application/<wbr>vnd.<wbr>farcaster.<wbr>snap+json</code>: <span>Snap JSON response following the Farcaster Snap spec.</span>
-				</li>
+			<div class="accept-stack">
+				<div class="accept-item">
+					<code>application/vnd.farcaster.snap+json</code>
+					<span>Snap JSON response following the Farcaster Snap spec.</span>
+				</div>
 
-				<li>
-					<code>image/*</code>: <span>PNG frame preview of the rendered page: Svelte to HTML/CSS to SVG via <code>satori</code>, then PNG via <code>resvg-js</code>.</span>
-				</li>
+				<div class="accept-item">
+					<code>image/*</code>
+					<span>PNG frame preview of the rendered page: Svelte to HTML/CSS to SVG via <code>satori</code>, then PNG via <code>resvg-js</code>.</span>
+				</div>
 
-				<li>
-					<code>*/*</code>: <span>The normal HTML page rendered by SvelteKit.</span>
-				</li>
-			</ul>
+				<div class="accept-item">
+					<code>*/*</code>
+					<span>The normal HTML page rendered by SvelteKit.</span>
+				</div>
+			</div>
+
+			<p>This is handled by the global SvelteKit <code>handle()</code> middleware in <code>hooks.server.ts</code>.</p>
 
 		{:else if data.currentPage === 4}
 			<p>Try the SKIFFLE Snap demo – cast <b>snap.skiffle.dev</b> from your Farcaster client of choice!</p>
@@ -81,11 +109,20 @@
 
 <style>
 	article {
+		position: relative;
 		height: 100%;
 		gap: 1.5em;
+		overflow: hidden;
+	}
+
+	header {
+		position: relative;
+		z-index: 1;
 	}
 
 	.card {
+		position: relative;
+		z-index: 1;
 		justify-content: flex-start;
 		flex: 1;
 
@@ -112,25 +149,48 @@
 		background-color: rgba(255, 255, 255, 0.1);
 	}
 
-	ul {
-		gap: 0.75em;
-		padding: 0;
+	article.slide-magic-url {
+		gap: 1em;
+	}
+
+	article.slide-magic-url .card {
+		gap: 0.6em;
+		padding: 1em 1.1em;
+	}
+
+	article.slide-magic-url .accept-lead {
+		line-height: 1.35;
 		margin: 0;
 	}
 
-	ul > li {
+	article.slide-magic-url .accept-stack {
 		display: flex;
 		flex-direction: column;
-		gap: 0.35em;
-		padding: 0.8em 0.9em;
-		border-radius: 0.8em;
-		background-color: rgba(255, 255, 255, 0.06);
-		list-style: none;
-		line-height: 1.5;
+		gap: 0.4em;
 	}
 
-	ul code {
-		display: block;
-		white-space: normal;
+	article.slide-magic-url .accept-item {
+		display: flex;
+		flex-direction: column;
+		gap: 0.15em;
+		padding: 0.45em 0.65em;
+		border-radius: 0.65em;
+		background-color: rgba(255, 255, 255, 0.06);
+		line-height: 1.35;
+	}
+
+	article.slide-magic-url .accept-stack code {
+		font-size: 0.78em;
+		word-break: break-word;
+		line-height: 1.35;
+	}
+
+	article.slide-magic-url .accept-stack span {
+		font-size: 0.88em;
+		opacity: 0.92;
+	}
+
+	article.slide-magic-url .accept-stack span code {
+		font-size: 0.95em;
 	}
 </style>

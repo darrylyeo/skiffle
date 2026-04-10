@@ -3,6 +3,8 @@ import { snapButtonGroup, snapTargetButton } from '$/lib/snap-components'
 import { SnapButtonVariants, SnapDirections, SnapGaps, SnapJustifyValues } from '$/lib/snap-spec'
 import type { PageLoad } from './$types'
 
+const githubBranchUrl = 'https://github.com/darrylyeo/skiffle/tree/snap'
+
 export const load: PageLoad = async () => {
 	return {
 		title: 'SKIFFLE – a website in a snap!',
@@ -31,7 +33,7 @@ export const load: PageLoad = async () => {
 							label: 'GitHub',
 							role: AppSnapButtonRoles.External,
 							action: 'link',
-							targetUrl: 'https://github.com/darrylyeo/skiffle',
+							targetUrl: githubBranchUrl,
 						}),
 					],
 				}),
@@ -57,7 +59,7 @@ export const load: PageLoad = async () => {
 				{
 					label: 'GitHub',
 					action: 'link',
-					targetUrl: 'https://github.com/darrylyeo/skiffle',
+					targetUrl: githubBranchUrl,
 				},
 			]
 		}

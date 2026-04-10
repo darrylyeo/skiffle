@@ -16,64 +16,71 @@ export const actions: Actions = {
 	}) => {
 		const farcasterUserId = farcasterViewerFid ?? 1
 
-		const currentPage = Number(url.searchParams.get('page') ?? 0)
+		const currentPage = Number.isFinite(Number(url.searchParams.get('page') ?? 0))
+			? Math.max(0, Math.trunc(Number(url.searchParams.get('page') ?? 0)))
+			: 0
 
 		const demos = [
 			{
-				label: 'My Profile',
+				label: '👤 My Profile',
 				action: 'post',
 				targetUrl: resolve('/(examples)/farcaster/user/[farcasterUserId]', { farcasterUserId: String(farcasterUserId) }),
 			},
 			{
-				label: 'Channels',
+				label: '📻 Channels',
 				action: 'post',
 				targetUrl: '/farcaster/channels?/open',
 			},
 			{
-				label: 'Counter',
+				label: '🔢 Counter',
 				action: 'post',
 				targetUrl: '/demos/counter?/open',
 			},
 			{
-				label: 'Coin Flip',
+				label: '🪙 Coin Flip',
 				action: 'post',
 				targetUrl: '/demos/coin-flip?/open',
 			},
 			{
-				label: 'Abstract Art',
+				label: '🎨 Abstract Art',
 				action: 'post',
 				targetUrl: '/demos/abstract-art?/open',
 			},
 			{
-				label: 'Rock Paper Scissors',
+				label: '✊ Rock Paper Scissors',
 				action: 'post',
 				targetUrl: '/demos/rock-paper-scissors?/open',
 			},
 			{
-				label: 'Tic-tac-toe',
+				label: '❎ Tic-tac-toe',
 				action: 'post',
 				targetUrl: '/demos/tic-tac-toe?/open',
 			},
 			{
-				label: 'Hangman',
+				label: '🔠 Hangman',
 				action: 'post',
 				targetUrl: '/demos/hangman?/open',
 			},
 			{
-				label: 'Wordle',
+				label: '🟩 Wordle',
 				action: 'post',
 				targetUrl: '/demos/wordle?/open',
 			},
 			{
-				label: 'Slideshow',
+				label: '📽️ Slideshow',
 				action: 'post',
 				targetUrl: '/demos/tips?/open',
 			},
 		] satisfies FrameButton[]
 
-		const itemsPerPage = 2
-		const totalPages = Math.ceil(demos.length / itemsPerPage)
-		const pageDemos = demos.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage)
+		const snapItemsPerPage = 4
+		const frameItemsPerPage = 2
+		const totalPages = Math.max(1, Math.ceil(demos.length / snapItemsPerPage))
+		const pageDemos = demos.slice(
+			currentPage * snapItemsPerPage,
+			(currentPage + 1) * snapItemsPerPage,
+		)
+		const framePageDemos = pageDemos.slice(0, frameItemsPerPage)
 		
 		return {
 			snap: {
@@ -101,7 +108,7 @@ export const actions: Actions = {
 						gap: SnapGaps.Sm,
 						justify: SnapJustifyValues.Center,
 						children: [
-							...pageDemos.map((demo) => snapTargetButton({
+							...pageDemos.slice(0, 2).map((demo) => snapTargetButton({
 								label: demo.label,
 								role: AppSnapButtonRoles.Cta,
 								variant: SnapButtonVariants.Primary,
@@ -110,6 +117,22 @@ export const actions: Actions = {
 							})),
 						],
 					}),
+					...(pageDemos.length > 2
+						? [
+							snapButtonGroup({
+								direction: SnapDirections.Horizontal,
+								gap: SnapGaps.Sm,
+								justify: SnapJustifyValues.Center,
+								children: pageDemos.slice(2).map((demo) => snapTargetButton({
+									label: demo.label,
+									role: AppSnapButtonRoles.Cta,
+									variant: SnapButtonVariants.Primary,
+									action: demo.action,
+									targetUrl: demo.targetUrl,
+								})),
+							}),
+						]
+						: []),
 				],
 			},
 			frame: {
@@ -123,7 +146,7 @@ export const actions: Actions = {
 						action: 'post',
 						targetUrl: '/',
 					},
-					...pageDemos,
+					...framePageDemos,
 					{
 						label: 'More Demos ›',
 						action: 'post',
