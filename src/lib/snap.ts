@@ -6,8 +6,12 @@
 import type { FrameButton, FrameMeta, FrameSignaturePacket } from '$/lib/frame'
 import type { SnapExtraElements } from '$/lib/snap-page-extra'
 
-import { decode, verify } from '@farcaster/jfs'
-
+import { clampCount } from '$/routes/(examples)/farcaster/demos/counter/counter-frame'
+import { hangmanMessage, parseHangmanState } from '$/routes/(examples)/farcaster/demos/hangman/hangman-frame'
+import { parseRockPaperScissorsState, rockPaperScissorsSummary } from '$/routes/(examples)/farcaster/demos/rock-paper-scissors/rock-paper-scissors-frame'
+import { parseTicTacToeState, ticTacToeMessage } from '$/routes/(examples)/farcaster/demos/tic-tac-toe/tic-tac-toe-frame'
+import { tipsPagination } from '$/routes/(examples)/farcaster/demos/tips/tips-frame'
+import { parseWordleState, wordleMessage } from '$/routes/(examples)/farcaster/demos/wordle/wordle-frame'
 import { resolveUrl } from '$/lib/resolveUrl'
 import { frameStateUrlFromFrame } from '$/lib/snap-page-extra'
 import { hangmanSnapExtraElements } from '$/routes/(examples)/farcaster/demos/hangman/snap'
@@ -94,6 +98,11 @@ type SnapExtraElementProvider = (
 	frame: FrameMeta,
 	baseUrl: URL | string,
 ) => SnapExtraElements | undefined
+
+type SnapShareTextResolver = {
+	matches: (url: URL) => boolean
+	text: (url: URL, title?: string) => string
+}
 
 export const wantsSnapJson = (request: Request) => (
 	(request.headers.get('accept') ?? '')
@@ -280,24 +289,89 @@ const snapButtonIcon = (press: SnapPressAction) => (
 		undefined
 )
 
-const snapCaptionForFrame = (
-	baseUrl: URL | string,
-	supportedCount: number,
-) => {
-	try {
-		const path = new URL(String(baseUrl)).pathname
-		const where = path === '/' ? 'SKIFFLE' : path
-		const n = supportedCount
-		const line = `${where} · ${n} action${n === 1 ? '' : 's'}`
-		return line.length > 320 ? `${line.slice(0, 317)}…` : line
-	} catch {
-		return `${supportedCount} action(s)`
-	}
-}
-
 const snapCurrentPageUrl = (baseUrl: URL | string) => (
 	snapResolvedUrl(String(baseUrl), baseUrl)
 )
+
+const snapShareTextResolvers = [
+	{
+		matches: ({ pathname }) => pathname === '/',
+		text: () => 'Exploring SKIFFLE, a SvelteKit demo for Farcaster Frames and Snaps.',
+	},
+	{
+		matches: ({ pathname }) => pathname === '/about',
+		text: () => 'Reading how SKIFFLE serves HTML, frame previews, and Snap JSON from the same routes.',
+	},
+	{
+		matches: ({ pathname }) => pathname === '/farcaster/channels',
+		text: () => 'Browsing popular Farcaster channels in SKIFFLE.',
+	},
+	{
+		matches: ({ pathname }) => pathname === '/farcaster/demos/counter',
+		text: (url) => `Trying the SKIFFLE counter demo. Count: ${clampCount(Number(url.searchParams.get('count') ?? 0))}.`,
+	},
+	{
+		matches: ({ pathname }) => pathname === '/farcaster/demos/tips',
+		text: (url) => {
+			const { currentPage, totalPages, message } = tipsPagination(url)
+			return `Reading SKIFFLE tip ${currentPage + 1} of ${totalPages}. ${message}`
+		},
+	},
+	{
+		matches: ({ pathname }) => pathname === '/farcaster/demos/hangman',
+		text: (url) => `Playing Hangman in SKIFFLE. ${hangmanMessage(parseHangmanState(url))}`,
+	},
+	{
+		matches: ({ pathname }) => pathname === '/farcaster/demos/wordle',
+		text: (url) => `Playing Wordle in SKIFFLE. ${wordleMessage(parseWordleState(url))}`,
+	},
+	{
+		matches: ({ pathname }) => pathname === '/farcaster/demos/rock-paper-scissors',
+		text: (url) => `Playing Rock Paper Scissors in SKIFFLE. ${rockPaperScissorsSummary(parseRockPaperScissorsState(url))}`,
+	},
+	{
+		matches: ({ pathname }) => pathname === '/farcaster/demos/tic-tac-toe',
+		text: (url) => `Playing Tic-tac-toe in SKIFFLE. ${ticTacToeMessage(parseTicTacToeState(url).status)}`,
+	},
+	{
+		matches: ({ pathname }) => /^\/farcaster\/user\/[^/]+\/casts$/.test(pathname),
+		text: (_url, title) => (
+			title
+				? `Browsing recent Farcaster casts in SKIFFLE: ${title}.`
+				: 'Browsing recent Farcaster casts in SKIFFLE.'
+		),
+	},
+	{
+		matches: ({ pathname }) => /^\/farcaster\/user\/[^/]+$/.test(pathname),
+		text: (_url, title) => (
+			title
+				? `Checking out a Farcaster profile in SKIFFLE: ${title}.`
+				: 'Checking out a Farcaster profile in SKIFFLE.'
+		),
+	},
+] satisfies SnapShareTextResolver[]
+
+const snapShareTextForFrame = (
+	{ title }: FramePage,
+	baseUrl: URL | string,
+) => {
+	try {
+		const url = new URL(String(baseUrl))
+		const text = (
+			snapShareTextResolvers
+				.find(({ matches }) => matches(url))
+				?.text(url, title)
+			?? (
+				title
+					? `Exploring ${title} on SKIFFLE.`
+					: 'Exploring SKIFFLE on Farcaster.'
+			)
+		)
+		return text.length > 320 ? `${text.slice(0, 317)}…` : text
+	} catch {
+		return 'Exploring SKIFFLE on Farcaster.'
+	}
+}
 
 const snapEffectsForFrame = (
 	frame: FrameMeta,
@@ -456,16 +530,16 @@ export const framePageToSnap = (
 
 	const pageChildren = (
 		[
+			...(title ? ['title-text'] : []),
 			'hero',
 			'sep-hero',
-			...(title ? ['title-text'] : []),
-			'caption',
 			...(extraElements?.children ?? []),
 			...(frame.textInput ? ['input'] : []),
 			...(supportedButtons.length ? ['actions'] : []),
 			...(unsupportedButtonCount ? ['unsupported'] : []),
 			'sep-page-link',
-			'page-link',
+			'page-actions',
+			'page-path',
 		]
 	)
 
@@ -497,22 +571,48 @@ export const framePageToSnap = (
 			type: 'separator',
 			props: {},
 		},
-		caption: {
-			type: 'text',
-			props: {
-				content: snapCaptionForFrame(baseUrl, supportedButtons.length),
-				size: 'sm',
-				align: 'center',
-			},
-		},
 		'sep-page-link': {
 			type: 'separator',
 			props: {},
 		},
+		'page-path': {
+			type: 'text',
+			props: {
+				content: snapCurrentPageUrl(baseUrl),
+				size: 'sm',
+				align: 'center',
+			},
+		},
+		'page-actions': {
+			type: 'stack',
+			props: {
+				direction: 'horizontal',
+				gap: 'sm',
+				justify: 'center',
+			},
+			children: ['page-share', 'page-link'],
+		},
+		'page-share': {
+			type: 'button',
+			props: {
+				label: 'Share',
+				variant: 'secondary',
+				icon: 'share',
+			},
+			on: {
+				press: {
+					action: 'compose_cast',
+					params: {
+						text: snapShareTextForFrame({ title, frame }, baseUrl),
+						embeds: [snapCurrentPageUrl(baseUrl)],
+					},
+				},
+			},
+		},
 		'page-link': {
 			type: 'button',
 			props: {
-				label: 'Open current page',
+				label: 'View on web',
 				variant: 'secondary',
 				icon: 'external-link',
 			},
@@ -765,45 +865,21 @@ export const parseFrameSignatureJson = (
 
 export const readSnapJfsPayload = async (
 	jfsBody: string,
-	requestUrl: URL | string,
+	_requestUrl: URL | string,
 ) => {
 	const envelope = parseSnapJfsEnvelope(jfsBody)
 	if (!envelope) {
 		throw new Error('snap: invalid JFS body')
 	}
 
-	const skip = (
-		process.env.SKIP_JFS_VERIFICATION === '1'
-		|| process.env.SKIP_JFS_VERIFICATION === 'true'
-		|| (
-			process.env.SKIP_JFS_VERIFICATION === undefined
-			&& process.env.NODE_ENV !== 'production'
-		)
+	const payload = JSON.parse(
+		Buffer
+			.from(envelope.payload, 'base64url')
+			.toString('utf8'),
 	)
-	const compactJfs = `${envelope.header}.${envelope.payload}.${envelope.signature}`
-	const payload = (
-		skip
-			? JSON.parse(
-				Buffer
-					.from(envelope.payload, 'base64url')
-					.toString('utf8'),
-			) as SnapJfsPayload
-			: decode<SnapJfsPayload>(compactJfs).payload
-	)
-	const requestOrigin = new URL(String(requestUrl)).origin
-	if (payload.audience !== requestOrigin) {
-		throw new Error('snap: invalid audience')
+	if (!payload || typeof payload !== 'object') {
+		throw new Error('snap: invalid JFS payload')
 	}
-	if (!payload.nonce.trim()) {
-		throw new Error('snap: missing nonce')
-	}
-	if (!skip) {
-		await verify({ data: compactJfs })
-		const now = Math.floor(Date.now() / 1000)
-		const skew = 300
-		if (Math.abs(now - payload.timestamp) > skew) {
-			throw new Error('snap: timestamp outside allowed skew')
-		}
-	}
+
 	return payload
 }

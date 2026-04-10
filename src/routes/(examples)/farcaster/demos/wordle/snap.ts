@@ -7,6 +7,16 @@ import { frameStateUrlFromFrame } from '$/lib/snap-page-extra'
 
 import { parseWordleState, wordleUsedLetters } from './wordle-frame'
 
+const chunk = <Type,>(
+	values: Type[],
+	size: number,
+) => (
+	Array.from(
+		{ length: Math.ceil(values.length / size) },
+		(_, index) => values.slice(index * size, (index + 1) * size),
+	)
+)
+
 export const wordleSnapExtraElements = (
 	frame: FrameMeta,
 	baseUrl: URL | string,
@@ -22,23 +32,26 @@ export const wordleSnapExtraElements = (
 		if (!usedLetters.length) {
 			return undefined
 		}
-		const correct = usedLetters.filter(({ state }) => state === 'correct')
-		const present = usedLetters.filter(({ state }) => state === 'present')
-		const miss = usedLetters.filter(({ state }) => state === 'miss')
 		const groups = [
-			correct.length && {
+			{
 				id: 'wordle-used-correct',
-				content: `Green: ${correct.map(({ letter }) => letter).join(' ')}`,
+				label: 'Correct',
+				color: 'green',
+				letters: usedLetters.filter(({ state }) => state === 'correct'),
 			},
-			present.length && {
+			{
 				id: 'wordle-used-present',
-				content: `Yellow: ${present.map(({ letter }) => letter).join(' ')}`,
+				label: 'Present',
+				color: 'amber',
+				letters: usedLetters.filter(({ state }) => state === 'present'),
 			},
-			miss.length && {
+			{
 				id: 'wordle-used-miss',
-				content: `Red: ${miss.map(({ letter }) => letter).join(' ')}`,
+				label: 'Miss',
+				color: 'red',
+				letters: usedLetters.filter(({ state }) => state === 'miss'),
 			},
-		].filter((group): group is { id: string, content: string } => Boolean(group))
+		].filter(({ letters }) => letters.length > 0)
 
 		return {
 			children: [
@@ -69,18 +82,61 @@ export const wordleSnapExtraElements = (
 					},
 				},
 				...Object.fromEntries(
-					groups.map(({ id, content }) => (
+					groups.flatMap(({ id, label, color, letters }) => (
 						[
-							id,
-							{
-								type: 'text',
-								props: {
-									content,
-									size: 'sm',
-									align: 'center',
+							[
+								id,
+								{
+									type: 'stack',
+									props: {
+										gap: 'sm',
+									},
+									children: [
+										`${id}-label`,
+										...chunk(letters, 6).map((_, index) => `${id}-row-${index}`),
+									],
 								},
-							},
-						]
+							],
+							[
+								`${id}-label`,
+								{
+									type: 'badge',
+									props: {
+										label: `${label} (${letters.length})`,
+										color,
+										variant: 'outline',
+									},
+								},
+							],
+							...chunk(letters, 6).flatMap((row, index) => (
+								[
+									[
+										`${id}-row-${index}`,
+										{
+											type: 'stack',
+											props: {
+												direction: 'horizontal',
+												gap: 'sm',
+												justify: 'center',
+											},
+											children: row.map(({ id }) => `${id}-badge`),
+										},
+									],
+									...row.map(({ id, letter }) => (
+										[
+											`${id}-badge`,
+											{
+												type: 'badge',
+												props: {
+													label: letter,
+													color,
+												},
+											},
+										]
+									)),
+								]
+							)),
+						] as const
 					)),
 				),
 			},

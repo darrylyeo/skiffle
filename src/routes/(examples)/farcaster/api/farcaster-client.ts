@@ -105,6 +105,69 @@ export type DemoChannel = {
 	headerImageUrl: string,
 }
 
+const fallbackPopularChannels = [
+	{
+		id: 'base',
+		name: 'Base',
+		url: 'https://onchainsummer.xyz',
+		description: 'Bringing the world onchain - a community of builders on Base',
+		followerCount: 480695,
+		memberCount: 813,
+		imageUrl: '',
+		headerImageUrl: '',
+	},
+	{
+		id: 'ethereum',
+		name: 'Ethereum',
+		url: 'https://ethereum.org',
+		description: 'Discussions about Ethereum.',
+		followerCount: 334197,
+		memberCount: 3105,
+		imageUrl: '',
+		headerImageUrl: '',
+	},
+	{
+		id: 'founders',
+		name: 'Founders',
+		url: 'https://farcaster.group',
+		description: 'A space for founders',
+		followerCount: 234543,
+		memberCount: 516,
+		imageUrl: '',
+		headerImageUrl: '',
+	},
+	{
+		id: 'fc-updates',
+		name: 'fc-updates',
+		url: 'https://warpcast.com/~/channel/fc-updates',
+		description: 'Important updates about things happening in Farcaster',
+		followerCount: 140610,
+		memberCount: 5,
+		imageUrl: '',
+		headerImageUrl: '',
+	},
+	{
+		id: 'frames',
+		name: 'frames',
+		url: 'https://warpcast.com/~/channel/frames',
+		description: 'Discussion about Farcaster Frames.',
+		followerCount: 101427,
+		memberCount: 90,
+		imageUrl: '',
+		headerImageUrl: '',
+	},
+	{
+		id: 'superrare',
+		name: 'SuperRare',
+		url: 'https://superrare.com',
+		description: 'The culture exchange',
+		followerCount: 96857,
+		memberCount: 873,
+		imageUrl: '',
+		headerImageUrl: '',
+	},
+] satisfies DemoChannel[]
+
 export const isValidHttpUrl = (href: string) => {
 	try {
 		const u = new URL(href)
@@ -144,7 +207,15 @@ export const getPopularChannels = async () => (
 						headerImageUrl: channel.headerImageUrl ?? '',
 					} satisfies DemoChannel
 				))
-				.filter((channel) => isValidHttpUrl(channel.url))
+				.filter((channel) => (
+					channel.name.trim()
+					&& channel.description.trim()
+					&& isValidHttpUrl(channel.url)
+				))
 				.slice(0, 30)
 		))
+		.catch((error) => {
+			console.error('popular channels fetch failed', error)
+			return fallbackPopularChannels
+		})
 )
