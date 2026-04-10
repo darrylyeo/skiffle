@@ -86,51 +86,59 @@
 <style>
 	article {
 		position: relative;
+		width: 100%;
 		height: 100%;
+		border: 1px solid rgba(255, 232, 223, 0.12);
+		border-radius: 28px;
 		justify-content: center;
 		align-items: center;
 		text-align: center;
-		gap: 1.05em;
-		padding: 0.45em 0.55em 0.7em;
+		gap: 16px;
+		padding: 8px 9px 12px;
 		overflow: hidden;
 		background:
-			radial-gradient(circle at top left, rgba(255, 129, 72, 0.26), transparent 32%),
-			radial-gradient(circle at top right, rgba(138, 99, 210, 0.28), transparent 44%),
-			linear-gradient(160deg, #8a63d2 0%, #5c3099 56%, #ff5b1f 100%);
+			radial-gradient(circle at 18% 16%, rgba(255, 148, 104, 0.22), transparent 22%),
+			radial-gradient(circle at 82% 14%, rgba(179, 142, 255, 0.24), transparent 24%),
+			radial-gradient(circle at 50% 88%, rgba(255, 190, 150, 0.08), transparent 34%),
+			linear-gradient(180deg, rgba(45, 31, 86, 0.62), rgba(29, 21, 58, 0.42));
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.12),
+			0 1em 2.4em rgba(31, 11, 52, 0.18);
 	}
 
 	header {
-		gap: 0.35em;
+		gap: 5px;
 	}
 
 	.eyebrow {
-		font-size: 0.76em;
+		font-size: 13px;
 		font-weight: 700;
-		letter-spacing: 0.08em;
+		letter-spacing: 1px;
 		text-transform: uppercase;
 		color: rgba(255, 227, 214, 0.8);
 	}
 
 	h2 {
-		font-size: 1.62em;
+		font-size: 30px;
 		font-weight: 700;
 		color: rgba(255, 255, 255, 0.95);
 	}
 
 	.annotation {
-		max-width: 19em;
-		font-size: 0.9em;
+		max-width: 320px;
+		font-size: 16px;
 		line-height: 1.35;
 		color: rgba(255, 241, 234, 0.78);
 	}
 
 	.board {
-		gap: 0.5em;
-		padding: 0.95em;
-		border-radius: 1.2em;
+		gap: 10px;
+		padding: 18px;
+		border-radius: 22px;
 		background:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05)),
-			rgba(56, 21, 98, 0.34);
+			radial-gradient(circle at 50% top, rgba(255, 255, 255, 0.08), transparent 26%),
+			linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05)),
+			rgba(56, 21, 98, 0.38);
 		box-shadow:
 			inset 0 1px 0 rgba(255, 255, 255, 0.12),
 			0 0.9em 2em rgba(49, 17, 84, 0.22);
@@ -139,7 +147,7 @@
 
 	.board-row {
 		display: flex;
-		gap: 0.5em;
+		gap: 10px;
 	}
 
 	.board-row > * {
@@ -147,14 +155,16 @@
 	}
 
 	.cell {
+		position: relative;
 		display: flex;
+		box-sizing: border-box;
 		align-items: center;
 		justify-content: center;
-		width: 2.65em;
-		height: 2.65em;
-		border-radius: 0.7em;
+		width: 66px;
+		height: 66px;
+		padding: 0;
+		border-radius: 13px;
 		border: 1px solid rgba(255, 232, 223, 0.12);
-		font-size: 1.9em;
 		font-weight: 700;
 		background-color: rgba(62, 26, 106, 0.42);
 		color: rgba(255, 255, 255, 0.96);
@@ -162,7 +172,17 @@
 	}
 
 	.cell[data-occupied="false"] {
-		color: rgba(255, 233, 223, 0.58);
+		align-items: flex-start;
+		justify-content: flex-start;
+		padding: 5px 6px;
+		font-size: 18px;
+		color: rgba(255, 233, 223, 0.56);
+	}
+
+	.cell[data-occupied="true"] {
+		font-size: 47px;
+		line-height: 1;
+		letter-spacing: -2px;
 	}
 
 	.cell[data-highlighted="true"] {
@@ -172,7 +192,7 @@
 		border-color: rgba(255, 196, 153, 0.48);
 		box-shadow:
 			inset 0 1px 0 rgba(255, 255, 255, 0.15),
-			0 0 0.8em rgba(255, 128, 73, 0.2);
+			0 0 13px rgba(255, 128, 73, 0.2);
 	}
 
 	.board[data-status="draw"] .cell {
@@ -186,14 +206,14 @@
 	}
 
 	.legend {
-		gap: 0.72em;
+		gap: 12px;
 		justify-content: center;
 	}
 
 	.chip {
-		min-width: 5.8em;
-		padding: 0.6em 0.8em;
-		border-radius: 0.7em;
+		min-width: 102px;
+		padding: 11px 15px;
+		border-radius: 11px;
 		background:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)),
 			rgba(56, 21, 98, 0.28);
@@ -201,12 +221,12 @@
 	}
 
 	.chip > span {
-		font-size: 0.76em;
+		font-size: 13px;
 		color: rgba(255, 233, 223, 0.72);
 	}
 
 	.chip > strong {
-		font-size: 1.32em;
+		font-size: 26px;
 		color: rgba(255, 255, 255, 0.96);
 	}
 
@@ -218,8 +238,8 @@
 
 	.piece {
 		position: absolute;
-		width: 0.6em;
-		height: 1.1em;
+		width: 10px;
+		height: 18px;
 		border-radius: 999px;
 		opacity: 0.85;
 	}

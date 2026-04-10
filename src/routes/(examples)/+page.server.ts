@@ -32,11 +32,6 @@ export const actions: Actions = {
 				targetUrl: '/farcaster/demos/counter?/open',
 			},
 			{
-				label: 'Tips',
-				action: 'post',
-				targetUrl: '/farcaster/demos/tips?/open',
-			},
-			{
 				label: 'Hangman',
 				action: 'post',
 				targetUrl: '/farcaster/demos/hangman?/open',
@@ -55,6 +50,11 @@ export const actions: Actions = {
 				label: 'Tic-tac-toe',
 				action: 'post',
 				targetUrl: '/farcaster/demos/tic-tac-toe?/open',
+			},
+			{
+				label: 'Tips',
+				action: 'post',
+				targetUrl: '/farcaster/demos/tips?/open',
 			},
 			// {
 			// 	label: 'Mint',

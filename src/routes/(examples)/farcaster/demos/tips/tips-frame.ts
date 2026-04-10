@@ -5,11 +5,11 @@ import type { FrameMeta } from '$/lib/frame'
 import { isTruthy } from '$/lib/isTruthy'
 
 export const TIPS = [
-	'Frame buttons can POST to SvelteKit form actions on the same app.',
-	'One route serves HTML, the PNG preview (Satori → ResVG), and Snap JSON.',
-	'Button targets can carry query state so the next frame image matches.',
-	'Set fc:frame:image to a clean URL when action query strings would confuse GETs.',
-	'Pin SKIFFLE demos in a Farcaster client to try stateful frames end to end.',
+	'Frame buttons POST to SvelteKit form actions using `?/actionName` targets on the same route.',
+	'One SKIFFLE URL can serve HTML, a rendered PNG preview, or Snap JSON depending on the request.',
+	'Demo state lives in the URL so every next image render stays aligned with the next action target.',
+	'Snaps layer richer controls on top of those same routes instead of needing a separate app surface.',
+	'When tunneling locally, set `SNAP_PUBLIC_BASE_URL` so public image and submit URLs stay correct.',
 ] as const
 
 const len = TIPS.length

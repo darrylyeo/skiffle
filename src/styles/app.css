@@ -4,6 +4,11 @@
 	line-height: 1;
 }
 
+:root {
+	color-scheme: light dark;
+	font-family: 'Ubuntu', sans-serif;
+}
+
 div {
 	display: flex;
 }

@@ -93,25 +93,32 @@
 <style>
 	article {
 		position: relative;
+		width: 100%;
 		height: 100%;
+		border: 1px solid rgba(255, 232, 223, 0.12);
+		border-radius: 1.7em;
 		justify-content: center;
 		align-items: center;
 		text-align: center;
-		gap: 1.1em;
-		padding: 0 0.35em;
+		gap: 1.25em;
+		padding: 0.7em 0.65em 0.85em;
 		overflow: hidden;
 		background:
-			radial-gradient(circle at top left, rgba(255, 129, 72, 0.28), transparent 34%),
-			radial-gradient(circle at top right, rgba(138, 99, 210, 0.3), transparent 44%),
-			linear-gradient(140deg, #8a63d2 0%, #5c3099 50%, #ff5b1f 100%);
+			radial-gradient(circle at 16% 50%, rgba(255, 127, 79, 0.26), transparent 24%),
+			radial-gradient(circle at 84% 42%, rgba(82, 168, 255, 0.24), transparent 26%),
+			radial-gradient(circle at 50% 10%, rgba(255, 236, 210, 0.08), transparent 20%),
+			linear-gradient(180deg, rgba(35, 34, 73, 0.6), rgba(26, 24, 53, 0.4));
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.12),
+			0 1em 2.4em rgba(31, 11, 52, 0.18);
 	}
 
 	header {
-		gap: 0.35em;
+		gap: 0.45em;
 	}
 
 	.eyebrow {
-		font-size: 0.78em;
+		font-size: 0.84em;
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
@@ -119,14 +126,14 @@
 	}
 
 	h2 {
-		font-size: 1.6em;
+		font-size: 1.88em;
 		font-weight: 700;
 		color: rgba(255, 255, 255, 0.95);
 	}
 
 	.annotation {
-		max-width: 25em;
-		font-size: 0.92em;
+		max-width: 18em;
+		font-size: 1em;
 		line-height: 1.35;
 		color: rgba(255, 241, 234, 0.78);
 	}
@@ -135,21 +142,24 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 0.75em;
+		gap: 0.95em;
 	}
 
 	.stats {
 		display: flex;
-		gap: 0.6em;
+		flex-wrap: wrap;
+		gap: 0.75em;
 		justify-content: center;
+		width: 100%;
+		max-width: 20em;
 	}
 
 	.choice,
 	.metric {
-		min-width: 6em;
-		padding: 0.75em 0.8em;
-		gap: 0.25em;
-		border-radius: 0.8em;
+		min-width: 6.8em;
+		padding: 0.95em 1em;
+		gap: 0.35em;
+		border-radius: 0.95em;
 		background:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05)),
 			rgba(54, 20, 94, 0.32);
@@ -159,25 +169,31 @@
 		border: 1px solid rgba(255, 232, 223, 0.12);
 	}
 
+	.metric {
+		flex: 0 0 48%;
+		max-width: 48%;
+		min-width: 0;
+	}
+
 	.choice > span,
 	.metric > span {
-		font-size: 0.78em;
+		font-size: 0.82em;
 		color: rgba(255, 232, 223, 0.74);
 	}
 
 	.choice > strong,
 	.metric > strong {
-		font-size: 1.3em;
+		font-size: 1.48em;
 		line-height: 1.1;
 		color: rgba(255, 255, 255, 0.96);
 	}
 
 	.choice {
-		min-width: 8.4em;
+		min-width: 9.1em;
 	}
 
 	.choice > strong {
-		font-size: 1.35em;
+		font-size: 1.75em;
 		text-transform: capitalize;
 	}
 
@@ -194,9 +210,9 @@
 	}
 
 	.versus {
-		padding: 0.45em 0.7em;
+		padding: 0.55em 0.8em;
 		border-radius: 999px;
-		font-size: 0.8em;
+		font-size: 0.88em;
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;

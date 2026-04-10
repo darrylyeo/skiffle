@@ -116,7 +116,7 @@ export const buildRockPaperScissorsFrame = ({
 			...(lastCpu ? { lastCpu } : {}),
 			...(outcome ? { outcome } : {}),
 		})}`,
-		aspectRatio: '1.91:1',
+		aspectRatio: '1:1',
 	},
 	buttons: [
 		hasRounds({ rounds }) ?

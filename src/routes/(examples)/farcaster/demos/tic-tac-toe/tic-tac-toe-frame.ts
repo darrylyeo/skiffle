@@ -31,6 +31,8 @@ const WIN_LINES = [
 	[2, 4, 6],
 ] as const
 
+const CORNER_CELLS = [0, 2, 6, 8] as const
+
 const normalizeBoard = (value: string | null | undefined) => (
 	value && /^[XO-]{9}$/.test(value)
 		? value
@@ -61,12 +63,6 @@ const statusFromQuery = (value: string | null | undefined): TicTacToeStatus => (
 		'turn'
 )
 
-const nextBotCell = (board: string) => (
-	board[4] === '-'
-		? 4
-		: board.indexOf('-')
-)
-
 const withMove = (
 	board: string,
 	index: number,
@@ -81,6 +77,39 @@ const winningLine = (board: string) => (
 		&& board[a] === board[b]
 		&& board[b] === board[c]
 	))
+)
+
+const emptyCellInLine = (
+	board: string,
+	line: readonly [number, number, number],
+) => (
+	line.find((index) => board[index] === '-')
+)
+
+const criticalCellForMark = (
+	board: string,
+	mark: 'X' | 'O',
+) => (
+	WIN_LINES
+		.map((line) => (
+			line.filter((index) => board[index] === mark).length === 2
+			&& line.filter((index) => board[index] === '-').length === 1 ?
+				emptyCellInLine(board, line)
+			:
+				undefined
+		))
+		.find((index) => index !== undefined)
+)
+
+const nextBotCell = (board: string) => (
+	criticalCellForMark(board, 'O')
+		?? criticalCellForMark(board, 'X')
+		?? (
+			board[4] === '-'
+				? 4
+			: CORNER_CELLS.find((index) => board[index] === '-')
+		)
+		?? board.indexOf('-')
 )
 
 const canPlay = (status: TicTacToeStatus) => (
