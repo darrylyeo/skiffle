@@ -44,27 +44,24 @@
 		{:else if data.currentPage === 2}
 			<p>To render any SvelteKit page as a Snap response, <b>return a <code>snap</code> object</b> from <code>load()</code> in <code>+page.server.ts</code> or <code>+page.ts</code>.</p>
 
-			<p>Use provided helper functions to construct relative URL navigation buttons and Snap elements and configuration including button groups, roles, and theme settings.</p>
+			<p>Use provided helper functions to construct relative URL navigation buttons and Snap elements / configuration, including button groups, badges, and theme settings.</p>
 
 			<p>The same route can also return <code>frame</code> metadata for image/post behavior, so Snap JSON and frame previews stay aligned while sharing the same route data.</p>
 
 		{:else if data.currentPage === 3}
 			<p>A snap-enabled page URL will return different responses depending on HTTP <code>Accept</code> headers:</p>
 
-			<ul class="overloads column">
+			<ul class="column">
 				<li>
-					<code>application/<wbr>vnd.<wbr>farcaster.<wbr>snap+json</code>
-					<span>Snap JSON response following the Farcaster Snap spec.</span>
+					<code>application/<wbr>vnd.<wbr>farcaster.<wbr>snap+json</code>: <span>Snap JSON response following the Farcaster Snap spec.</span>
 				</li>
 
 				<li>
-					<code>image/*</code> or <code>?<wbr>frameImage</code>
-					<span>PNG frame preview of the rendered page: Svelte to HTML/CSS to SVG via <code>satori</code>, then PNG via <code>resvg-js</code>.</span>
+					<code>image/*</code>: <span>PNG frame preview of the rendered page: Svelte to HTML/CSS to SVG via <code>satori</code>, then PNG via <code>resvg-js</code>.</span>
 				</li>
 
 				<li>
-					<code>*/*</code>
-					<span>The normal HTML page rendered by SvelteKit.</span>
+					<code>*/*</code>: <span>The normal HTML page rendered by SvelteKit.</span>
 				</li>
 			</ul>
 
@@ -115,13 +112,13 @@
 		background-color: rgba(255, 255, 255, 0.1);
 	}
 
-	.overloads {
+	ul {
 		gap: 0.75em;
 		padding: 0;
 		margin: 0;
 	}
 
-	.overloads > li {
+	ul > li {
 		display: flex;
 		flex-direction: column;
 		gap: 0.35em;
@@ -132,7 +129,7 @@
 		line-height: 1.5;
 	}
 
-	.overloads code {
+	ul code {
 		display: block;
 		white-space: normal;
 	}

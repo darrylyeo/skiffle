@@ -9,6 +9,7 @@ import satori from 'satori'
 import { Resvg } from '@resvg/resvg-js'
 
 import { styledHtmlDocumentForSatori } from '$/lib/frame-satori'
+import { loadSatoriAdditionalAsset } from '$/lib/satori-emoji'
 
 
 type SatoriNode = JSXElement
@@ -164,6 +165,7 @@ export const handle: Handle = async ({
 			contentRoot,
 			{
 				fonts,
+				loadAdditionalAsset: loadSatoriAdditionalAsset,
 				width,
 				height,
 			}

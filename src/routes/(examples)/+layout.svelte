@@ -4,6 +4,23 @@
 
 	let url = $page.url
 
+	const footerBaseUrl = (url: URL) => (
+		`${url.origin}${url.pathname === '/' ? '' : url.pathname.replace(/\/$/, '')}`
+	)
+
+	const footerQueryLine = (url: URL) => {
+		const query = [...url.searchParams.entries()]
+			.map(([key, value]) => (
+				value
+					? `${key}=${value}`
+					: key
+			))
+			.join('&')
+
+		return query
+			? `?${query.length > 56 ? `${query.slice(0, 53)}...` : query}`
+			: ''
+	}
 
 	// Props
 	import type { Snippet } from 'svelte'
@@ -32,7 +49,11 @@
 		<footer class="footer row">
 			<p>
 				<output class="url-badge">
-					{url.origin}{url.pathname === '/' ? '' : url.pathname.replace(/\/$/, '')}{url.search}
+					<span>{footerBaseUrl(url)}</span>
+
+					{#if footerQueryLine(url)}
+						<span class="query-line">{footerQueryLine(url)}</span>
+					{/if}
 				</output>
 			</p>
 
@@ -86,6 +107,19 @@
 		text-align: left;
 		overflow-wrap: anywhere;
 		color: rgba(255, 255, 255, 0.84);
+	}
+
+	.url-badge > span {
+		display: block;
+	}
+
+	.query-line {
+		max-width: 24em;
+		font-size: 0.82em;
+		opacity: 0.82;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	.annotation {

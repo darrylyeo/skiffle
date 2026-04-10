@@ -39,6 +39,8 @@
 	"dependencies": {
 		"@farcaster/jfs": "^0.3.0",
 		"@fontsource/fira-code": "^5.2.7",
+		"@fontsource/noto-sans-jp": "^5.2.9",
+		"@fontsource/noto-sans-symbols-2": "^5.2.8",
 		"@fontsource/ubuntu": "^5.2.8",
 		"@resvg/resvg-js": "^2.6.2",
 		"satori": "^0.26.0",

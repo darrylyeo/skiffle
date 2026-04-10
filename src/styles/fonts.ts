@@ -1,47 +1,61 @@
 import { readFileSync } from 'fs'
 
+const readFont = (pkg: string, file: string) => (
+	readFileSync(`${process.cwd()}/node_modules/${pkg}/files/${file}`)
+)
+
+const familyFonts = (
+	name: string,
+	pkg: string,
+	subsets: string[],
+	weights: number[],
+) => (
+	subsets.flatMap((subset) => (
+		weights.map((weight) => ({
+			name,
+			data: readFont(pkg, `${pkg.split('/').at(-1)}-${subset}-${weight}-normal.woff`),
+			style: 'normal' as const,
+			weight,
+		}))
+	))
+)
+
 export const fonts = ([
-	{
-		name: 'Fira Code',
-		data: readFileSync(`${process.cwd()}/node_modules/@fontsource/fira-code/files/fira-code-latin-400-normal.woff`),
-		style: 'normal',
-		weight: 400,
-	},
-	{
-		name: 'Fira Code',
-		data: readFileSync(`${process.cwd()}/node_modules/@fontsource/fira-code/files/fira-code-latin-500-normal.woff`),
-		style: 'normal',
-		weight: 500,
-	},
-	{
-		name: 'Fira Code',
-		data: readFileSync(`${process.cwd()}/node_modules/@fontsource/fira-code/files/fira-code-latin-600-normal.woff`),
-		style: 'normal',
-		weight: 600,
-	},
-	{
-		name: 'Fira Code',
-		data: readFileSync(`${process.cwd()}/node_modules/@fontsource/fira-code/files/fira-code-latin-700-normal.woff`),
-		style: 'normal',
-		weight: 700,
-	},
-	{
-		name: 'Ubuntu',
-		data: readFileSync(`${process.cwd()}/node_modules/@fontsource/ubuntu/files/ubuntu-latin-400-normal.woff`),
-		style: 'normal',
-		weight: 400,
-	},
-	{
-		name: 'Ubuntu',
-		data: readFileSync(`${process.cwd()}/node_modules/@fontsource/ubuntu/files/ubuntu-latin-500-normal.woff`),
-		style: 'normal',
-		weight: 500,
-	},
-	{
-		name: 'Ubuntu',
-		data: readFileSync(`${process.cwd()}/node_modules/@fontsource/ubuntu/files/ubuntu-latin-700-normal.woff`),
-		style: 'normal',
-		weight: 700,
-	},
+	...familyFonts(
+		'Fira Code',
+		'@fontsource/fira-code',
+		[
+			'latin',
+			'latin-ext',
+			'greek',
+			'greek-ext',
+			'cyrillic',
+			'cyrillic-ext',
+			'symbols2',
+		],
+		[
+			400,
+			500,
+			600,
+			700,
+		],
+	),
+	...familyFonts(
+		'Ubuntu',
+		'@fontsource/ubuntu',
+		[
+			'latin',
+			'latin-ext',
+			'greek',
+			'greek-ext',
+			'cyrillic',
+			'cyrillic-ext',
+		],
+		[
+			400,
+			500,
+			700,
+		],
+	),
 ] as const)
 	.filter(font => font.data)

@@ -3,11 +3,11 @@
 	<p class="sticker sticker-idea">Needs better acronym</p>
 
 	<h1 class="logo" aria-label="SKIFFLE">
-		<span>S</span>
-		<span>K</span>
+		<span class="svelte">S</span>
+		<span class="svelte">K</span>
 		<span>I</span>
-		<span>F</span>
-		<span>F</span>
+		<span class="farcaster">F</span>
+		<span class="farcaster">F</span>
 		<span>L</span>
 		<span>E</span>
 	</h1>
@@ -37,7 +37,7 @@
 		background: radial-gradient(circle, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.075));
 		gap: 1.5em;
 
-		text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.15), 0 0 10px rgba(0, 0, 0, 0.25);
+		text-shadow: 2px 2px 2px rgba(255, 255, 255, 0.14), 0 0 10px rgba(255, 255, 255, 0.18);
 	}
 
 	.sticker {
@@ -78,55 +78,49 @@
 	.logo {
 		display: flex;
 		align-items: flex-end;
-		gap: 0.02em;
-
-		font-size: clamp(3.8rem, 11vw, 5.8rem);
+		justify-content: center;
+		gap: 0.01em;
+		font-size: 3.75em;
 		font-weight: 900;
-		letter-spacing: -0.06em;
+		letter-spacing: 0.04em;
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: rgba(255, 255, 255, 0.5);
 	}
 
 	.logo > span {
 		display: block;
-		color: rgba(255, 255, 255, 0.92);
-		text-shadow:
-			0.04em 0.06em 0 rgba(0, 0, 0, 0.2),
-			0.12em 0.16em 0.32em rgba(0, 0, 0, 0.28);
+		-webkit-background-clip: text;
+		background-clip: text;
 		transform-origin: center 80%;
 	}
 
 	.logo > span:nth-child(1) {
-		color: #ff875d;
-		transform: translateY(0.06em) rotate(-8deg) skewY(-6deg) scale(1.02, 0.94);
+		transform: translateY(0.04em) rotate(-8deg) scale(1.02, 0.96);
 	}
 
 	.logo > span:nth-child(2) {
-		color: #ff5c2b;
-		transform: translateY(-0.02em) rotate(6deg) skewY(3deg) scale(0.92, 1.08);
+		transform: translateY(-0.01em) rotate(7deg) scale(0.96, 1.04);
 	}
 
 	.logo > span:nth-child(3) {
-		color: rgba(255, 255, 255, 0.9);
-		transform: translateY(0.08em) rotate(-4deg) skewX(-8deg) scale(0.78, 1.16);
+		transform: translateY(0.06em) rotate(-5deg) scale(0.84, 1.1);
 	}
 
 	.logo > span:nth-child(4) {
-		color: #9c7bff;
-		transform: translateY(-0.01em) rotate(7deg) skewY(-5deg) scale(1.04, 0.96);
+		transform: translateY(-0.01em) rotate(6deg) scale(1.01, 0.98);
 	}
 
 	.logo > span:nth-child(5) {
-		color: #7e5ee2;
-		transform: translateY(0.04em) rotate(-6deg) skewX(6deg) scale(0.96, 1.08);
+		transform: translateY(0.03em) rotate(-6deg) scale(0.98, 1.04);
 	}
 
 	.logo > span:nth-child(6) {
-		color: rgba(255, 255, 255, 0.92);
-		transform: translateY(-0.03em) rotate(5deg) skewY(-4deg) scale(0.88, 1.05);
+		transform: translateY(-0.02em) rotate(5deg) scale(0.92, 1.03);
 	}
 
 	.logo > span:nth-child(7) {
-		color: rgba(255, 255, 255, 0.84);
-		transform: translateY(0.05em) rotate(-7deg) skewX(-6deg) scale(1.05, 0.95);
+		transform: translateY(0.04em) rotate(-7deg) scale(1.03, 0.97);
 	}
 
 	h2 {

@@ -315,12 +315,6 @@ const snapCurrentPageUrl = (baseUrl: URL | string) => (
 	)
 )
 
-const snapGoActionTarget = (baseUrl: URL | string) => {
-	const target = new URL(snapResolvedUrl('/go', baseUrl))
-	target.search = `?/open&from=${encodeURIComponent(snapCurrentPageUrl(baseUrl))}`
-	return target.href
-}
-
 const snapFooterContextUrl = (
 	baseUrl: URL | string,
 	context?: string,
@@ -333,30 +327,10 @@ const snapFooterContextUrl = (
 	)
 }
 
-const snapFooterContext = (baseUrl: URL | string) => (
-	new URL(snapResolvedUrl(String(baseUrl), baseUrl)).searchParams.get(SNAP_FOOTER_CONTEXT_PARAM)
-)
-
-const snapFooterBadgeLabel = (baseUrl: URL | string) => {
-	const label = snapCurrentPageUrl(baseUrl).replace(/^https?:\/\//, '')
-	return label.length > 30
-		? `${label.slice(0, 27)}...`
-		: label
-}
-
 const snapExtraElementProviders = [
 	hangmanSnapExtraElements,
 	wordleSnapExtraElements,
 ] satisfies SnapExtraElementProvider[]
-
-const snapExtraElementsForFrame = (
-	frame: FrameMeta,
-	baseUrl: URL | string,
-) => (
-	snapExtraElementProviders
-		.map((provider) => provider(frame, baseUrl))
-		.find((value) => value !== undefined)
-)
 
 const SNAP_ACTION_MAX_CHILDREN = 6
 const SNAP_ACTION_MAX_DEPTH = 4
@@ -456,11 +430,16 @@ export const framePageToSnap = (
 	{ title, frame, snap }: FramePage,
 	baseUrl: URL | string,
 ): SnapResponse => {
-	const extraElements = snapExtraElementsForFrame(frame, baseUrl)
+	const currentPageUrl = snapCurrentPageUrl(baseUrl)
+	const extraElements = snapExtraElementProviders
+		.map((provider) => provider(frame, baseUrl))
+		.find((value) => value !== undefined)
 	const actionElements = snap?.buttons?.length
 		? snapActionElements(snap.buttons, baseUrl)
 		: undefined
-	const isGoMenuOpen = snapFooterContext(baseUrl) === 'go'
+	const isGoMenuOpen = new URL(snapResolvedUrl(String(baseUrl), baseUrl))
+		.searchParams
+		.get(SNAP_FOOTER_CONTEXT_PARAM) === 'go'
 	const footerChildren = (
 		isGoMenuOpen
 			? ['page-go-input', 'page-go-actions']
@@ -521,7 +500,9 @@ export const framePageToSnap = (
 		'page-url-badge': {
 			type: SnapElementTypes.Text,
 			props: {
-				content: snapFooterBadgeLabel(baseUrl),
+				content: currentPageUrl
+					.replace(/^https?:\/\//, '')
+					.replace(/%2f/gi, '/'),
 				size: SnapTextSizes.Sm,
 				align: SnapAlignments.Center,
 			},
@@ -563,7 +544,7 @@ export const framePageToSnap = (
 									: 'Checking out SKIFFLE on Farcaster.'
 							)
 						).slice(0, 320),
-						embeds: [snapCurrentPageUrl(baseUrl)],
+						embeds: [currentPageUrl],
 					},
 				},
 			},
@@ -579,7 +560,7 @@ export const framePageToSnap = (
 				[SnapEvents.Press]: {
 					action: SnapActions.OpenUrl,
 					params: {
-						target: snapCurrentPageUrl(baseUrl),
+						target: currentPageUrl,
 					},
 				},
 			},
@@ -624,7 +605,11 @@ export const framePageToSnap = (
 				[SnapEvents.Press]: {
 					action: SnapActions.Submit,
 					params: {
-						target: snapGoActionTarget(baseUrl),
+						target: (() => {
+							const target = new URL(snapResolvedUrl('/go', baseUrl))
+							target.search = `?/open&from=${encodeURIComponent(currentPageUrl)}`
+							return target.href
+						})(),
 					},
 				},
 			},
