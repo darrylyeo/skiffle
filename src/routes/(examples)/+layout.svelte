@@ -16,10 +16,6 @@
 		children: Snippet,
 		data: PageData,
 	} = $props()
-
-	let {
-		frameSignaturePacket,
-	} = data
 </script>
 
 
@@ -44,8 +40,8 @@
 				</p>
 			</div>
 
-			{#if frameSignaturePacket}
-				<p class="annotation">gm, FID #{frameSignaturePacket.untrustedData.fid}</p>
+			{#if data.frameSignaturePacket}
+				<p class="annotation">gm, FID #{data.frameSignaturePacket.untrustedData.fid}</p>
 			{:else}
 				<p class="annotation">by @darrylyeo</p>
 			{/if}
@@ -73,11 +69,6 @@
 		height: 100%;
 		padding: 2em;
 		row-gap: 2em;
-	}
-
-	header {
-		justify-content: flex-start;
-		gap: 2.25em;
 	}
 
 	main {

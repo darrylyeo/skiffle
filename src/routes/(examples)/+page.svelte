@@ -1,4 +1,6 @@
 <article class="card column">
+	<p class="sticker">now with snaps!</p>
+
 	<h1><span class="svelte">SK</span>I<span class="farcaster">FF</span>LE</h1>
 
 	<h2 class="acronym row wrap">
@@ -20,12 +22,32 @@
 	}
 
 	.card {
+		position: relative;
 		padding: 2.25em;
 		border-radius: 1em;
 		background: radial-gradient(circle, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.075));
 		gap: 1.5em;
 
 		text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.15), 0 0 10px rgba(0, 0, 0, 0.25);
+	}
+
+	.sticker {
+		position: absolute;
+		top: 1.35em;
+		right: 1.35em;
+		padding: 0.55em 0.9em 0.5em;
+		border: 1px solid rgba(255, 255, 255, 0.28);
+		border-radius: 999px;
+		background: linear-gradient(135deg, rgba(255, 62, 0, 0.95), rgba(138, 99, 210, 0.95));
+		box-shadow: 0 0.6em 1.6em rgba(0, 0, 0, 0.22);
+		color: rgba(255, 255, 255, 0.96);
+		font-size: 0.95em;
+		font-weight: 800;
+		letter-spacing: 0.08em;
+		line-height: 1;
+		text-transform: uppercase;
+		transform: rotate(8deg);
+		text-shadow: none;
 	}
 
 	h1 {

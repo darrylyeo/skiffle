@@ -9,15 +9,11 @@
 	}: {
 		data: PageData,
 	} = $props()
-
-	let {
-		casts,
-	} = data
 </script>
 
 
 <div class="column card">
-	{#each casts.slice(0, 15) as cast (`${cast.timestamp}:${cast.content}`)}
+	{#each data.casts.slice(0, 15) as cast (`${cast.timestamp}:${cast.content}`)}
 		<div class="cast row">
 			<p>{cast.content}</p>
 

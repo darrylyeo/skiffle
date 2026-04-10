@@ -3,36 +3,32 @@
 	let {
 		data,
 	} = $props()
-
-	let {
-		currentPage,
-	} = data
 </script>
 
 
 <article class="column">
 	<header>
 		<h2>
-			{#if currentPage === 0}
+			{#if data.currentPage === 0}
 				<span>What is SKIFFLE?</span>
-			{:else if currentPage === 1}
+			{:else if data.currentPage === 1}
 				<span>How do Frames and Snaps work in SKIFFLE?</span>
-			{:else if currentPage === 2}
+			{:else if data.currentPage === 2}
 				<span>What's next for SKIFFLE?</span>
-			{:else if currentPage === 3}
+			{:else if data.currentPage === 3}
 				<span>That's all, folks!</span>
 			{/if}
 		</h2>
 	</header>
 
 	<div class="card column">
-		{#if currentPage === 0}
+		{#if data.currentPage === 0}
 			<p><b>SKIFFLE</b> is a <b>SvelteKit</b> demo for <b>Farcaster Frames</b> (PNG previews + frame meta) and <b>Farcaster Snaps</b> (JSON embeds on the same routes).</p>
 
 			<p>Load page data and render content as you normally would, using Svelte template syntax, <code>style</code> tags, <code>+layout.svelte</code> / <code>+page.svelte</code> components, and <code>load()</code> functions in <code>+layout.server.ts</code> / <code>+layout.ts</code> / <code>+page.server.ts</code> / <code>+page.ts</code> (or <code>.js</code>) files.</p>
 
 			<p>Link frame buttons to other frame routes using relative URLs, or handle signature packets<wbr> using <b>Form Actions</b> (define <code>actions</code> in <code>+page.server.ts</code>, then target <code>?/actionName</code>).</p>
-		{:else if currentPage === 1}
+		{:else if data.currentPage === 1}
 			<p>To render a SvelteKit page as a frame, <b>export a <code>frame</code> object</b> from <code>+page.server.ts</code> or<wbr> <code>+page.ts</code> matching the <code>FrameMeta</code> type (also defined under the global <code>PageData</code> type).</p>
 
 			<p><b>Page route URLs double as frame image URLs</b> and share common <code>load()</code> functions. This<wbr> overloading behavior is made possible by the <code>handle</code> server hook in <code>hooks.server.ts</code>.</p>
@@ -40,7 +36,7 @@
 			<p><b>Farcaster Snaps</b> use the same URLs with <code>Accept: application/vnd.farcaster.snap+json</code>.<wbr> The hook returns JSON (<code>version</code>, <code>theme</code>, <code>ui</code>) per the <a href="https://docs.farcaster.xyz/snap">snap spec</a>.<wbr> Snap button <code>submit</code> actions POST a JFS-signed body;<wbr> set <code>SKIP_JFS_VERIFICATION=1</code> for local testing or use the <a href="https://farcaster.xyz/~/developers/snaps">snap emulator</a>.</p>
 
 			<p>A page route request with an <code>Accept</code> HTTP header containing <code>image/</code> yields this pipeline:<wbr> compile Svelte to HTML/CSS, convert to SVG with <code>satori</code>, render to PNG with <code>resvg-js</code>.</p>
-		{:else if currentPage === 2}
+		{:else if data.currentPage === 2}
 			<p>Try the SKIFFLE demo – cast <b>skiffle.dev</b> on Warpcast or your Farcaster client of choice!</p>
 
 			<p>Check out SKIFFLE on GitHub – <b>github.com/darrylyeo/skiffle</b></p>
@@ -48,7 +44,7 @@
 			<p>Follow <b>@darrylyeo</b> on Farcaster and GitHub for project updates.</p>
 
 			<p>More documentation and examples coming soon!</p>
-		{:else if currentPage === 3}
+		{:else if data.currentPage === 3}
 			<span>You've reached the last page. Want to read it again?</span>
 		{/if}
 	</div>
