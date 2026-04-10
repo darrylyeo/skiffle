@@ -3,9 +3,10 @@
 
 
 // Types
-import type { TupleOf } from './TupleOf'
-
-import type { FarcasterCastId, FarcasterUserId } from './farcaster'
+type TupleOf<T, N extends number> = N extends N ? number extends N ? T[] : _TupleOf<T, N, []> : never
+type _TupleOf<T, N extends number, R extends unknown[]> = R['length'] extends N ? R : _TupleOf<T, N, [T, ...R]>
+type FarcasterUserId = number
+type FarcasterCastId = `0x${string}`
 
 export type FrameSignaturePacket<
 	HasInputText extends boolean = boolean,
