@@ -1,28 +1,57 @@
 <script lang="ts">
+	// Types/constants
+	import type { PageData } from './$types'
+
+	// Functions
+	import { counterPrimeFactorization } from './counter-frame'
+
+	const counterAeaBars = (count: number) => (
+		Array.from(
+			{
+				length: 18,
+			},
+			(_, i) => ({
+				height: 18 + ((count * 7 + i * 19) % 62),
+				opacity: 0.16 + (((count + i * 13) % 5) * 0.08),
+			}),
+		)
+	)
+
 	// Props
-	let {
-		data,
-	}: {
-		data: { count: number },
-	} = $props()
+	let { data }: { data: PageData } = $props()
 </script>
 
 
-<article class="column">
-	<header class="column">
-		<p class="eyebrow">Counter demo</p>
-		<h2>Tap it up</h2>
-	</header>
-
-	<div class="meter column">
-		<p class="annotation">Current count</p>
-		<p class="value" aria-live="polite">{data.count}</p>
+<article class="page column">
+	<div class="aea row" aria-hidden="true">
+		{#each counterAeaBars(data.count) as bar, i (`${i}:${bar.height}`)}
+			<span
+				class="aea-bar"
+				style={`height:${bar.height}%;opacity:${bar.opacity};`}
+			></span>
+		{/each}
 	</div>
+
+	<h2>How high can you go?</h2>
+
+	<p
+		class={[
+			'value',
+			String(data.count).length >= 4 && 'value--tight',
+			String(data.count).length >= 6 && 'value--compact',
+		]}
+		aria-live="polite"
+	>
+		{data.count}
+	</p>
+
+	<p class="factors">{counterPrimeFactorization(data.count)}</p>
 </article>
 
 
 <style>
-	article {
+	.page {
+		position: relative;
 		height: 100%;
 		border: 1px solid rgba(255, 255, 255, 0.1);
 		border-radius: 1.6em;
@@ -43,58 +72,59 @@
 			0 1.1em 2.6em rgba(37, 13, 62, 0.22);
 	}
 
-	header {
-		gap: 0.2em;
+	.aea {
+		position: absolute;
+		top: 0.8em;
+		right: 0.8em;
+		bottom: 0.8em;
+		left: 0.8em;
+		align-items: flex-end;
+		justify-content: center;
+		gap: 0.38em;
+		overflow: hidden;
 	}
 
-	.eyebrow {
-		font-size: 0.78em;
-		font-weight: 800;
-		letter-spacing: 0.16em;
-		text-transform: uppercase;
-		color: rgba(255, 221, 200, 0.78);
+	.aea-bar {
+		display: block;
+		width: 1.05em;
+		border-radius: 999px 999px 0 0;
+		background:
+			linear-gradient(180deg, rgba(255, 241, 224, 0.9), rgba(255, 129, 82, 0.52)),
+			rgba(255, 255, 255, 0.08);
+		box-shadow:
+			0 0 1.4em rgba(255, 125, 82, 0.15),
+			0 0 0.12em rgba(255, 255, 255, 0.3);
 	}
 
 	h2 {
-		font-size: 1.7em;
+		font-size: 1.45em;
 		font-weight: 700;
 		color: rgba(255, 255, 255, 0.95);
 	}
 
-	.meter {
-		position: relative;
-		min-width: min(100%, 20em);
-		padding: 1em 1em 1.15em;
-		border: 1px solid rgba(255, 235, 224, 0.14);
-		border-radius: 1.7em;
-		gap: 0.25em;
-		background:
-			radial-gradient(circle at 50% 36%, rgba(255, 247, 232, 0.2), transparent 30%),
-			radial-gradient(circle at 50% 85%, rgba(255, 110, 61, 0.18), transparent 40%),
-			linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05)),
-			rgba(70, 26, 56, 0.34);
-		box-shadow:
-			inset 0 1px 0 rgba(255, 255, 255, 0.14),
-			0 1.1em 2.4em rgba(37, 13, 62, 0.18);
-	}
-
-	.annotation {
-		font-size: 0.84em;
-		font-weight: 700;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		color: rgba(255, 226, 210, 0.66);
-	}
-
 	.value {
-		font-size: clamp(4.8em, 18vw, 6.8em);
+		font-size: 7.8em;
 		font-weight: 900;
-		letter-spacing: -0.08em;
+		letter-spacing: -0.1em;
 		line-height: 1;
 		color: #fff7f0;
 		text-shadow:
 			0 0.02em 0 rgba(255, 255, 255, 0.24),
 			0 0.08em 0.18em rgba(0, 0, 0, 0.28),
 			0 0.28em 0.5em rgba(255, 96, 46, 0.2);
+	}
+
+	.value--tight {
+		font-size: 6.4em;
+	}
+
+	.value--compact {
+		font-size: 5.3em;
+	}
+
+	.factors {
+		font-size: 0.72em;
+		letter-spacing: 0.02em;
+		color: rgba(255, 232, 219, 0.74);
 	}
 </style>

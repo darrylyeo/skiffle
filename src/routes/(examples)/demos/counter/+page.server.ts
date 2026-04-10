@@ -1,103 +1,6 @@
 // Types
-import { AppSnapButtonRoles } from '$/lib/app-snap-tokens'
-import type { AppSnapPage } from '$/lib/snap-components'
-import type { FrameMeta } from '$/lib/frame'
-
-// Functions
-import { snapButtonGroup, snapTargetButton } from '$/lib/snap-components'
-import { SnapButtonVariants, SnapDirections, SnapGaps, SnapJustifyValues, SnapPaletteColors } from '$/lib/snap-spec'
-
-// Data
 import type { Actions, PageServerLoad } from './$types'
-
-const clampCount = (n: number) => (
-	Math.max(0, Math.min(9_999, Number.isFinite(n) ? Math.floor(n) : 0))
-)
-
-const counterFrameMeta = (count: number): FrameMeta => {
-	const c = clampCount(count)
-
-	return {
-		image: {
-			url: `/demos/counter?count=${c}`,
-			aspectRatio: '1.91:1',
-		},
-		buttons: [
-			{
-				label: '‹ Demos',
-				action: 'post',
-				targetUrl: '/?/demos',
-			},
-			{
-				label: '+1',
-				action: 'post',
-				targetUrl: `/demos/counter?/bump&count=${c}&delta=1`,
-			},
-			{
-				label: '+10',
-				action: 'post',
-				targetUrl: `/demos/counter?/bump&count=${c}&delta=10`,
-			},
-			{
-				label: 'Reset',
-				action: 'post',
-				targetUrl: '/demos/counter?/set&to=0',
-			},
-		],
-	}
-}
-
-const counterSnap = (count: number): AppSnapPage => {
-	const c = clampCount(count)
-
-	return {
-		shareText: `Trying the counter demo in SKIFFLE. Count is at ${c}.\n\nWant to keep it going?`,
-		theme: {
-			accent: SnapPaletteColors.Teal,
-		},
-		buttons: [
-			snapButtonGroup({
-				direction: SnapDirections.Horizontal,
-				gap: SnapGaps.Sm,
-				justify: SnapJustifyValues.Center,
-				children: [
-					snapTargetButton({
-						label: '‹ Demos',
-						role: AppSnapButtonRoles.Back,
-						action: 'post',
-						targetUrl: '/?/demos',
-					}),
-					snapTargetButton({
-						label: '+1',
-						role: AppSnapButtonRoles.Cta,
-						variant: SnapButtonVariants.Primary,
-						action: 'post',
-						targetUrl: `/demos/counter?/bump&count=${c}&delta=1`,
-					}),
-				],
-			}),
-			snapButtonGroup({
-				direction: SnapDirections.Horizontal,
-				gap: SnapGaps.Sm,
-				justify: SnapJustifyValues.Center,
-				children: [
-					snapTargetButton({
-						label: '+10',
-						role: AppSnapButtonRoles.Cta,
-						variant: SnapButtonVariants.Primary,
-						action: 'post',
-						targetUrl: `/demos/counter?/bump&count=${c}&delta=10`,
-					}),
-					snapTargetButton({
-						label: 'Reset',
-						action: 'post',
-						targetUrl: '/demos/counter?/set&to=0',
-					}),
-				],
-			}),
-		],
-	}
-}
+import { clampCount, counterFrameMeta, counterSnap } from './counter-frame'
 
 const countFromHref = (href: string | undefined) => {
 	if (!href) {
@@ -119,7 +22,7 @@ export const load: PageServerLoad = async ({ url }) => {
 
 	return {
 		count,
-		title: `Counter demo · ${count}`,
+		title: `How high can you go? · ${count}`,
 		frame: counterFrameMeta(count),
 		snap: counterSnap(count),
 	}

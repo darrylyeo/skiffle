@@ -1,15 +1,19 @@
 // Types
+import { AppSnapButtonRoles } from '$/lib/app-snap-tokens'
+import type { AppSnapPage } from '$/lib/snap-components'
 import type { FrameMeta } from '$/lib/frame'
 
 // Functions
 import { isTruthy } from '$/lib/isTruthy'
+import { snapButtonGroup, snapTargetButton } from '$/lib/snap-components'
+import { SnapButtonVariants, SnapDirections, SnapGaps, SnapJustifyValues, SnapPaletteColors } from '$/lib/snap-spec'
 
 export const TIPS = [
-	'Frame buttons POST to SvelteKit form actions using `?/actionName` targets on the same route.',
-	'One SKIFFLE URL can serve HTML, a rendered PNG preview, or Snap JSON depending on the request.',
-	'Demo state lives in the URL so every next image render stays aligned with the next action target.',
-	'Snaps layer richer controls on top of those same routes instead of needing a separate app surface.',
-	'When tunneling locally, set `SNAP_PUBLIC_BASE_URL` so public image and submit URLs stay correct.',
+	'One SKIFFLE route can respond with HTML, a rendered frame image, or Farcaster Snap JSON depending on the request.',
+	'Frame and Snap actions reuse normal SvelteKit form actions, so the same route keeps handling the interaction loop.',
+	'This demo keeps its current slide in the URL, so every next render stays aligned with the next action target.',
+	'SKIFFLE renders frame images from the route HTML and CSS through Satori, then converts the SVG output to PNG.',
+	'When testing through a public tunnel, `SNAP_PUBLIC_BASE_URL` keeps Snap image and submit targets pointed at the public origin.',
 ] as const
 
 const len = TIPS.length
@@ -50,7 +54,7 @@ const frameMetaFromPaginationState = ({
 				},
 				currentPage < totalPages - 1
 					? {
-						label: 'Next Tip ›',
+						label: 'Next Slide ›',
 						action: 'post',
 						targetUrl: `/demos/tips?/paginate&page=${nextPage}`,
 					}
@@ -66,14 +70,56 @@ const frameMetaFromPaginationState = ({
 	}
 }
 
+const snapFromPaginationState = ({
+	currentPage,
+	totalPages,
+	message,
+}: ReturnType<typeof tipsPagination>): AppSnapPage => {
+	const nextPage = normTipIndex(currentPage + 1)
+
+	return {
+		shareText: `Viewing slide ${currentPage + 1} of ${totalPages} in the SKIFFLE slideshow demo. ${message}`,
+		theme: {
+			accent: SnapPaletteColors.Amber,
+		},
+		buttons: [
+			snapButtonGroup({
+				direction: SnapDirections.Horizontal,
+				gap: SnapGaps.Sm,
+				justify: SnapJustifyValues.Center,
+				children: [
+					snapTargetButton({
+						label: '‹ Demos',
+						role: AppSnapButtonRoles.Back,
+						action: 'post',
+						targetUrl: '/?/demos',
+					}),
+					currentPage < totalPages - 1
+						? snapTargetButton({
+							label: 'Next Slide ›',
+							role: AppSnapButtonRoles.Pager,
+							variant: SnapButtonVariants.Primary,
+							action: 'post',
+							targetUrl: `/demos/tips?/paginate&page=${nextPage}`,
+						})
+						: snapTargetButton({
+							label: 'Back to Top ›',
+							role: AppSnapButtonRoles.Pager,
+							variant: SnapButtonVariants.Primary,
+							action: 'post',
+							targetUrl: '/demos/tips?/paginate&page=0',
+						}),
+				],
+			}),
+		],
+	}
+}
+
 export const tipsPageView = (url: URL) => {
 	const state = tipsPagination(url)
 	return {
 		...state,
 		frame: frameMetaFromPaginationState(state),
+		snap: snapFromPaginationState(state),
 	}
 }
-
-export const buildTipsFrame = (url: URL): FrameMeta => (
-	tipsPageView(url).frame
-)

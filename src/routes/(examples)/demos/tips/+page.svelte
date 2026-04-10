@@ -1,21 +1,20 @@
 <script lang="ts">
+	// Types/constants
+	import type { PageData } from './$types'
+
 	// Props
-	let {
-		data,
-	}: {
-		data: { message: string, tipCount: number, tipIndex: number },
-	} = $props()
+	let { data }: { data: PageData } = $props()
 </script>
 
 
 <article class="column">
 	<section class="panel column">
 		<header class="column">
-			<p class="eyebrow">SKIFFLE tips</p>
+			<p class="eyebrow">SKIFFLE demo</p>
 
 			<div class="meta row inline">
-				<h2>Tip carousel</h2>
-				<p class="annotation">Tip {data.tipIndex + 1} of {data.tipCount}</p>
+				<h2>Slideshow</h2>
+				<p class="annotation">Slide {data.tipIndex + 1} of {data.tipCount}</p>
 			</div>
 		</header>
 
@@ -27,8 +26,6 @@
 					<span data-active={index === data.tipIndex}></span>
 				{/each}
 			</div>
-
-			<p class="hint">Use the frame buttons to step through each tip.</p>
 		</footer>
 	</section>
 </article>
@@ -106,7 +103,7 @@
 	}
 
 	footer.column {
-		gap: 0.65em;
+		gap: 0.4em;
 	}
 
 	.dots {
@@ -125,13 +122,5 @@
 	.dots > span[data-active="true"] {
 		width: 1.45em;
 		background: rgba(255, 201, 166, 0.92);
-	}
-
-	.hint {
-		margin: 0;
-		font-size: 0.84em;
-		font-weight: 600;
-		color: rgba(255, 226, 213, 0.62);
-		text-align: center;
 	}
 </style>

@@ -65,7 +65,7 @@ export const actions: Actions = {
 				targetUrl: '/demos/wordle?/open',
 			},
 			{
-				label: 'Tips',
+				label: 'Slideshow',
 				action: 'post',
 				targetUrl: '/demos/tips?/open',
 			},
