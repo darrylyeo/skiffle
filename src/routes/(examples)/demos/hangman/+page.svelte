@@ -9,23 +9,24 @@
 
 <section class="page" data-status={data.status}>
 	<header>
-		<p>Word Game</p>
 		<h1>Hangman</h1>
 		<strong>{data.message}</strong>
 	</header>
 
-	<div class="lives" aria-label="Lives">
-		{#each data.lives as alive, index (`life:${index}`)}
-			<span data-alive={alive}></span>
-		{/each}
-	</div>
+	<div class="stage">
+		<div class="lives" aria-label="Lives">
+			{#each data.lives as alive, index (`life:${index}`)}
+				<span data-alive={alive}></span>
+			{/each}
+		</div>
 
-	<div class="word" aria-label="Hidden word">
-		{#each data.letters as letter (letter.id)}
-			<span data-revealed={letter.revealed}>
-				{letter.revealed ? letter.label : '_'}
-			</span>
-		{/each}
+		<div class="word" aria-label="Hidden word">
+			{#each data.letters as letter (letter.id)}
+				<span data-revealed={letter.revealed}>
+					{letter.revealed ? letter.label : '_'}
+				</span>
+			{/each}
+		</div>
 	</div>
 
 	<div class="meta">
@@ -62,9 +63,11 @@
 	.page {
 		display: flex;
 		flex-direction: column;
-		gap: 12px;
-		min-height: 100%;
-		padding: 18px 24px;
+		justify-content: space-between;
+		gap: 14px;
+		width: 100%;
+		height: 100%;
+		padding: 20px;
 		border: 1px solid rgba(255, 233, 222, 0.12);
 		border-radius: 30px;
 		overflow: hidden;
@@ -84,15 +87,8 @@
 		display: flex;
 		flex-direction: column;
 		gap: 6px;
-	}
-
-	header > p {
-		margin: 0;
-		font-size: 13px;
-		font-weight: 700;
-		letter-spacing: 0.22em;
-		text-transform: uppercase;
-		color: rgba(255, 224, 211, 0.9);
+		align-items: center;
+		text-align: center;
 	}
 
 	header > h1 {
@@ -104,12 +100,32 @@
 	header > strong {
 		font-size: 16px;
 		line-height: 1.3;
+		max-width: 18em;
 		color: rgba(255, 245, 240, 0.96);
+	}
+
+	.stage {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		justify-content: center;
+		gap: 16px;
+		padding: 16px;
+		border-radius: 22px;
+		background:
+			radial-gradient(circle at 50% 0%, rgba(255, 173, 117, 0.14), transparent 30%),
+			linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)),
+			rgba(49, 19, 72, 0.22);
+		border: 1px solid rgba(255, 224, 211, 0.12);
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.08),
+			0 10px 24px rgba(33, 12, 55, 0.14);
 	}
 
 	.lives {
 		display: flex;
 		gap: 8px;
+		width: 100%;
 	}
 
 	.lives > span {
@@ -127,23 +143,23 @@
 
 	.word {
 		display: flex;
-		gap: 8px;
-		justify-content: space-between;
+		gap: 10px;
+		justify-content: center;
 	}
 
 	.word > span {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		min-width: 0;
+		min-width: 44px;
 		flex: 1;
-		height: 48px;
+		height: 60px;
 		border-radius: 12px;
 		border: 1px solid rgba(255, 209, 191, 0.18);
 		background:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05)),
 			rgba(55, 23, 95, 0.28);
-		font-size: 24px;
+		font-size: 28px;
 		font-weight: 800;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
@@ -159,6 +175,7 @@
 	.meta {
 		display: flex;
 		gap: 8px;
+		flex-shrink: 0;
 	}
 
 	.meta > * {

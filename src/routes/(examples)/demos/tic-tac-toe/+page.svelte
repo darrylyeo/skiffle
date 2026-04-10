@@ -44,16 +44,6 @@
 	{/if}
 
 	<header class='column'>
-		<p class='eyebrow'>
-			{
-				data.status === 'x-win' ? 'Victory'
-				: data.status === 'o-win' ? 'Defeat'
-				: data.status === 'draw' ? 'Stalemate'
-				: data.status === 'invalid' ? 'Try again'
-				:
-					'Your move'
-			}
-		</p>
 		<h2>Tic-tac-toe</h2>
 		<p class='annotation'>{data.message}</p>
 	</header>
@@ -107,15 +97,7 @@
 	}
 
 	header {
-		gap: 5px;
-	}
-
-	.eyebrow {
-		font-size: 13px;
-		font-weight: 700;
-		letter-spacing: 1px;
-		text-transform: uppercase;
-		color: rgba(255, 227, 214, 0.8);
+		gap: 7px;
 	}
 
 	h2 {
@@ -133,8 +115,8 @@
 
 	.board {
 		gap: 10px;
-		padding: 18px;
-		border-radius: 22px;
+		padding: 22px;
+		border-radius: 24px;
 		background:
 			radial-gradient(circle at 50% top, rgba(255, 255, 255, 0.08), transparent 26%),
 			linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05)),
@@ -160,10 +142,10 @@
 		box-sizing: border-box;
 		align-items: center;
 		justify-content: center;
-		width: 66px;
-		height: 66px;
+		width: 82px;
+		height: 82px;
 		padding: 0;
-		border-radius: 13px;
+		border-radius: 15px;
 		border: 1px solid rgba(255, 232, 223, 0.12);
 		font-weight: 700;
 		background-color: rgba(62, 26, 106, 0.42);
@@ -174,13 +156,13 @@
 	.cell[data-occupied="false"] {
 		align-items: flex-start;
 		justify-content: flex-start;
-		padding: 5px 6px;
-		font-size: 18px;
+		padding: 7px 8px;
+		font-size: 22px;
 		color: rgba(255, 233, 223, 0.56);
 	}
 
 	.cell[data-occupied="true"] {
-		font-size: 47px;
+		font-size: 58px;
 		line-height: 1;
 		letter-spacing: -2px;
 	}

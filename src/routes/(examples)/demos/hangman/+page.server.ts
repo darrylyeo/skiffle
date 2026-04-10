@@ -3,6 +3,7 @@ import type { Actions, PageServerLoad } from './$types'
 
 // Functions
 import { redirect } from '@sveltejs/kit'
+import { snapGridSelection } from '$/lib/snap-grid'
 
 // Functions
 import {
@@ -19,13 +20,8 @@ import {
 	parseHangmanState,
 } from './hangman-frame'
 
-const HANGMAN_GRID_COLUMNS = 7
+const HANGMAN_GRID_COLUMNS = 9
 const HANGMAN_ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
-
-const isRecord = (value: unknown): value is Record<string, unknown> => (
-	typeof value === 'object'
-	&& value !== null
-)
 
 const hangmanLetterFromGridSelection = (value: unknown): string => {
 	if (typeof value === 'string') {
@@ -46,25 +42,44 @@ const hangmanLetterFromGridSelection = (value: unknown): string => {
 		return hangmanLetterFromGridSelection(value[0])
 	}
 
-	if (
-		isRecord(value)
-		&& typeof value.row === 'number'
-		&& typeof value.col === 'number'
-	) {
-		return HANGMAN_ALPHABET[value.row * HANGMAN_GRID_COLUMNS + value.col] ?? ''
+	const selection = snapGridSelection(value)
+
+	if (selection) {
+		return HANGMAN_ALPHABET[selection.row * HANGMAN_GRID_COLUMNS + selection.col] ?? ''
 	}
 
 	return ''
 }
 
-const actionGuess = async (request: Request) => {
-	const formData = await request.formData()
-
-	return (
-		hangmanLetterFromGridSelection(formData.get('hangmanLetter'))
-		|| String(formData.get('inputText') ?? '').trim()
+const actionGuess = async ({
+	locals,
+	request,
+}: {
+	locals: {
+		frameSignaturePacket?: {
+			untrustedData?: {
+				inputText?: string
+				hangmanLetter?: unknown
+			}
+		}
+	}
+	request: Request
+}) => (
+	hangmanLetterFromGridSelection(
+		locals.frameSignaturePacket?.untrustedData?.hangmanLetter
+		?? locals.frameSignaturePacket?.untrustedData?.inputText,
 	)
-}
+	|| await request
+		.formData()
+		.then((formData) => (
+			hangmanLetterFromGridSelection(
+				formData.get('hangmanLetter')
+				?? formData.get('inputText'),
+			)
+			|| String(formData.get('inputText') ?? '').trim()
+		))
+		.catch(() => '')
+)
 
 export const load: PageServerLoad = ({ url }) => {
 	const state = parseHangmanState(url)
@@ -103,14 +118,20 @@ export const actions: Actions = {
 
 	guess: async ({
 		request,
-		locals: { frameSignaturePacket },
+		locals,
 		url,
 	}) => {
 		const state = (
-			hangmanStateFromHref(frameSignaturePacket?.untrustedData.url)
+			hangmanStateFromHref(locals.frameSignaturePacket?.untrustedData.url)
 			?? parseHangmanState(url)
 		)
-		const next = nextHangmanState(state, await actionGuess(request))
+		const next = nextHangmanState(
+			state,
+			await actionGuess({
+				locals,
+				request,
+			}),
+		)
 
 		return {
 			...next,

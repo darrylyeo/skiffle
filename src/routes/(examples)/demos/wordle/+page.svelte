@@ -9,7 +9,6 @@
 
 <section class="page" data-status={data.status}>
 	<header>
-		<p>Word Game</p>
 		<h1>Wordle</h1>
 		<strong>{data.message}</strong>
 	</header>
@@ -18,7 +17,7 @@
 		{#each data.rows as row, rowIndex (`row:${rowIndex}`)}
 			<div class="row">
 				{#each row as cell (cell.id)}
-					<span data-state={cell.state}>{cell.letter}</span>
+					<div class="cell" data-state={cell.state}>{cell.letter}</div>
 				{/each}
 			</div>
 		{/each}
@@ -54,15 +53,6 @@
 		gap: 10px;
 	}
 
-	header > p {
-		margin: 0;
-		font-size: 12px;
-		font-weight: 700;
-		letter-spacing: 0.2em;
-		text-transform: uppercase;
-		color: rgba(255, 226, 213, 0.88);
-	}
-
 	header > h1 {
 		margin: 0;
 		font-size: 42px;
@@ -79,7 +69,8 @@
 		display: flex;
 		flex-direction: column;
 		flex: 1;
-		justify-content: space-between;
+		justify-content: flex-start;
+		gap: 8px;
 		padding: 10px;
 		border-radius: 24px;
 		background:
@@ -97,47 +88,50 @@
 	.row {
 		display: flex;
 		gap: 8px;
+		flex: 1;
+		min-height: 0;
 	}
 
-	.row > span {
+	.cell {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		flex: 1;
-		height: 52px;
+		min-height: 52px;
 		border-radius: 14px;
 		border: 1px solid rgba(255, 232, 223, 0.12);
 		background: rgba(43, 16, 74, 0.34);
 		font-size: 22px;
 		font-weight: 800;
+		line-height: 1;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
 		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 	}
 
-	.row > span[data-state="empty"] {
+	.cell[data-state="empty"] {
 		color: rgba(255, 228, 216, 0.2);
 	}
 
-	.row > span[data-state="miss"] {
+	.cell[data-state="miss"] {
 		background: rgba(239, 68, 68, 0.32);
 		border-color: rgba(252, 165, 165, 0.44);
 		color: #fee2e2;
 	}
 
-	.row > span[data-state="present"] {
+	.cell[data-state="present"] {
 		background: rgba(250, 204, 21, 0.28);
 		border-color: rgba(253, 224, 71, 0.42);
 		color: #fef08a;
 	}
 
-	.row > span[data-state="correct"] {
+	.cell[data-state="correct"] {
 		background: rgba(34, 197, 94, 0.3);
 		border-color: rgba(134, 239, 172, 0.46);
 		color: #dcfce7;
 	}
 
-	.page[data-status="win"] .row > span[data-state="correct"] {
+	.page[data-status="win"] .cell[data-state="correct"] {
 		box-shadow:
 			inset 0 0 0 1px rgba(240, 253, 244, 0.24),
 			0 0 18px rgba(34, 197, 94, 0.2);

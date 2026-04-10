@@ -257,6 +257,24 @@ export const buildWordleSnap = ({
 		),
 	},
 	buttons: [
+		...(canGuess(status)
+			? [
+				snapButtonGroup({
+					direction: SnapDirections.Horizontal,
+					gap: SnapGaps.Sm,
+					justify: SnapJustifyValues.Center,
+					children: [
+						snapTargetButton({
+							label: status === 'invalid' || status === 'repeat' ? 'Try Again' : 'Guess',
+							role: AppSnapButtonRoles.Cta,
+							variant: SnapButtonVariants.Primary,
+							action: 'post',
+							targetUrl: `/demos/wordle?/guess&word=${word}&guesses=${guesses.join(',')}`,
+						}),
+					],
+				}),
+			]
+			: []),
 		snapButtonGroup({
 			direction: SnapDirections.Horizontal,
 			gap: SnapGaps.Sm,
@@ -268,31 +286,13 @@ export const buildWordleSnap = ({
 					action: 'post',
 					targetUrl: '/?/demos',
 				}),
-				canGuess(status) && snapTargetButton({
-					label: status === 'invalid' || status === 'repeat' ? 'Try Again' : 'Guess',
-					role: AppSnapButtonRoles.Cta,
-					variant: SnapButtonVariants.Primary,
+				(guesses.length > 0 || !canGuess(status)) && snapTargetButton({
+					label: status === 'win' || status === 'loss' ? 'Play Again' : 'Reset',
 					action: 'post',
-					targetUrl: `/demos/wordle?/guess&word=${word}&guesses=${guesses.join(',')}`,
+					targetUrl: '/demos/wordle?/open',
 				}),
 			].filter(isTruthy),
 		}),
-		...(guesses.length > 0 || !canGuess(status)
-			? [
-				snapButtonGroup({
-					direction: SnapDirections.Horizontal,
-					gap: SnapGaps.Sm,
-					justify: SnapJustifyValues.Center,
-					children: [
-						snapTargetButton({
-							label: status === 'win' || status === 'loss' ? 'Play Again' : 'Reset',
-							action: 'post',
-							targetUrl: '/demos/wordle?/open',
-						}),
-					],
-				}),
-			]
-			: []),
 	],
 })
 

@@ -8,8 +8,8 @@ import { SnapAlignments, SnapPaletteColors, SnapTextSizes } from '$/lib/snap-spe
 
 import { hangmanCanGuess, hangmanMisses, hangmanUsedLetters, parseHangmanState } from './hangman-frame'
 
-const HANGMAN_GRID_COLUMNS = 7
-const HANGMAN_GRID_ROW_HEIGHT = 24
+const HANGMAN_GRID_COLUMNS = 9
+const HANGMAN_GRID_ROW_HEIGHT = 22
 const HANGMAN_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 export const hangmanSnapExtraElements = (

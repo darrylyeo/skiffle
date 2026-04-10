@@ -9,7 +9,9 @@ import type { FrameButton, FrameMeta } from '$/lib/frame'
 import type { SnapExtraElements } from '$/lib/snap-page-extra'
 
 import { resolveUrl } from '$/lib/resolveUrl'
+import { coinFlipSnapExtraElements } from '$/routes/(examples)/demos/coin-flip/snap'
 import { hangmanSnapExtraElements } from '$/routes/(examples)/demos/hangman/snap'
+import { ticTacToeSnapExtraElements } from '$/routes/(examples)/demos/tic-tac-toe/snap'
 import { wordleSnapExtraElements } from '$/routes/(examples)/demos/wordle/snap'
 import {
 	SnapActions,
@@ -328,7 +330,9 @@ const snapFooterContextUrl = (
 }
 
 const snapExtraElementProviders = [
+	coinFlipSnapExtraElements,
 	hangmanSnapExtraElements,
+	ticTacToeSnapExtraElements,
 	wordleSnapExtraElements,
 ] satisfies SnapExtraElementProvider[]
 
@@ -443,7 +447,7 @@ export const framePageToSnap = (
 	const footerChildren = (
 		isGoMenuOpen
 			? ['page-go-input', 'page-go-actions']
-			: ['page-actions', 'page-url-badge', 'page-follow-separator', 'page-follow']
+			: ['page-url', 'page-actions', 'page-follow-separator', 'page-follow']
 	)
 
 	const pageChildren = (
@@ -497,7 +501,7 @@ export const framePageToSnap = (
 			},
 			children: footerChildren,
 		},
-		'page-url-badge': {
+		'page-url': {
 			type: SnapElementTypes.Text,
 			props: {
 				content: currentPageUrl

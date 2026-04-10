@@ -8,13 +8,15 @@ import { snapButtonGroup, snapTargetButton } from '$/lib/snap-components'
 import { AppSnapButtonRoles } from '$/lib/app-snap-tokens'
 import { SnapButtonVariants, SnapDirections, SnapGaps, SnapJustifyValues, SnapPaletteColors } from '$/lib/snap-spec'
 
-export type CoinFlipResult = 'heads' | 'tails'
+export type CoinFlipResult = 'heads' | 'tails' | 'edge'
 
 export type CoinFlipState = {
 	seed: number
 	flips: number
 	heads: number
 	tails: number
+	edge: number
+	history: string
 	lastResult?: CoinFlipResult
 }
 
@@ -30,13 +32,31 @@ const nextRandom = (value: number) => (
 	(value * 48_271) % 2_147_483_647
 )
 
+const HISTORY_LIMIT = 16
+
+const normalizeHistory = (value: string | null | undefined) => (
+	(value ?? '')
+		.toLowerCase()
+		.replaceAll(/[^hte]/g, '')
+		.slice(-HISTORY_LIMIT)
+)
+
 const flipResult = (
 	seed: number,
 	flips: number,
 ): CoinFlipResult => (
-	nextRandom(seed + flips * 97) % 2 === 0
-		? 'heads'
-		: 'tails'
+	(() => {
+		const roll = nextRandom(seed + flips * 97) % 40
+
+		return (
+			roll < 2 ?
+				'edge'
+			: roll % 2 === 0 ?
+				'heads'
+			:
+				'tails'
+		)
+	})()
 )
 
 const resultLabel = (result: CoinFlipResult | undefined) => (
@@ -44,6 +64,8 @@ const resultLabel = (result: CoinFlipResult | undefined) => (
 		? 'Heads'
 	: result === 'tails'
 		? 'Tails'
+	: result === 'edge'
+		? 'Edge'
 	:
 		'Flip the coin'
 )
@@ -61,9 +83,16 @@ const leadLabel = ({
 )
 
 export const coinFlipMessage = (state: CoinFlipState) => (
-	state.lastResult
-		? `${resultLabel(state.lastResult)}. ${leadLabel(state)}`
-	: 'Call it and tap flip.'
+	state.lastResult === 'edge' ?
+		(
+			state.edge === 1
+				? 'It landed on its edge.'
+				: `Edge again. ${state.edge} total edge landings.`
+		)
+	: state.lastResult ?
+		`${resultLabel(state.lastResult)}. ${leadLabel(state)}`
+	:
+		'Flip the coin.'
 )
 
 export const parseCoinFlipState = (url: URL): CoinFlipState => ({
@@ -71,10 +100,12 @@ export const parseCoinFlipState = (url: URL): CoinFlipState => ({
 	flips: clampCount(Number(url.searchParams.get('flips') ?? 0)),
 	heads: clampCount(Number(url.searchParams.get('heads') ?? 0)),
 	tails: clampCount(Number(url.searchParams.get('tails') ?? 0)),
+	edge: clampCount(Number(url.searchParams.get('edge') ?? 0)),
+	history: normalizeHistory(url.searchParams.get('history')),
 	lastResult: (() => {
 		const result = url.searchParams.get('lastResult')
 
-		return result === 'heads' || result === 'tails'
+		return result === 'heads' || result === 'tails' || result === 'edge'
 			? result
 			: undefined
 	})(),
@@ -85,8 +116,56 @@ export const coinFlipFace = (state: CoinFlipState) => (
 		? 'H'
 	: state.lastResult === 'tails'
 		? 'T'
+	: state.lastResult === 'edge'
+		? 'E'
 	:
 		'?'
+)
+
+const historyCode = (result: CoinFlipResult) => (
+	result === 'heads'
+		? 'h'
+	: result === 'tails'
+		? 't'
+	:
+		'e'
+)
+
+export const coinFlipHistory = (state: CoinFlipState) => (
+	[...state.history]
+		.map((value) => (
+			value === 'h'
+				? 'heads'
+			: value === 't'
+				? 'tails'
+			:
+				'edge'
+		))
+)
+
+export const coinFlipHistoryBadges = (state: CoinFlipState) => (
+	coinFlipHistory(state)
+		.map((result, index) => ({
+			id: `${state.flips}:${index}:${result}`,
+			result,
+			label: result === 'heads' ? 'Heads' : result === 'tails' ? 'Tails' : 'Edge',
+			short: result === 'heads' ? 'H' : result === 'tails' ? 'T' : 'E',
+		}))
+)
+
+export const coinFlipShareText = (state: CoinFlipState) => (
+	state.lastResult === 'edge'
+		? `I found Edge in the SKIFFLE coin flip demo after ${state.flips} flips.`
+	: state.edge > 0
+		? `The SKIFFLE coin flip demo already hit Edge. Heads ${state.heads}, tails ${state.tails}, edge ${state.edge} after ${state.flips} flips.`
+	: state.flips === 0
+		? 'Trying the SKIFFLE coin flip demo.'
+	: state.heads === state.tails
+		? `The SKIFFLE coin flip demo is tied at ${state.heads}-${state.tails} after ${state.flips} flips.`
+	: state.heads > state.tails
+		? `Heads leads ${state.heads}-${state.tails} after ${state.flips} flips in the SKIFFLE coin flip demo.`
+	:
+		`Tails leads ${state.tails}-${state.heads} after ${state.flips} flips in the SKIFFLE coin flip demo.`
 )
 
 export const nextCoinFlipState = (state: CoinFlipState): CoinFlipState => {
@@ -97,6 +176,8 @@ export const nextCoinFlipState = (state: CoinFlipState): CoinFlipState => {
 		flips: clampCount(state.flips + 1),
 		heads: clampCount(state.heads + (lastResult === 'heads' ? 1 : 0)),
 		tails: clampCount(state.tails + (lastResult === 'tails' ? 1 : 0)),
+		edge: clampCount(state.edge + (lastResult === 'edge' ? 1 : 0)),
+		history: `${state.history}${historyCode(lastResult)}`.slice(-HISTORY_LIMIT),
 		lastResult,
 	}
 }
@@ -118,6 +199,8 @@ export const freshCoinFlipState = (seed: number): CoinFlipState => ({
 	flips: 0,
 	heads: 0,
 	tails: 0,
+	edge: 0,
+	history: '',
 })
 
 const coinFlipTargetParams = (state: CoinFlipState) => (
@@ -126,6 +209,8 @@ const coinFlipTargetParams = (state: CoinFlipState) => (
 		flips: String(state.flips),
 		heads: String(state.heads),
 		tails: String(state.tails),
+		edge: String(state.edge),
+		history: state.history,
 		...(state.lastResult ? { lastResult: state.lastResult } : {}),
 	})
 )
@@ -155,10 +240,12 @@ export const buildCoinFlipFrame = (state: CoinFlipState): FrameMeta => ({
 })
 
 export const buildCoinFlipSnap = (state: CoinFlipState): AppSnapPage => ({
-	shareText: `Trying the Coin Flip demo in SKIFFLE. ${coinFlipMessage(state)}`,
+	shareText: coinFlipShareText(state),
 	theme: {
 		accent: (
-			state.lastResult === 'heads'
+			state.lastResult === 'edge'
+				? SnapPaletteColors.Pink
+			: state.lastResult === 'heads'
 				? SnapPaletteColors.Amber
 			: state.lastResult === 'tails'
 				? SnapPaletteColors.Blue

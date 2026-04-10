@@ -7,6 +7,7 @@ import type { FrameMeta } from '$/lib/frame'
 import { snapButtonGroup, snapTargetButton } from '$/lib/snap-components'
 import { isTruthy } from '$/lib/isTruthy'
 import { frameButtons } from '$/lib/frame'
+import { snapGridSelection } from '$/lib/snap-grid'
 import { SnapButtonVariants, SnapDirections, SnapEffects, SnapGaps, SnapJustifyValues, SnapPaletteColors } from '$/lib/snap-spec'
 
 // Data
@@ -141,9 +142,9 @@ const ticTacToeMessage = (status: TicTacToeStatus) => (
 	: status === 'draw'
 		? 'Draw.'
 	: status === 'invalid'
-		? 'Pick an open cell from 1 to 9.'
+		? 'Pick an open square.'
 	:
-		'Enter your move (1-9).'
+		'Pick a square.'
 )
 
 const ticTacToeBoardRows = (board: string) => (
@@ -320,18 +321,38 @@ const actionInputText = async ({
 	locals,
 	request,
 }: {
-	locals: { frameSignaturePacket?: { untrustedData?: { inputText?: string } } },
+	locals: { frameSignaturePacket?: { untrustedData?: { inputText?: string, ticTacToeCell?: string } } },
 	request: Request,
 }) => (
-	locals.frameSignaturePacket?.untrustedData?.inputText
-		?? await (
-			request
-				.formData()
-				.then((formData) => (
-					`${formData.get('inputText') ?? ''}`.trim()
-				))
-				.catch(() => '')
+	(() => {
+		const rawValue = (
+			locals.frameSignaturePacket?.untrustedData?.ticTacToeCell
+			?? locals.frameSignaturePacket?.untrustedData?.inputText
 		)
+		const selection = snapGridSelection(rawValue)
+
+		return (
+			selection
+				? String(selection.row * 3 + selection.col + 1)
+			: rawValue?.trim()
+		)
+	})()
+		?? await request
+			.formData()
+			.then((formData) => (
+				(() => {
+					const rawValue = formData.get('ticTacToeCell') ?? formData.get('inputText')
+					const selection = snapGridSelection(rawValue)
+
+					return (
+						selection
+							? String(selection.row * 3 + selection.col + 1)
+						:
+							`${rawValue ?? ''}`.trim()
+					)
+				})()
+			))
+			.catch(() => '')
 )
 
 export const actions: Actions = {

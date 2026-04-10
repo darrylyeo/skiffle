@@ -99,6 +99,7 @@ export type SnapEvent = typeof SnapEvents[keyof typeof SnapEvents]
 export const SnapElementTypes = {
 	Badge: 'badge',
 	Button: 'button',
+	CellGrid: 'cell_grid',
 	Image: 'image',
 	Input: 'input',
 	Separator: 'separator',
