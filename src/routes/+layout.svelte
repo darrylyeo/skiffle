@@ -1,53 +1,27 @@
 <script lang="ts">
+	// Types/constants
+	import { AppSnapScriptId } from '$/lib/app-snap-tokens'
+	import { serializeAppSnapForHtml } from '$/lib/snap-components'
+
+
 	// Styles
 	import '$/styles/app.css'
 	import '$/styles/fonts.css'
 
 
 	// Context
-	import { page } from '$app/stores'
+	import { page } from '$app/state'
 
 	let {
 		url,
 		data,
 		data: {
 			frame,
+			snap,
+			title = 'SKIFFLE',
 			width = 764,
 		},
-	} = $derived($page)
-
-	let title = $derived.by(() => {
-		if (data.title) {
-			return data.title
-		}
-
-		return (
-			url.pathname === '/' ?
-				'SKIFFLE'
-			: url.pathname === '/about' ?
-				'About SKIFFLE'
-			: url.pathname === '/farcaster/channels' ?
-				'Popular Farcaster channels'
-			: url.pathname === '/farcaster/demos/counter' ?
-				`Counter demo${typeof data.count === 'number' ? ` · ${data.count}` : ''}`
-			: url.pathname === '/farcaster/demos/tips' ?
-				`Tip carousel${typeof data.tipIndex === 'number' && typeof data.tipCount === 'number' ? ` · Tip ${data.tipIndex + 1} of ${data.tipCount}` : ''}`
-			: url.pathname === '/farcaster/demos/hangman' ?
-				'Hangman'
-			: url.pathname === '/farcaster/demos/wordle' ?
-				'Wordle'
-			: url.pathname === '/farcaster/demos/rock-paper-scissors' ?
-				'Rock Paper Scissors'
-			: url.pathname === '/farcaster/demos/tic-tac-toe' ?
-				'Tic-tac-toe'
-			: /^\/farcaster\/user\/[^/]+\/casts$/.test(url.pathname) && data.user ?
-				`${data.user.display_name} casts`
-			: /^\/farcaster\/user\/[^/]+$/.test(url.pathname) && data.user ?
-				`${data.user.display_name} (@${data.user.username})`
-			:
-				undefined
-		)
-	})
+	} = $derived(page)
 
 	let aspectRatio = $derived(
 		(frame?.image?.aspectRatio ?? '1.91:1')?.split(':').map(Number)
@@ -57,11 +31,17 @@
 		width * aspectRatio[1] / aspectRatio[0]
 	)
 	
-	let frameImageUrl = $derived.by(() => {
+	let pageImageUrl = $derived.by(() => {
 		const _url = new URL(url)
 		_url.searchParams.set('frameImage', '')
 		return _url.href
 	})
+
+	let snapJson = $derived(
+		snap
+			? serializeAppSnapForHtml(snap)
+			: undefined
+	)
 
 
 	// Props
@@ -72,7 +52,31 @@
 
 	// Components
 	import FrameMetadata from '$/components/FrameMetadata.svelte'
+	import PageImage from '$/components/PageImage.svelte'
 </script>
+
+
+<svelte:head>
+	<title>{title}</title>
+
+	{#if snapJson}
+		{@html `<script id="${AppSnapScriptId}" type="application/json">${snapJson}</script>`}
+	{/if}
+</svelte:head>
+
+{#if frame}
+	<FrameMetadata
+		{title}
+		metadata={{
+			...frame,
+			image: {
+				...frame.image,
+				url: pageImageUrl,
+			},
+		}}
+		baseUrl={page.url}
+	/>
+{/if}
 
 
 <div
@@ -84,21 +88,14 @@
 </div>
 
 
-{#if frame}
+{#if frame || snap}
 	<details>
 		<summary>Image preview</summary>
 
-		<FrameMetadata
+		<PageImage
 			{title}
-			metadata={{
-				...frame,
-				image: {
-					...frame.image,
-					url: frameImageUrl,
-				},
-			}}
-			baseUrl={$page.url}
-			showPreview={true}
+			src={pageImageUrl}
+			alt={title ? `${title} preview` : 'Page preview'}
 		/>
 	</details>
 {/if}

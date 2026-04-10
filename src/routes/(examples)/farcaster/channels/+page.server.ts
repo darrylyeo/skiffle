@@ -1,5 +1,5 @@
 import { getPopularChannels } from '../api/farcaster-client'
-import { buildChannelsFrame } from './channels-frame'
+import { buildChannelsFrame, buildChannelsSnap } from './channels-frame'
 import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async () => {
@@ -26,6 +26,7 @@ const frameAction = async ({
 
 	return {
 		frame: buildChannelsFrame(channels, url),
+		snap: buildChannelsSnap(channels, url),
 	}
 }
 

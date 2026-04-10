@@ -6,15 +6,18 @@ import { redirect } from '@sveltejs/kit'
 
 // Functions
 import {
-	buildHangmanFrame,
-	freshHangmanState,
-	hangmanStateFromHref,
-	nextHangmanState,
-	parseHangmanState,
-} from './hangman-frame'
+	buildWordleFrame,
+	buildWordleSnap,
+	freshWordleState,
+	nextWordleState,
+	parseWordleState,
+	wordleMessage,
+	wordleRows,
+	wordleStateFromHref,
+} from './wordle-frame'
 
 export const load: PageServerLoad = ({ url }) => {
-	const state = parseHangmanState(url)
+	const state = parseWordleState(url)
 	if (
 		!url.searchParams.has('status')
 		&& (state.status === 'win' || state.status === 'loss')
@@ -25,18 +28,23 @@ export const load: PageServerLoad = ({ url }) => {
 	}
 
 	return {
+		title: 'Wordle',
 		...state,
-		frame: buildHangmanFrame(state),
+		message: wordleMessage(state),
+		rows: wordleRows(state),
+		frame: buildWordleFrame(state),
+		snap: buildWordleSnap(state),
 	}
 }
 
 export const actions: Actions = {
 	open: async ({ locals: { farcasterViewerFid } }) => {
-		const state = freshHangmanState(farcasterViewerFid ?? Date.now())
+		const state = freshWordleState(farcasterViewerFid ?? Date.now())
 
 		return {
 			...state,
-			frame: buildHangmanFrame(state),
+			frame: buildWordleFrame(state),
+			snap: buildWordleSnap(state),
 		}
 	},
 
@@ -47,14 +55,15 @@ export const actions: Actions = {
 	}) => {
 		const input = String((await request.formData()).get('inputText') ?? '')
 		const state = (
-			hangmanStateFromHref(frameSignaturePacket?.untrustedData.url)
-			?? parseHangmanState(url)
+			wordleStateFromHref(frameSignaturePacket?.untrustedData.url)
+			?? parseWordleState(url)
 		)
-		const next = nextHangmanState(state, input)
+		const next = nextWordleState(state, input)
 
 		return {
 			...next,
-			frame: buildHangmanFrame(next),
+			frame: buildWordleFrame(next),
+			snap: buildWordleSnap(next),
 		}
 	},
 }

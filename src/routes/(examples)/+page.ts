@@ -1,7 +1,42 @@
+import { AppSnapButtonRoles } from '$/lib/app-snap-tokens'
+import { snapButtonGroup, snapTargetButton } from '$/lib/snap-components'
+import { SnapButtonVariants, SnapDirections, SnapGaps, SnapJustifyValues } from '$/lib/snap-spec'
 import type { PageLoad } from './$types'
 
 export const load: PageLoad = async () => {
 	return {
+		title: 'SKIFFLE – a website in a snap!',
+		snap: {
+			shareText: 'Checking out the SKIFFLE demo, a SvelteKit project for embedding full server-rendered websites in Farcaster Snaps.',
+			buttons: [
+				snapButtonGroup({
+					direction: SnapDirections.Horizontal,
+					gap: SnapGaps.Sm,
+					justify: SnapJustifyValues.Center,
+					children: [
+						snapTargetButton({
+							label: 'About',
+							role: AppSnapButtonRoles.Cta,
+							action: 'post',
+							targetUrl: '/about',
+						}),
+						snapTargetButton({
+							label: 'Demos...',
+							role: AppSnapButtonRoles.Pager,
+							variant: SnapButtonVariants.Primary,
+							action: 'post',
+							targetUrl: '?/demos',
+						}),
+						snapTargetButton({
+							label: 'GitHub',
+							role: AppSnapButtonRoles.External,
+							action: 'link',
+							targetUrl: 'https://github.com/darrylyeo/skiffle',
+						}),
+					],
+				}),
+			],
+		},
 		frame: {
 			buttons: [
 				{
@@ -10,9 +45,9 @@ export const load: PageLoad = async () => {
 					targetUrl: '/about',
 				},
 				{
-					label: 'GitHub',
-					action: 'link',
-					targetUrl: 'https://github.com/darrylyeo/skiffle',
+					label: 'Demos...',
+					action: 'post',
+					targetUrl: '?/demos',
 				},
 				{
 					label: 'Follow',
@@ -20,9 +55,9 @@ export const load: PageLoad = async () => {
 					targetUrl: 'https://farcaster.xyz/darrylyeo',
 				},
 				{
-					label: 'Demos...',
-					action: 'post',
-					targetUrl: '?/demos',
+					label: 'GitHub',
+					action: 'link',
+					targetUrl: 'https://github.com/darrylyeo/skiffle',
 				},
 			]
 		}

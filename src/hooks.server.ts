@@ -13,6 +13,11 @@ import { styledHtmlDocumentForSatori } from '$/lib/frame-satori'
 
 type SatoriNode = JSXElement
 
+const wantsSnapJson = (request: Request) => (
+	(request.headers.get('accept') ?? '')
+		.includes(SnapMediaType)
+)
+
 /** `JSXElement.props` is typed `unknown`; Satori vnode children match this shape at runtime. */
 const vnodeProps = (node: SatoriNode) => (
 	node.props as {
@@ -69,9 +74,9 @@ import {
 	isLikelyJfsCompact,
 	parseFrameSignatureJson,
 	readSnapJfsPayload,
-	wantsSnapJson,
-} from './lib/snap'
+} from './lib/snap-jfs'
 import { snapGetResponse, snapPostResponse } from './lib/snap-routes'
+import { SnapMediaType } from './lib/snap-spec'
 
 
 // Hooks

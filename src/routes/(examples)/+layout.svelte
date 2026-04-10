@@ -29,22 +29,14 @@
 			{@render children()}
 		</main>
 
-		<footer class="row">
-			<div class="row">
-				<p>
-					<output
-						class="url"
-					>
-						<strong>{url.host}</strong>{url.pathname.replace(/\/$/, '')}{url.search}
-					</output>
-				</p>
-			</div>
+		<footer class="footer row">
+			<p>
+				<output class="url-badge">
+					{url.origin}{url.pathname === '/' ? '' : url.pathname.replace(/\/$/, '')}{url.search}
+				</output>
+			</p>
 
-			{#if data.frameSignaturePacket}
-				<p class="annotation">gm, FID #{data.frameSignaturePacket.untrustedData.fid}</p>
-			{:else}
-				<p class="annotation">by @darrylyeo</p>
-			{/if}
+			<p class="annotation">by @darrylyeo</p>
 		</footer>
 	</div>
 </div>
@@ -76,12 +68,24 @@
 		overflow: hidden;
 	}
 
-	.url {
-		font-size: 12px;
-		color: rgba(255, 255, 255, 0.75);
+	.footer {
+		justify-content: space-between;
+		align-items: center;
+		gap: 1em;
 	}
-	.url strong {
-		color: rgba(255, 255, 255, 0.85);
+
+	.url-badge {
+		display: block;
+		padding: 0.35em 0.65em;
+		border: 1px solid rgba(255, 255, 255, 0.26);
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.08);
+		font-size: 11px;
+		font-weight: 600;
+		line-height: 1.2;
+		text-align: left;
+		overflow-wrap: anywhere;
+		color: rgba(255, 255, 255, 0.84);
 	}
 
 	.annotation {

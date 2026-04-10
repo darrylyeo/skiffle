@@ -168,7 +168,7 @@ export const ticTacToeBoardRows = (board: string): TicTacToeCell[][] => (
 
 export const buildTicTacToeFrame = ({ board, status }: TicTacToeState): FrameMeta => ({
 	image: {
-		url: `/farcaster/demos/tic-tac-toe?board=${board}&status=${status}`,
+		url: `/demos/tic-tac-toe?board=${board}&status=${status}`,
 		aspectRatio: '1:1',
 	},
 	textInput: canPlay(status) ? 'Move (1-9)' : undefined,
@@ -181,12 +181,12 @@ export const buildTicTacToeFrame = ({ board, status }: TicTacToeState): FrameMet
 		canPlay(status) && {
 			label: status === 'invalid' ? 'Try Again' : 'Play',
 			action: 'post',
-			targetUrl: `/farcaster/demos/tic-tac-toe?/play&board=${board}`,
+			targetUrl: `/demos/tic-tac-toe?/play&board=${board}`,
 		},
 		(!isFreshBoard(board) || !canPlay(status)) && {
 			label: canPlay(status) ? 'Reset' : 'Play Again',
 			action: 'post',
-			targetUrl: '/farcaster/demos/tic-tac-toe?/open',
+			targetUrl: '/demos/tic-tac-toe?/open',
 		},
 	].filter(isTruthy),
 })

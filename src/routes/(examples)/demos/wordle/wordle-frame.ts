@@ -1,8 +1,13 @@
 // Types
+import { AppSnapButtonRoles } from '$/lib/app-snap-tokens'
+import type { AppSnapPage } from '$/lib/snap-components'
 import type { FrameMeta } from '$/lib/frame'
 
 // Functions
 import { isTruthy } from '$/lib/isTruthy'
+import { snapButtonGroup, snapTargetButton } from '$/lib/snap-components'
+import { frameButtons } from '$/lib/frame'
+import { SnapButtonVariants, SnapDirections, SnapEffects, SnapGaps, SnapJustifyValues, SnapPaletteColors } from '$/lib/snap-spec'
 
 type WordleStatus = 'turn' | 'invalid' | 'repeat' | 'win' | 'loss'
 
@@ -167,13 +172,17 @@ export const wordleUsedLetters = ({
 
 	for (const guess of guesses) {
 		for (const [index, letter] of [...guess.toUpperCase()].entries()) {
-			letters.set(
-				letter,
-				mergedWordleLetterState(
-					letters.get(letter),
-					evaluationForGuess(target, guess)[index],
-				),
-			)
+			const state = evaluationForGuess(target, guess)[index]
+
+			if (state !== 'empty') {
+				letters.set(
+					letter,
+					mergedWordleLetterState(
+						letters.get(letter),
+						state,
+					),
+				)
+			}
 		}
 	}
 
@@ -207,11 +216,11 @@ export const buildWordleFrame = ({
 	status,
 }: WordleState): FrameMeta => ({
 	image: {
-		url: `/farcaster/demos/wordle?word=${word}&guesses=${guesses.join(',')}&status=${status}`,
+		url: `/demos/wordle?word=${word}&guesses=${guesses.join(',')}&status=${status}`,
 		aspectRatio: '1:1',
 	},
 	textInput: canGuess(status) ? 'Enter a 5-letter word' : undefined,
-	buttons: [
+	buttons: frameButtons(
 		{
 			label: '‹ Demos',
 			action: 'post',
@@ -220,14 +229,71 @@ export const buildWordleFrame = ({
 		canGuess(status) && {
 			label: status === 'invalid' || status === 'repeat' ? 'Try Again' : 'Guess',
 			action: 'post',
-			targetUrl: `/farcaster/demos/wordle?/guess&word=${word}&guesses=${guesses.join(',')}`,
+			targetUrl: `/demos/wordle?/guess&word=${word}&guesses=${guesses.join(',')}`,
 		},
 		(guesses.length > 0 || !canGuess(status)) && {
 			label: status === 'win' || status === 'loss' ? 'Play Again' : 'Reset',
 			action: 'post',
-			targetUrl: '/farcaster/demos/wordle?/open',
+			targetUrl: '/demos/wordle?/open',
 		},
-	].filter(isTruthy),
+	),
+})
+
+export const buildWordleSnap = ({
+	word,
+	guesses,
+	status,
+}: WordleState): AppSnapPage => ({
+	effects: status === 'win' ? [SnapEffects.Confetti] : undefined,
+	shareText: `Trying the Wordle demo in SKIFFLE. ${wordleMessage({ word, guesses, status })}`,
+	theme: {
+		accent: (
+			status === 'win' ?
+				SnapPaletteColors.Green
+			: status === 'loss' || status === 'invalid' ?
+				SnapPaletteColors.Red
+			:
+				SnapPaletteColors.Amber
+		),
+	},
+	buttons: [
+		snapButtonGroup({
+			direction: SnapDirections.Horizontal,
+			gap: SnapGaps.Sm,
+			justify: SnapJustifyValues.Center,
+			children: [
+				snapTargetButton({
+					label: '‹ Demos',
+					role: AppSnapButtonRoles.Back,
+					action: 'post',
+					targetUrl: '/?/demos',
+				}),
+				canGuess(status) && snapTargetButton({
+					label: status === 'invalid' || status === 'repeat' ? 'Try Again' : 'Guess',
+					role: AppSnapButtonRoles.Cta,
+					variant: SnapButtonVariants.Primary,
+					action: 'post',
+					targetUrl: `/demos/wordle?/guess&word=${word}&guesses=${guesses.join(',')}`,
+				}),
+			].filter(isTruthy),
+		}),
+		...(guesses.length > 0 || !canGuess(status)
+			? [
+				snapButtonGroup({
+					direction: SnapDirections.Horizontal,
+					gap: SnapGaps.Sm,
+					justify: SnapJustifyValues.Center,
+					children: [
+						snapTargetButton({
+							label: status === 'win' || status === 'loss' ? 'Play Again' : 'Reset',
+							action: 'post',
+							targetUrl: '/demos/wordle?/open',
+						}),
+					],
+				}),
+			]
+			: []),
+	],
 })
 
 export const nextWordleState = (

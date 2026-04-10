@@ -3,33 +3,38 @@
 
 
 // Types/constants
-import type { FrameButton, FrameMeta, FrameSignaturePacket } from '$/lib/frame'
+import { AppSnapButtonRoles, AppSnapNodeTypes } from '$/lib/app-snap-tokens'
+import type { AppSnapButton, AppSnapButtonNode, AppSnapPage } from '$/lib/snap-components'
+import type { FrameButton, FrameMeta } from '$/lib/frame'
 import type { SnapExtraElements } from '$/lib/snap-page-extra'
 
-import { clampCount } from '$/routes/(examples)/farcaster/demos/counter/counter-frame'
-import { hangmanMessage, parseHangmanState } from '$/routes/(examples)/farcaster/demos/hangman/hangman-frame'
-import { parseRockPaperScissorsState, rockPaperScissorsSummary } from '$/routes/(examples)/farcaster/demos/rock-paper-scissors/rock-paper-scissors-frame'
-import { parseTicTacToeState, ticTacToeMessage } from '$/routes/(examples)/farcaster/demos/tic-tac-toe/tic-tac-toe-frame'
-import { tipsPagination } from '$/routes/(examples)/farcaster/demos/tips/tips-frame'
-import { parseWordleState, wordleMessage } from '$/routes/(examples)/farcaster/demos/wordle/wordle-frame'
 import { resolveUrl } from '$/lib/resolveUrl'
-import { frameStateUrlFromFrame } from '$/lib/snap-page-extra'
-import { hangmanSnapExtraElements } from '$/routes/(examples)/farcaster/demos/hangman/snap'
-import { wordleSnapExtraElements } from '$/routes/(examples)/farcaster/demos/wordle/snap'
-
-export const SNAP_MEDIA_TYPE = 'application/vnd.farcaster.snap+json' as const
-export const SNAP_VERSION = '2.0' as const
-
-export type SnapPaletteColor = (
-	| 'purple'
-	| 'blue'
-	| 'green'
-	| 'amber'
-	| 'teal'
-	| 'red'
-	| 'pink'
-	| 'gray'
-)
+import { hangmanSnapExtraElements } from '$/routes/(examples)/demos/hangman/snap'
+import { wordleSnapExtraElements } from '$/routes/(examples)/demos/wordle/snap'
+import {
+	SnapActions,
+	SnapAlignments,
+	SnapButtonVariants,
+	SnapDirections,
+	SnapElementTypes,
+	SnapEvents,
+	SnapGaps,
+	SnapIcons,
+	SnapImageAspects,
+	SnapJustifyValues,
+	SnapPaletteColors,
+	SnapTextSizes,
+	SnapTextWeights,
+	SnapUiRoots,
+	SnapVersion,
+	type SnapAction,
+	type SnapElementType,
+	type SnapEffect,
+	type SnapEvent,
+	type SnapImageAspect,
+	type SnapPaletteColor,
+	type SnapUiRoot,
+} from '$/lib/snap-spec'
 
 export type SnapTheme = {
 	accent?: SnapPaletteColor,
@@ -37,17 +42,17 @@ export type SnapTheme = {
 
 /** json-render-style UI tree (subset; see Farcaster elements catalog). */
 export type SnapUi = {
-	root: string,
+	root: SnapUiRoot,
 	elements: Record<
 		string,
 		{
-			type: string,
+			type: SnapElementType,
 			props: Record<string, unknown>,
 			children?: string[],
 			on?: Record<
-				string,
+				SnapEvent,
 				{
-					action: string,
+					action: SnapAction,
 					params?: Record<string, unknown>,
 				}
 			>,
@@ -57,41 +62,22 @@ export type SnapUi = {
 }
 
 export type SnapResponse = {
-	version: typeof SNAP_VERSION,
+	version: typeof SnapVersion,
 	theme?: SnapTheme,
-	effects?: string[],
+	effects?: SnapEffect[],
 	ui: SnapUi,
-}
-
-export type SnapJfsPayload = {
-	fid: number,
-	inputs: Record<string, unknown>,
-	timestamp: number,
-	nonce: string,
-	audience: string,
-}
-
-type SnapJfsEnvelope = {
-	header: string,
-	payload: string,
-	signature: string,
 }
 
 export type FramePage = {
 	title?: string,
 	frame: FrameMeta,
+	snap?: AppSnapPage,
 }
 
 /** Per https://docs.farcaster.xyz/snap/actions (submit, open_url, view_token, …). */
 type SnapPressAction = {
-	action: string,
+	action: SnapAction,
 	params?: Record<string, unknown>,
-}
-
-type SupportedButton = {
-	button: FrameButton,
-	index: number,
-	press: SnapPressAction,
 }
 
 type SnapExtraElementProvider = (
@@ -99,17 +85,8 @@ type SnapExtraElementProvider = (
 	baseUrl: URL | string,
 ) => SnapExtraElements | undefined
 
-type SnapShareTextResolver = {
-	matches: (url: URL) => boolean
-	text: (url: URL, title?: string) => string
-}
-
-export const wantsSnapJson = (request: Request) => (
-	(request.headers.get('accept') ?? '')
-		.includes(SNAP_MEDIA_TYPE)
-)
-
 const LOOPBACK_HOST = /^(localhost|127\.0\.0\.1|\[::1\]|::1)(:\d+)?$/
+const SNAP_FOOTER_CONTEXT_PARAM = 'snapFooter'
 
 const frameImageUrlForCurrentPage = (url: URL | string) => {
 	const frameImageUrl = new URL(String(url))
@@ -146,34 +123,11 @@ export const snapResolvedUrl = (href: string, base: URL | string) => {
 	return resolved
 }
 
-const decodeHtml = (value: string) => (
-	value
-		.replaceAll('&quot;', '"')
-		.replaceAll('&amp;', '&')
-		.replaceAll('&lt;', '<')
-		.replaceAll('&gt;', '>')
-)
-
-const FRAME_BUTTON_ACTIONS = [
-	'post',
-	'post_redirect',
-	'link',
-	'mint',
-	'tx',
-] as const
-
-const parseFrameButtonAction = (value: string | undefined) => (
-	FRAME_BUTTON_ACTIONS.find((action) => action === value)
-)
-
-/** Matches `@farcaster/snap` image `aspect` enum (see `IMAGE_ASPECTS`). */
-type SnapImageAspect = '1:1' | '16:9' | '4:3' | '9:16'
-
 const SNAP_IMAGE_ASPECTS = [
-	'1:1',
-	'16:9',
-	'4:3',
-	'9:16',
+	SnapImageAspects.Square,
+	SnapImageAspects.Wide,
+	SnapImageAspects.Standard,
+	SnapImageAspects.Portrait,
 ] as const satisfies readonly SnapImageAspect[]
 
 const SNAP_IMAGE_ASPECT_WIDTH_PER_HEIGHT: Record<SnapImageAspect, number> = {
@@ -229,40 +183,69 @@ const frameMintTargetToViewToken = (mint: string) => {
 	)
 }
 
-const snapPressFromFrameButton = (
-	button: FrameButton,
+const snapPressFromButton = (
+	{ press }: AppSnapButton,
 	baseUrl: URL | string,
 ): SnapPressAction | undefined => {
-	if (!button.targetUrl) {
+	if (press.action === SnapActions.ComposeCast) {
+		return {
+			action: SnapActions.ComposeCast,
+			params: {
+				text: press.text,
+				...(press.embeds?.length ? { embeds: press.embeds } : {}),
+			},
+		}
+	}
+
+	if (press.action === SnapActions.ViewToken) {
+		return {
+			action: SnapActions.ViewToken,
+			params: { token: press.token },
+		}
+	}
+
+	if (press.action === SnapActions.Submit || press.action === SnapActions.OpenUrl || press.action === SnapActions.OpenMiniApp) {
+		return {
+			action: press.action,
+			params: {
+				target: snapResolvedUrl(press.targetUrl, baseUrl),
+			},
+		}
+	}
+
+	if (!press.targetUrl) {
 		return undefined
 	}
 
-	const target = snapResolvedUrl(button.targetUrl, baseUrl)
-
-	if (button.action === 'post' || button.action === 'post_redirect') {
+	if (press.action === 'post' || press.action === 'post_redirect') {
 		return {
-			action: 'submit',
-			params: { target },
+			action: SnapActions.Submit,
+			params: {
+				target: snapResolvedUrl(press.targetUrl, baseUrl),
+			},
 		}
 	}
 
-	if (button.action === 'link' || button.action === undefined) {
+	if (press.action === 'link' || press.action === undefined) {
 		return {
-			action: 'open_url',
-			params: { target },
+			action: SnapActions.OpenUrl,
+			params: {
+				target: snapResolvedUrl(press.targetUrl, baseUrl),
+			},
 		}
 	}
 
-	if (button.action === 'mint') {
-		const token = frameMintTargetToViewToken(button.targetUrl)
+	if (press.action === 'mint') {
+		const token = frameMintTargetToViewToken(press.targetUrl)
+
 		return (
 			token
 				? {
-					action: 'view_token',
+					action: SnapActions.ViewToken,
 					params: { token },
 				}
 				: {
-					action: 'open_url',
+					action: SnapActions.OpenUrl,
 					params: {
 						target: 'https://docs.farcaster.xyz/reference/frames/spec',
 					},
@@ -270,173 +253,96 @@ const snapPressFromFrameButton = (
 		)
 	}
 
-	if (button.action === 'tx') {
+	if (press.action === 'tx') {
 		return {
-			action: 'open_url',
-			params: { target },
+			action: SnapActions.OpenUrl,
+			params: {
+				target: snapResolvedUrl(press.targetUrl, baseUrl),
+			},
 		}
 	}
 
 	return undefined
 }
 
-const snapButtonIcon = (press: SnapPressAction) => (
-	press.action === 'open_url'
-		? 'external-link'
-	: press.action === 'view_token'
-		? 'wallet'
-	:
-		undefined
+const snapButtonIcon = (
+	button: AppSnapButton,
+	press: SnapPressAction,
+) => (
+	button.icon
+		?? (
+			button.role === AppSnapButtonRoles.Share ?
+				SnapIcons.Share
+			: button.role === AppSnapButtonRoles.External ?
+				SnapIcons.ExternalLink
+			: press.action === SnapActions.ViewToken ?
+				SnapIcons.Wallet
+			:
+				undefined
+		)
 )
+
+const stripQueryParam = (
+	url: string,
+	param: string,
+) => {
+	const hashIndex = url.indexOf('#')
+	const hash = hashIndex === -1 ? '' : url.slice(hashIndex)
+	const beforeHash = hashIndex === -1 ? url : url.slice(0, hashIndex)
+	const queryIndex = beforeHash.indexOf('?')
+
+	if (queryIndex === -1) {
+		return url
+	}
+
+	const query = beforeHash.slice(queryIndex + 1)
+	const nextQuery = query
+		.split('&')
+		.filter((part) => (
+			part
+			&& part !== param
+			&& !part.startsWith(`${param}=`)
+		))
+		.join('&')
+
+	return `${beforeHash.slice(0, queryIndex)}${nextQuery ? `?${nextQuery}` : ''}${hash}`
+}
 
 const snapCurrentPageUrl = (baseUrl: URL | string) => (
-	snapResolvedUrl(String(baseUrl), baseUrl)
+	stripQueryParam(
+		snapResolvedUrl(String(baseUrl), baseUrl),
+		SNAP_FOOTER_CONTEXT_PARAM,
+	)
 )
 
-const snapShareTextResolvers = [
-	{
-		matches: ({ pathname }) => pathname === '/',
-		text: () => 'Exploring SKIFFLE, a SvelteKit demo for Farcaster Frames and Snaps.',
-	},
-	{
-		matches: ({ pathname }) => pathname === '/about',
-		text: () => 'Reading how SKIFFLE serves HTML, frame previews, and Snap JSON from the same routes.',
-	},
-	{
-		matches: ({ pathname }) => pathname === '/farcaster/channels',
-		text: () => 'Browsing popular Farcaster channels in SKIFFLE.',
-	},
-	{
-		matches: ({ pathname }) => pathname === '/farcaster/demos/counter',
-		text: (url) => `Trying the SKIFFLE counter demo. Count: ${clampCount(Number(url.searchParams.get('count') ?? 0))}.`,
-	},
-	{
-		matches: ({ pathname }) => pathname === '/farcaster/demos/tips',
-		text: (url) => {
-			const { currentPage, totalPages, message } = tipsPagination(url)
-			return `Reading SKIFFLE tip ${currentPage + 1} of ${totalPages}. ${message}`
-		},
-	},
-	{
-		matches: ({ pathname }) => pathname === '/farcaster/demos/hangman',
-		text: (url) => `Playing Hangman in SKIFFLE. ${hangmanMessage(parseHangmanState(url))}`,
-	},
-	{
-		matches: ({ pathname }) => pathname === '/farcaster/demos/wordle',
-		text: (url) => `Playing Wordle in SKIFFLE. ${wordleMessage(parseWordleState(url))}`,
-	},
-	{
-		matches: ({ pathname }) => pathname === '/farcaster/demos/rock-paper-scissors',
-		text: (url) => `Playing Rock Paper Scissors in SKIFFLE. ${rockPaperScissorsSummary(parseRockPaperScissorsState(url))}`,
-	},
-	{
-		matches: ({ pathname }) => pathname === '/farcaster/demos/tic-tac-toe',
-		text: (url) => `Playing Tic-tac-toe in SKIFFLE. ${ticTacToeMessage(parseTicTacToeState(url).status)}`,
-	},
-	{
-		matches: ({ pathname }) => /^\/farcaster\/user\/[^/]+\/casts$/.test(pathname),
-		text: (_url, title) => (
-			title
-				? `Browsing recent Farcaster casts in SKIFFLE: ${title}.`
-				: 'Browsing recent Farcaster casts in SKIFFLE.'
-		),
-	},
-	{
-		matches: ({ pathname }) => /^\/farcaster\/user\/[^/]+$/.test(pathname),
-		text: (_url, title) => (
-			title
-				? `Checking out a Farcaster profile in SKIFFLE: ${title}.`
-				: 'Checking out a Farcaster profile in SKIFFLE.'
-		),
-	},
-] satisfies SnapShareTextResolver[]
-
-const snapShareTextForFrame = (
-	{ title }: FramePage,
-	baseUrl: URL | string,
-) => {
-	try {
-		const url = new URL(String(baseUrl))
-		const text = (
-			snapShareTextResolvers
-				.find(({ matches }) => matches(url))
-				?.text(url, title)
-			?? (
-				title
-					? `Exploring ${title} on SKIFFLE.`
-					: 'Exploring SKIFFLE on Farcaster.'
-			)
-		)
-		return text.length > 320 ? `${text.slice(0, 317)}…` : text
-	} catch {
-		return 'Exploring SKIFFLE on Farcaster.'
-	}
+const snapGoActionTarget = (baseUrl: URL | string) => {
+	const target = new URL(snapResolvedUrl('/go', baseUrl))
+	target.search = `?/open&from=${encodeURIComponent(snapCurrentPageUrl(baseUrl))}`
+	return target.href
 }
 
-const snapEffectsForFrame = (
-	frame: FrameMeta,
+const snapFooterContextUrl = (
 	baseUrl: URL | string,
+	context?: string,
 ) => {
-	try {
-		const stateUrl = frameStateUrlFromFrame(frame, baseUrl)
-
-		return (
-			stateUrl.searchParams.get('status') === 'x-win'
-			|| stateUrl.searchParams.get('status') === 'win'
-			|| stateUrl.searchParams.get('outcome') === 'win'
-		)
-			? ['confetti']
-			: undefined
-	} catch {
-		return undefined
-	}
+	const currentUrl = snapCurrentPageUrl(baseUrl)
+	return (
+		context
+			? `${currentUrl}${currentUrl.includes('?') ? '&' : '?'}${SNAP_FOOTER_CONTEXT_PARAM}=${encodeURIComponent(context)}`
+			: currentUrl
+	)
 }
 
-const snapThemeAccentResolvers = {
-	'/farcaster/channels': () => (
-		'blue'
-	),
-	'/farcaster/demos/wordle': (stateUrl: URL) => (
-		stateUrl.searchParams.get('status') === 'win' ?
-			'green'
-		: stateUrl.searchParams.get('status') === 'loss' || stateUrl.searchParams.get('status') === 'invalid' ?
-			'red'
-		:
-			'amber'
-	),
-	'/farcaster/demos/hangman': (stateUrl: URL) => (
-		stateUrl.searchParams.get('status') === 'win' ?
-			'green'
-		: stateUrl.searchParams.get('status') === 'loss' || stateUrl.searchParams.get('status') === 'invalid' || stateUrl.searchParams.get('status') === 'repeat' ?
-			'red'
-		:
-			'amber'
-	),
-	'/farcaster/demos/tic-tac-toe': (stateUrl: URL) => (
-		stateUrl.searchParams.get('status') === 'x-win' ?
-			'green'
-		: stateUrl.searchParams.get('status') === 'o-win' || stateUrl.searchParams.get('status') === 'invalid' ?
-			'red'
-		:
-			'purple'
-	),
-	'/farcaster/demos/rock-paper-scissors': (stateUrl: URL) => (
-		stateUrl.searchParams.get('outcome') === 'win' ?
-			'green'
-		: stateUrl.searchParams.get('outcome') === 'loss' ?
-			'red'
-		: stateUrl.searchParams.get('outcome') === 'draw' ?
-			'blue'
-		:
-			'purple'
-	),
-	'/farcaster/demos/tips': () => (
-		'amber'
-	),
-	'/farcaster/demos/counter': () => (
-		'teal'
-	),
-} satisfies Record<string, (stateUrl: URL) => SnapPaletteColor>
+const snapFooterContext = (baseUrl: URL | string) => (
+	new URL(snapResolvedUrl(String(baseUrl), baseUrl)).searchParams.get(SNAP_FOOTER_CONTEXT_PARAM)
+)
+
+const snapFooterBadgeLabel = (baseUrl: URL | string) => {
+	const label = snapCurrentPageUrl(baseUrl).replace(/^https?:\/\//, '')
+	return label.length > 30
+		? `${label.slice(0, 27)}...`
+		: label
+}
 
 const snapExtraElementProviders = [
 	hangmanSnapExtraElements,
@@ -452,107 +358,141 @@ const snapExtraElementsForFrame = (
 		.find((value) => value !== undefined)
 )
 
-const snapThemeAccentForFrame = (
-	frame: FrameMeta,
+const SNAP_ACTION_MAX_CHILDREN = 6
+const SNAP_ACTION_MAX_DEPTH = 4
+const SNAP_TOTAL_ELEMENTS_MAX = 64
+
+const assertSnapActionConstraint = (
+	constraint: boolean,
+	message: string,
+) => {
+	if (!constraint) {
+		throw new Error(`snap: ${message}`)
+	}
+}
+
+const snapActionElements = (
+	nodes: AppSnapButtonNode[],
 	baseUrl: URL | string,
-): SnapPaletteColor => {
-	try {
-		const stateUrl = frameStateUrlFromFrame(frame, baseUrl)
-		const resolveAccent = snapThemeAccentResolvers[stateUrl.pathname]
-		if (resolveAccent) {
-			return resolveAccent(stateUrl)
+) => {
+	assertSnapActionConstraint(
+		nodes.length <= SNAP_ACTION_MAX_CHILDREN,
+		`action root supports at most ${SNAP_ACTION_MAX_CHILDREN} children`,
+	)
+
+	let idCounter = 0
+
+	const elements: SnapResponse['ui']['elements'] = {}
+
+	const nextId = (prefix: string) => `${prefix}-${idCounter++}`
+
+	const buildNode = (
+		node: AppSnapButtonNode,
+		depth: number,
+	): string => {
+		assertSnapActionConstraint(
+			depth <= SNAP_ACTION_MAX_DEPTH,
+			`button groups may nest at most ${SNAP_ACTION_MAX_DEPTH} levels deep`,
+		)
+
+		if (node.type === AppSnapNodeTypes.Button) {
+			const press = snapPressFromButton(node, baseUrl)
+
+			if (!press) {
+				throw new Error(`snap: unsupported button press mapping for "${node.label}"`)
+			}
+
+			const id = nextId('action-button')
+			const icon = snapButtonIcon(node, press)
+
+			elements[id] = {
+				type: SnapElementTypes.Button,
+				props: {
+					label: node.label.slice(0, 30),
+					...(node.variant ? { variant: node.variant } : {}),
+					...(icon ? { icon } : {}),
+				},
+				on: {
+					[SnapEvents.Press]: press,
+				},
+			}
+
+			return id
 		}
-	} catch {
-		/* default below */
+
+		assertSnapActionConstraint(
+			node.children.length <= SNAP_ACTION_MAX_CHILDREN,
+			`button group supports at most ${SNAP_ACTION_MAX_CHILDREN} children`,
+		)
+
+		const id = nextId('action-group')
+		const children = node.children.map((child) => buildNode(child, depth + 1))
+
+		elements[id] = {
+			type: SnapElementTypes.Stack,
+			props: {
+				...(node.direction ? { direction: node.direction } : {}),
+				...(node.gap ? { gap: node.gap } : {}),
+				...(node.justify ? { justify: node.justify } : {}),
+			},
+			children,
+		}
+
+		return id
 	}
 
-	return 'purple'
+	elements.actions = {
+		type: SnapElementTypes.Stack,
+		props: {
+			gap: SnapGaps.Sm,
+		},
+		children: nodes.map((node) => buildNode(node, 1)),
+	}
+
+	return elements
 }
-
-const snapButtonPriority = ({
-	button,
-	press,
-}: SupportedButton) => {
-	const label = button.label.trim().toLowerCase()
-
-	return (
-		label.includes('guess') || label.includes('play') || label.includes('submit') ?
-			4
-		: label.includes('more') || label.includes('next') || label.includes('continue') ?
-			3
-		: press.action === 'submit' && !label.includes('back') && !label.includes('reset') ?
-			2
-		: press.action === 'open_mini_app' || press.action === 'view_token' ?
-			1
-		:
-			0
-	)
-}
-
-const snapButtonVariant = (
-	supported: SupportedButton,
-	supportedButtons: SupportedButton[],
-) => (
-	snapButtonPriority(supported) > 0
-	&& supportedButtons.every((candidate) => (
-			candidate.index === supported.index
-			|| snapButtonPriority(supported) >= snapButtonPriority(candidate)
-		)) ?
-		'primary'
-	:
-		'secondary'
-)
 
 export const framePageToSnap = (
-	{ title, frame }: FramePage,
+	{ title, frame, snap }: FramePage,
 	baseUrl: URL | string,
 ): SnapResponse => {
-	const buttons = frame.buttons?.filter((button) => button !== undefined) ?? []
-	const supportedButtons: SupportedButton[] = []
-
-	for (const [index, button] of buttons.entries()) {
-		if (!button) {
-			continue
-		}
-
-		const press = snapPressFromFrameButton(button, baseUrl)
-		if (press) {
-			supportedButtons.push({
-				button,
-				index,
-				press,
-			})
-		}
-	}
-
-	const unsupportedButtonCount = buttons.length - supportedButtons.length
 	const extraElements = snapExtraElementsForFrame(frame, baseUrl)
+	const actionElements = snap?.buttons?.length
+		? snapActionElements(snap.buttons, baseUrl)
+		: undefined
+	const isGoMenuOpen = snapFooterContext(baseUrl) === 'go'
+	const footerChildren = (
+		isGoMenuOpen
+			? ['page-go-input', 'page-go-actions']
+			: ['page-actions', 'page-url-badge', 'page-follow-separator', 'page-follow']
+	)
 
 	const pageChildren = (
 		[
 			...(title ? ['title-text'] : []),
 			'hero',
-			'sep-hero',
 			...(extraElements?.children ?? []),
-			...(frame.textInput ? ['input'] : []),
-			...(supportedButtons.length ? ['actions'] : []),
-			...(unsupportedButtonCount ? ['unsupported'] : []),
+			...(
+				frame.textInput && !extraElements?.hideInput
+					? ['input']
+					: []
+			),
+			...(actionElements ? ['actions'] : []),
 			'sep-page-link',
-			'page-actions',
-			'page-path',
+			'page-footer',
 		]
 	)
 
 	const elements: SnapResponse['ui']['elements'] = {
 		page: {
-			type: 'stack',
+			type: SnapElementTypes.Stack,
 			props: {
-				gap: 'md',
+				gap: SnapGaps.Md,
 			},
 			children: pageChildren,
 		},
 		hero: {
-			type: 'image',
+			type: SnapElementTypes.Image,
 			props: {
 				url: snapResolvedUrl(
 					frameImageUrlForCurrentPage(
@@ -567,319 +507,201 @@ export const framePageToSnap = (
 				alt: title ?? 'SKIFFLE preview',
 			},
 		},
-		'sep-hero': {
-			type: 'separator',
-			props: {},
-		},
 		'sep-page-link': {
-			type: 'separator',
+			type: SnapElementTypes.Separator,
 			props: {},
 		},
-		'page-path': {
-			type: 'text',
+		'page-footer': {
+			type: SnapElementTypes.Stack,
 			props: {
-				content: snapCurrentPageUrl(baseUrl),
-				size: 'sm',
-				align: 'center',
+				gap: SnapGaps.Sm,
+			},
+			children: footerChildren,
+		},
+		'page-url-badge': {
+			type: SnapElementTypes.Text,
+			props: {
+				content: snapFooterBadgeLabel(baseUrl),
+				size: SnapTextSizes.Sm,
+				align: SnapAlignments.Center,
+			},
+		},
+		'page-go-input': {
+			type: SnapElementTypes.Input,
+			props: {
+				name: 'gotoPath',
+				label: 'Go to Page',
+				placeholder: '/about or /demos/wordle?/open',
+				maxLength: 280,
 			},
 		},
 		'page-actions': {
-			type: 'stack',
+			type: SnapElementTypes.Stack,
 			props: {
-				direction: 'horizontal',
-				gap: 'sm',
-				justify: 'center',
+				direction: SnapDirections.Horizontal,
+				gap: SnapGaps.Sm,
+				justify: SnapJustifyValues.Center,
 			},
-			children: ['page-share', 'page-link'],
+			children: ['page-share', 'page-link', 'page-go'],
 		},
 		'page-share': {
-			type: 'button',
+			type: SnapElementTypes.Button,
 			props: {
 				label: 'Share',
-				variant: 'secondary',
-				icon: 'share',
+				variant: SnapButtonVariants.Secondary,
+				icon: SnapIcons.Share,
 			},
 			on: {
-				press: {
-					action: 'compose_cast',
+				[SnapEvents.Press]: {
+					action: SnapActions.ComposeCast,
 					params: {
-						text: snapShareTextForFrame({ title, frame }, baseUrl),
+						text: (
+							snap?.shareText
+							?? (
+								title
+									? `Checking out ${title} on SKIFFLE.`
+									: 'Checking out SKIFFLE on Farcaster.'
+							)
+						).slice(0, 320),
 						embeds: [snapCurrentPageUrl(baseUrl)],
 					},
 				},
 			},
 		},
 		'page-link': {
-			type: 'button',
+			type: SnapElementTypes.Button,
 			props: {
-				label: 'View on web',
-				variant: 'secondary',
-				icon: 'external-link',
+				label: 'Visit',
+				variant: SnapButtonVariants.Secondary,
+				icon: SnapIcons.ExternalLink,
 			},
 			on: {
-				press: {
-					action: 'open_url',
+				[SnapEvents.Press]: {
+					action: SnapActions.OpenUrl,
 					params: {
 						target: snapCurrentPageUrl(baseUrl),
 					},
 				},
 			},
 		},
+		'page-go': {
+			type: SnapElementTypes.Button,
+			props: {
+				label: 'Go to...',
+				variant: SnapButtonVariants.Secondary,
+				icon: SnapIcons.ArrowRight,
+			},
+			on: {
+				[SnapEvents.Press]: {
+					action: SnapActions.Submit,
+					params: {
+						target: snapFooterContextUrl(baseUrl, 'go'),
+					},
+				},
+			},
+		},
+		'page-go-actions': {
+			type: SnapElementTypes.Stack,
+			props: {
+				direction: SnapDirections.Horizontal,
+				gap: SnapGaps.Sm,
+				justify: SnapJustifyValues.Center,
+			},
+			children: ['page-go-open', 'page-go-close'],
+		},
+		'page-follow-separator': {
+			type: SnapElementTypes.Separator,
+			props: {},
+		},
+		'page-go-open': {
+			type: SnapElementTypes.Button,
+			props: {
+				label: 'Go',
+				variant: SnapButtonVariants.Primary,
+				icon: SnapIcons.Check,
+			},
+			on: {
+				[SnapEvents.Press]: {
+					action: SnapActions.Submit,
+					params: {
+						target: snapGoActionTarget(baseUrl),
+					},
+				},
+			},
+		},
+		'page-go-close': {
+			type: SnapElementTypes.Button,
+			props: {
+				label: 'Cancel',
+				variant: SnapButtonVariants.Secondary,
+				icon: SnapIcons.X,
+			},
+			on: {
+				[SnapEvents.Press]: {
+					action: SnapActions.Submit,
+					params: {
+						target: snapFooterContextUrl(baseUrl),
+					},
+				},
+			},
+		},
+		'page-follow': {
+			type: SnapElementTypes.Button,
+			props: {
+				label: 'Follow @darrylyeo',
+				variant: SnapButtonVariants.Secondary,
+			},
+			on: {
+				[SnapEvents.Press]: {
+					action: SnapActions.OpenUrl,
+					params: {
+						target: 'https://farcaster.xyz/darrylyeo',
+					},
+				},
+			},
+		},
 		...(extraElements?.elements ?? {}),
+		...(actionElements ?? {}),
 	}
 
 	if (title) {
 		elements['title-text'] = {
-			type: 'text',
+			type: SnapElementTypes.Text,
 			props: {
 				content: title.length > 320 ? `${title.slice(0, 317)}…` : title,
-				weight: 'bold',
-				align: 'center',
+				weight: SnapTextWeights.Bold,
+				align: SnapAlignments.Center,
 			},
 		}
 	}
 
 	if (frame.textInput) {
 		elements.input = {
-			type: 'input',
+			type: SnapElementTypes.Input,
 			props: {
 				name: 'inputText',
 				label: frame.textInput,
-				placeholder: 'Optional',
+				placeholder: frame.textInput,
 				maxLength: 280,
 			},
 		}
 	}
 
-	if (supportedButtons.length) {
-		const useHorizontalActions = supportedButtons.length <= 3
-		elements.actions = {
-			type: 'stack',
-			props: {
-				direction: useHorizontalActions ? 'horizontal' : 'vertical',
-				gap: 'sm',
-				...(useHorizontalActions
-					? { justify: 'center' as const }
-					: {}),
-			},
-			children: supportedButtons.map(({ index }) => `button-${index}`),
-		}
-
-		for (const { button, index, press } of supportedButtons) {
-			const icon = snapButtonIcon(press)
-			elements[`button-${index}`] = {
-				type: 'button',
-				props: {
-					label: button.label.slice(0, 30),
-					variant: snapButtonVariant(
-						{ button, index, press },
-						supportedButtons,
-					),
-					...(icon ? { icon } : {}),
-				},
-				on: {
-					press,
-				},
-			}
-		}
-	}
-
-	if (unsupportedButtonCount) {
-		elements.unsupported = {
-			type: 'text',
-			props: {
-				content: `${unsupportedButtonCount} frame action${unsupportedButtonCount === 1 ? '' : 's'} not mapped to Snap.`,
-				size: 'sm',
-				align: 'center',
-			},
-		}
-	}
+	assertSnapActionConstraint(
+		Object.keys(actionElements ?? {}).length <= SNAP_TOTAL_ELEMENTS_MAX,
+		`button tree supports at most ${SNAP_TOTAL_ELEMENTS_MAX} elements`,
+	)
 
 	return {
-		version: SNAP_VERSION,
-		effects: snapEffectsForFrame(frame, baseUrl),
-		theme: { accent: snapThemeAccentForFrame(frame, baseUrl) },
+		version: SnapVersion,
+		effects: snap?.effects,
+		theme: {
+			accent: snap?.theme?.accent ?? SnapPaletteColors.Purple,
+		},
 		ui: {
-			root: 'page',
+			root: SnapUiRoots.Page,
 			elements,
 		},
 	}
 }
 
-const metaPropertyMap = (html: string) => {
-	const properties: Record<string, string> = {}
-	for (const [, attrs] of html.matchAll(/<meta\s+([^>]+)>/gi)) {
-		const property = (
-			attrs.match(/\bproperty\s*=\s*"([^"]+)"/i)
-			?? attrs.match(/\bproperty\s*=\s*'([^']+)'/i)
-		)?.[1]
-		const contentRaw = (
-			attrs.match(/\bcontent\s*=\s*"([^"]*)"/i)
-			?? attrs.match(/\bcontent\s*=\s*'([^']*)'/i)
-		)?.[1]
-		if (property && contentRaw !== undefined) {
-			properties[property] = decodeHtml(contentRaw)
-		}
-	}
-	return properties
-}
-
-export const parseFramePageFromHtml = (
-	html: string,
-): FramePage | undefined => {
-	const properties = metaPropertyMap(html)
-
-	const imageUrl = properties['fc:frame:image']
-	if (!imageUrl) {
-		return undefined
-	}
-
-	const buttonFromMeta = (buttonIndex: 1 | 2 | 3 | 4) => {
-		const label = properties[`fc:frame:button:${buttonIndex}`]
-		return label
-			? {
-				label,
-				action: parseFrameButtonAction(properties[`fc:frame:button:${buttonIndex}:action`]),
-				targetUrl: properties[`fc:frame:button:${buttonIndex}:target`],
-			}
-			: undefined
-	}
-
-	const title = html.match(/<title>([^<]+)<\/title>/)?.[1]
-
-	return {
-		title: title ? decodeHtml(title) : undefined,
-		frame: {
-			version: properties['fc:frame'] as FrameMeta['version'] | undefined,
-			image: {
-				url: imageUrl,
-				aspectRatio: properties['fc:frame:image:aspect_ratio'] as FrameMeta['image']['aspectRatio'] | undefined,
-			},
-			postUrl: properties['fc:frame:post_url'],
-			textInput: properties['fc:frame:input:text'],
-			buttons: [
-				buttonFromMeta(1),
-				buttonFromMeta(2),
-				buttonFromMeta(3),
-				buttonFromMeta(4),
-			],
-			state: (() => {
-				try {
-					return properties['fc:frame:state']
-						? JSON.parse(properties['fc:frame:state'])
-						: undefined
-				} catch {
-					return undefined
-				}
-			})(),
-		},
-	}
-}
-
-export const createSnapResponse = (
-	body: SnapResponse,
-	requestUrl: URL,
-) => {
-	const self = resolveUrl(requestUrl.pathname + requestUrl.search, requestUrl)
-	const link = (
-		`<${self}>; rel="alternate"; type="${SNAP_MEDIA_TYPE}", `
-		+ `<${self}>; rel="alternate"; type="text/html"`
-	)
-	return new Response(
-		JSON.stringify(body),
-		{
-			status: 200,
-			headers: {
-				'content-type': SNAP_MEDIA_TYPE,
-				'vary': 'Accept',
-				'link': link,
-			},
-		},
-	)
-}
-
-const JFS_PARTS = 3
-
-export const isLikelyJfsCompact = (text: string) => {
-	const trimmed = text.trim()
-	const parts = trimmed.split('.')
-	return (
-		parts.length === JFS_PARTS
-		&& parts.every((p) => p.length > 0)
-	)
-}
-
-const parseSnapJfsEnvelope = (
-	text: string,
-): SnapJfsEnvelope | undefined => {
-	const trimmed = text.trim()
-
-	if (isLikelyJfsCompact(trimmed)) {
-		const [header, payload, signature] = trimmed.split('.')
-		return {
-			header,
-			payload,
-			signature,
-		}
-	}
-
-	try {
-		const value = JSON.parse(trimmed) as Partial<SnapJfsEnvelope>
-		if (
-			value
-			&& typeof value === 'object'
-			&& typeof value.header === 'string'
-			&& typeof value.payload === 'string'
-			&& typeof value.signature === 'string'
-		) {
-			return {
-				header: value.header,
-				payload: value.payload,
-				signature: value.signature,
-			}
-		}
-	} catch {
-		/* not JSON */
-	}
-
-	return undefined
-}
-
-export const hasSnapJfsEnvelope = (text: string) => (
-	parseSnapJfsEnvelope(text) !== undefined
-)
-
-export const parseFrameSignatureJson = (
-	text: string,
-): FrameSignaturePacket | undefined => {
-	try {
-		const v = JSON.parse(text) as Partial<FrameSignaturePacket>
-		if (v && typeof v === 'object' && v.untrustedData !== undefined) {
-			return v as FrameSignaturePacket
-		}
-	} catch {
-		/* not JSON */
-	}
-	return undefined
-}
-
-export const readSnapJfsPayload = async (
-	jfsBody: string,
-	_requestUrl: URL | string,
-) => {
-	const envelope = parseSnapJfsEnvelope(jfsBody)
-	if (!envelope) {
-		throw new Error('snap: invalid JFS body')
-	}
-
-	const payload = JSON.parse(
-		Buffer
-			.from(envelope.payload, 'base64url')
-			.toString('utf8'),
-	)
-	if (!payload || typeof payload !== 'object') {
-		throw new Error('snap: invalid JFS payload')
-	}
-
-	return payload
-}

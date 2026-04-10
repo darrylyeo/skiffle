@@ -1,18 +1,19 @@
 // Types
 import type { Handle, RequestEvent } from '@sveltejs/kit'
 
+import type { AppSnapPage } from '$/lib/snap-components'
 import type { FrameMeta } from '$/lib/frame'
 
 import { deserialize } from '$app/forms'
 
+import { parseAppSnapFromHtml } from '$/lib/snap-components'
+import type { SnapJfsPayload } from '$/lib/snap-jfs'
 import {
-	createSnapResponse,
 	framePageToSnap,
-	parseFramePageFromHtml,
 	snapResolvedUrl,
 	type FramePage,
-	type SnapJfsPayload,
 } from '$/lib/snap'
+import { SnapMediaType } from '$/lib/snap-spec'
 import { resolveUrl } from '$/lib/resolveUrl'
 
 type Resolve = Parameters<Handle>[0]['resolve']
@@ -51,33 +52,213 @@ const frameImageUrlForRequest = (url: URL | string) => {
 	return frameImageUrl.href
 }
 
-const mergeFrameIntoPage = (
+type SnapRouteData = {
+	title?: string
+	frame?: FrameMeta
+	snap?: AppSnapPage
+	gotoUrl?: string
+}
+
+const decodeHtml = (value: string) => (
+	value
+		.replaceAll('&quot;', '"')
+		.replaceAll('&amp;', '&')
+		.replaceAll('&lt;', '<')
+		.replaceAll('&gt;', '>')
+)
+
+const FRAME_BUTTON_ACTIONS = [
+	'post',
+	'post_redirect',
+	'link',
+	'mint',
+	'tx',
+] as const
+
+const parseFrameButtonAction = (value: string | undefined) => (
+	FRAME_BUTTON_ACTIONS.find((action) => action === value)
+)
+
+const parseFrameVersion = (value: string | undefined): FrameMeta['version'] | undefined => (
+	value === 'vNext' || /^\d+-\d+-\d+$/.test(value ?? '')
+		? value as FrameMeta['version']
+		: undefined
+)
+
+const parseFrameAspectRatio = (value: string | undefined): FrameMeta['image']['aspectRatio'] | undefined => (
+	value === '1:1' || value === '1.91:1'
+		? value
+		: undefined
+)
+
+const metaPropertyMap = (html: string) => {
+	const properties: Record<string, string> = {}
+	for (const [, attrs] of html.matchAll(/<meta\s+([^>]+)>/gi)) {
+		const property = (
+			attrs.match(/\bproperty\s*=\s*"([^"]+)"/i)
+			?? attrs.match(/\bproperty\s*=\s*'([^']+)'/i)
+		)?.[1]
+		const contentRaw = (
+			attrs.match(/\bcontent\s*=\s*"([^"]*)"/i)
+			?? attrs.match(/\bcontent\s*=\s*'([^']*)'/i)
+		)?.[1]
+		if (property && contentRaw !== undefined) {
+			properties[property] = decodeHtml(contentRaw)
+		}
+	}
+	return properties
+}
+
+const parseFramePageFromHtml = (
+	html: string,
+): FramePage | undefined => {
+	const properties = metaPropertyMap(html)
+
+	const imageUrl = properties['fc:frame:image']
+	if (!imageUrl) {
+		return undefined
+	}
+
+	const buttonFromMeta = (buttonIndex: 1 | 2 | 3 | 4) => {
+		const label = properties[`fc:frame:button:${buttonIndex}`]
+		return label
+			? {
+				label,
+				action: parseFrameButtonAction(properties[`fc:frame:button:${buttonIndex}:action`]),
+				targetUrl: properties[`fc:frame:button:${buttonIndex}:target`],
+			}
+			: undefined
+	}
+
+	const title = html.match(/<title>([^<]+)<\/title>/)?.[1]
+
+	return {
+		title: title ? decodeHtml(title) : undefined,
+		frame: {
+			version: parseFrameVersion(properties['fc:frame']),
+			image: {
+				url: imageUrl,
+				aspectRatio: parseFrameAspectRatio(properties['fc:frame:image:aspect_ratio']),
+			},
+			postUrl: properties['fc:frame:post_url'],
+			textInput: properties['fc:frame:input:text'],
+			buttons: [
+				buttonFromMeta(1),
+				buttonFromMeta(2),
+				buttonFromMeta(3),
+				buttonFromMeta(4),
+			],
+			state: (() => {
+				try {
+					return properties['fc:frame:state']
+						? JSON.parse(properties['fc:frame:state'])
+						: undefined
+				} catch {
+					return undefined
+				}
+			})(),
+		},
+		snap: parseAppSnapFromHtml(html),
+	}
+}
+
+const createSnapResponse = (
+	body: ReturnType<typeof framePageToSnap>,
+	requestUrl: URL,
+) => {
+	const self = resolveUrl(requestUrl.pathname + requestUrl.search, requestUrl)
+	const link = (
+		`<${self}>; rel="alternate"; type="${SnapMediaType}", `
+		+ `<${self}>; rel="alternate"; type="text/html"`
+	)
+	return new Response(
+		JSON.stringify(body),
+		{
+			status: 200,
+			headers: {
+				'content-type': SnapMediaType,
+				'vary': 'Accept',
+				'link': link,
+			},
+		},
+	)
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> => (
+	typeof value === 'object'
+	&& value !== null
+)
+
+const isFrameMetaLike = (value: unknown): value is FrameMeta => (
+	isRecord(value)
+	&& isRecord(value.image)
+)
+
+const isAppSnapPageLike = (value: unknown): value is AppSnapPage => (
+	isRecord(value)
+)
+
+const snapRouteDataFromActionResult = (value: unknown): SnapRouteData | undefined => {
+	if (
+		!value
+		|| typeof value !== 'object'
+		|| !('data' in value)
+		|| !value.data
+		|| typeof value.data !== 'object'
+	) {
+		return undefined
+	}
+
+	const data = value.data
+	const title = 'title' in data ? data.title : undefined
+	const frame = 'frame' in data ? data.frame : undefined
+	const snap = 'snap' in data ? data.snap : undefined
+	const gotoUrl = 'gotoUrl' in data ? data.gotoUrl : undefined
+
+	return {
+		...(typeof title === 'string' ? { title } : {}),
+		...(isFrameMetaLike(frame) ? { frame } : {}),
+		...(isAppSnapPageLike(snap) ? { snap } : {}),
+		...(typeof gotoUrl === 'string' ? { gotoUrl } : {}),
+	}
+}
+
+const mergeRouteDataIntoPage = (
 	framePage: FramePage | undefined,
-	frame: FrameMeta,
+	data: SnapRouteData,
 	baseUrl: URL | string,
-): FramePage => ({
-	title: framePage?.title,
-	frame: {
-		...framePage?.frame,
-		...frame,
-		image: {
-			...framePage?.frame.image,
-			...frame.image,
-			url: snapResolvedUrl(
-				resolveUrl(
-					frame.image.url || framePage?.frame.image.url || frameImageUrlForRequest(baseUrl),
+): FramePage | undefined => {
+	const frame = data.frame
+		? {
+			...framePage?.frame,
+			...data.frame,
+			image: {
+				...framePage?.frame.image,
+				...data.frame.image,
+				url: snapResolvedUrl(
+					resolveUrl(
+						data.frame.image.url || framePage?.frame.image.url || frameImageUrlForRequest(baseUrl),
+						baseUrl,
+					),
 					baseUrl,
 				),
-				baseUrl,
-			),
-		},
-	},
-})
+			},
+		}
+		: framePage?.frame
+
+	return frame
+		? {
+			title: data.title ?? framePage?.title,
+			frame,
+			snap: data.snap ?? framePage?.snap,
+		}
+		: undefined
+}
 
 const resolveFramePage = async (
 	event: RequestEvent,
 	resolve: Resolve,
-	overrideFrame?: FrameMeta,
+	overrideData?: SnapRouteData,
 ) => {
 	event.request = htmlRequest(event.request)
 
@@ -87,13 +268,33 @@ const resolveFramePage = async (
 	}
 
 	const framePage = parseFramePageFromHtml(await response.text())
-	if (!framePage && !overrideFrame) {
+	if (!framePage && !overrideData) {
 		return undefined
 	}
 
-	return overrideFrame
-		? mergeFrameIntoPage(framePage, overrideFrame, event.request.url)
+	return overrideData
+		? mergeRouteDataIntoPage(framePage, overrideData, event.request.url)
 		: framePage
+}
+
+const resolveFramePageFromUrl = async (
+	fetch: RequestEvent['fetch'],
+	url: URL | string,
+) => {
+	const response = await fetch(
+		String(url),
+		{
+			headers: {
+				accept: 'text/html',
+			},
+		},
+	)
+
+	if (!response.ok) {
+		return undefined
+	}
+
+	return parseFramePageFromHtml(await response.text())
 }
 
 export const snapGetResponse = async (
@@ -142,9 +343,19 @@ export const snapPostResponse = async (
 		const response = await resolve(event)
 		if (response.ok) {
 			try {
-				const { data } = deserialize(await response.text()) as { data?: { frame?: FrameMeta } }
-				if (data?.frame) {
-					const framePage = await resolveFramePage(event, resolve, data.frame)
+				const data = snapRouteDataFromActionResult(deserialize(await response.text()))
+
+				if (data?.gotoUrl) {
+					const targetUrl = new URL(data.gotoUrl, event.url)
+					const framePage = await resolveFramePageFromUrl(event.fetch, targetUrl)
+
+					return framePage
+						? createSnapResponse(framePageToSnap(framePage, targetUrl), targetUrl)
+						: null
+				}
+
+				if (data?.frame || data?.snap || data?.title) {
+					const framePage = await resolveFramePage(event, resolve, data)
 					return framePage
 						? createSnapResponse(framePageToSnap(framePage, event.url), event.url)
 						: null

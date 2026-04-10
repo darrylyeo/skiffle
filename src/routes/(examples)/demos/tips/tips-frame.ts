@@ -38,7 +38,7 @@ const frameMetaFromPaginationState = ({
 
 	return {
 		image: {
-			url: `/farcaster/demos/tips?page=${currentPage}`,
+			url: `/demos/tips?page=${currentPage}`,
 			aspectRatio: '1.91:1',
 		},
 		buttons: (
@@ -52,12 +52,12 @@ const frameMetaFromPaginationState = ({
 					? {
 						label: 'Next Tip ›',
 						action: 'post',
-						targetUrl: `/farcaster/demos/tips?/paginate&page=${nextPage}`,
+						targetUrl: `/demos/tips?/paginate&page=${nextPage}`,
 					}
 					: {
 						label: 'Back to Top ›',
 						action: 'post',
-						targetUrl: '/farcaster/demos/tips?/paginate&page=0',
+						targetUrl: '/demos/tips?/paginate&page=0',
 					},
 			] as const
 		)

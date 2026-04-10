@@ -6,6 +6,7 @@ import { resolveUrl } from '$/lib/resolveUrl'
 
 export type SnapExtraElements = {
 	children: string[]
+	hideInput?: boolean
 	elements: Record<
 		string,
 		{

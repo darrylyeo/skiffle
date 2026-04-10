@@ -1,3 +1,4 @@
+import { snapBackButton } from '$/lib/snap-components'
 import type { LayoutLoad } from './$types'
 
 export const load: LayoutLoad = async ({
@@ -5,6 +6,12 @@ export const load: LayoutLoad = async ({
 }) => {
 	return {
 		...data,
+
+		snap: {
+			buttons: [
+				snapBackButton('/'),
+			],
+		},
 
 		frame: {
 			buttons: [

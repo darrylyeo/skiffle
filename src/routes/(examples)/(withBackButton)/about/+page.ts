@@ -1,5 +1,8 @@
 // Functions
+import { AppSnapButtonRoles } from '$/lib/app-snap-tokens'
+import { findSnapButtonByRole, snapButtonGroup, snapTargetButton } from '$/lib/snap-components'
 import { isTruthy } from '$/lib/isTruthy'
+import { SnapButtonVariants, SnapDirections, SnapGaps, SnapJustifyValues } from '$/lib/snap-spec'
 
 
 // Data
@@ -12,11 +15,46 @@ export const load: PageLoad = async ({
 	const parentData = await parent()
 
 	const currentPage = Number(url.searchParams.get('page') ?? 0)
-	const totalPages = 3
+	const totalPages = 6
 
 	return {
 		currentPage,
 		totalPages,
+		title: 'About SKIFFLE',
+		snap: {
+			shareText: 'Reading the SKIFFLE project overview: the same SvelteKit routes can serve HTML, frame previews, and Snap JSON.',
+			buttons: [
+				snapButtonGroup({
+					direction: SnapDirections.Horizontal,
+					gap: SnapGaps.Sm,
+					justify: SnapJustifyValues.Center,
+					children: [
+						findSnapButtonByRole(parentData.snap?.buttons, AppSnapButtonRoles.Back),
+						currentPage > 0 && snapTargetButton({
+							label: '‹ Previous Page',
+							role: AppSnapButtonRoles.Pager,
+							action: 'post',
+							targetUrl: `?page=${currentPage - 1}`,
+						}),
+						currentPage < totalPages - 1
+							? snapTargetButton({
+								label: 'Next Page ›',
+								role: AppSnapButtonRoles.Pager,
+								variant: SnapButtonVariants.Primary,
+								action: 'post',
+								targetUrl: `?page=${currentPage + 1}`,
+							})
+							: snapTargetButton({
+								label: '⟲ Read again',
+								role: AppSnapButtonRoles.Pager,
+								variant: SnapButtonVariants.Primary,
+								action: 'post',
+								targetUrl: '?page=0',
+							}),
+					].filter(isTruthy),
+				}),
+			],
+		},
 
 		frame: {
 			buttons: [

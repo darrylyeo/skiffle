@@ -9,7 +9,7 @@ export const counterFrameMeta = (count: number): FrameMeta => {
 	const c = clampCount(count)
 	return {
 		image: {
-			url: `/farcaster/demos/counter?count=${c}`,
+			url: `/demos/counter?count=${c}`,
 			aspectRatio: '1.91:1',
 		},
 		buttons: [
@@ -21,17 +21,17 @@ export const counterFrameMeta = (count: number): FrameMeta => {
 			{
 				label: '+1',
 				action: 'post',
-				targetUrl: `/farcaster/demos/counter?/bump&count=${c}&delta=1`,
+				targetUrl: `/demos/counter?/bump&count=${c}&delta=1`,
 			},
 			{
 				label: '+10',
 				action: 'post',
-				targetUrl: `/farcaster/demos/counter?/bump&count=${c}&delta=10`,
+				targetUrl: `/demos/counter?/bump&count=${c}&delta=10`,
 			},
 			{
 				label: 'Reset',
 				action: 'post',
-				targetUrl: '/farcaster/demos/counter?/set&to=0',
+				targetUrl: '/demos/counter?/set&to=0',
 			},
 		],
 	}

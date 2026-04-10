@@ -12,12 +12,10 @@
 		title,
 		metadata,
 		baseUrl,
-		showPreview = false,
 	}: {
 		title?: string,
 		metadata: FrameMeta,
 		baseUrl: URL | string,
-		showPreview?: boolean,
 	} = $props()
 
 
@@ -49,18 +47,3 @@
 		<meta property={property} content={content} />
 	{/each}
 </svelte:head>
-
-{#if showPreview}
-	<div class="frame-preview">
-		{title}
-
-		<img src={metadata.image.url} alt="Frame" />
-	</div>
-{/if}
-
-
-<style>
-	.frame-preview {
-		display: grid;
-	}
-</style>

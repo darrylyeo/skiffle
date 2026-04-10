@@ -1,17 +1,9 @@
 <script lang="ts">
 	// Types/constants
-	import { wordleMessage, wordleRows } from './wordle-frame'
-
-	type Props = {
-		data: {
-			word: number
-			guesses: string[]
-			status: 'turn' | 'invalid' | 'repeat' | 'win' | 'loss'
-		}
-	}
+	import type { PageData } from './$types'
 
 	// Props
-	let { data }: Props = $props()
+	let { data }: { data: PageData } = $props()
 </script>
 
 
@@ -19,11 +11,11 @@
 	<header>
 		<p>Word Game</p>
 		<h1>Wordle</h1>
-		<strong>{wordleMessage(data)}</strong>
+		<strong>{data.message}</strong>
 	</header>
 
 	<section class="board" aria-label="Wordle board">
-		{#each wordleRows(data) as row, rowIndex (`row:${rowIndex}`)}
+		{#each data.rows as row, rowIndex (`row:${rowIndex}`)}
 			<div class="row">
 				{#each row as cell (cell.id)}
 					<span data-state={cell.state}>{cell.letter}</span>

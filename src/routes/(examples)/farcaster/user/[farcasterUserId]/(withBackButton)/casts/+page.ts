@@ -1,4 +1,7 @@
 // Types
+import { AppSnapButtonRoles } from '$/lib/app-snap-tokens'
+import { findSnapButtonByRole } from '$/lib/snap-components'
+import { isTruthy } from '$/lib/isTruthy'
 import type { PageLoad } from './$types'
 import type { FrameMeta } from '$/lib/frame'
 
@@ -12,6 +15,13 @@ export const load: PageLoad = async ({
 
 	return {
 		...data,
+		title: `${parentData.user.display_name} casts`,
+		snap: {
+			shareText: `Browsing ${parentData.user.display_name}'s recent casts in the SKIFFLE Farcaster demo.`,
+			buttons: [
+				findSnapButtonByRole(parentData.snap?.buttons, AppSnapButtonRoles.Back),
+			].filter(isTruthy),
+		},
 
 		frame: {
 			image: {

@@ -107,7 +107,7 @@ export const buildRockPaperScissorsFrame = ({
 	outcome,
 }: RockPaperScissorsState): FrameMeta => ({
 	image: {
-		url: `/farcaster/demos/rock-paper-scissors?${new URLSearchParams({
+		url: `/demos/rock-paper-scissors?${new URLSearchParams({
 			rounds: String(rounds),
 			wins: String(wins),
 			losses: String(losses),
@@ -123,7 +123,7 @@ export const buildRockPaperScissorsFrame = ({
 			{
 				label: 'Reset',
 				action: 'post',
-				targetUrl: '/farcaster/demos/rock-paper-scissors?/open',
+				targetUrl: '/demos/rock-paper-scissors?/open',
 			}
 		: {
 			label: '‹ Demos',
@@ -133,17 +133,17 @@ export const buildRockPaperScissorsFrame = ({
 		{
 			label: 'Rock',
 			action: 'post',
-			targetUrl: `/farcaster/demos/rock-paper-scissors?/play&pick=rock&rounds=${rounds}&wins=${wins}&losses=${losses}&draws=${draws}`,
+			targetUrl: `/demos/rock-paper-scissors?/play&pick=rock&rounds=${rounds}&wins=${wins}&losses=${losses}&draws=${draws}`,
 		},
 		{
 			label: 'Paper',
 			action: 'post',
-			targetUrl: `/farcaster/demos/rock-paper-scissors?/play&pick=paper&rounds=${rounds}&wins=${wins}&losses=${losses}&draws=${draws}`,
+			targetUrl: `/demos/rock-paper-scissors?/play&pick=paper&rounds=${rounds}&wins=${wins}&losses=${losses}&draws=${draws}`,
 		},
 		{
 			label: 'Scissors',
 			action: 'post',
-			targetUrl: `/farcaster/demos/rock-paper-scissors?/play&pick=scissors&rounds=${rounds}&wins=${wins}&losses=${losses}&draws=${draws}`,
+			targetUrl: `/demos/rock-paper-scissors?/play&pick=scissors&rounds=${rounds}&wins=${wins}&losses=${losses}&draws=${draws}`,
 		},
 	].filter(isTruthy),
 })

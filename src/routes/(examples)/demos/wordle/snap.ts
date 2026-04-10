@@ -4,18 +4,9 @@ import type { SnapExtraElements } from '$/lib/snap-page-extra'
 
 // Functions
 import { frameStateUrlFromFrame } from '$/lib/snap-page-extra'
+import { SnapAlignments, SnapGaps, SnapTextSizes } from '$/lib/snap-spec'
 
 import { parseWordleState, wordleUsedLetters } from './wordle-frame'
-
-const chunk = <Type,>(
-	values: Type[],
-	size: number,
-) => (
-	Array.from(
-		{ length: Math.ceil(values.length / size) },
-		(_, index) => values.slice(index * size, (index + 1) * size),
-	)
-)
 
 export const wordleSnapExtraElements = (
 	frame: FrameMeta,
@@ -23,7 +14,7 @@ export const wordleSnapExtraElements = (
 ) => {
 	try {
 		const stateUrl = frameStateUrlFromFrame(frame, baseUrl)
-		if (stateUrl.pathname !== '/farcaster/demos/wordle') {
+		if (stateUrl.pathname !== '/demos/wordle') {
 			return undefined
 		}
 
@@ -66,20 +57,9 @@ export const wordleSnapExtraElements = (
 				'wordle-used-stack': {
 					type: 'stack',
 					props: {
-						gap: 'sm',
+						gap: SnapGaps.Sm,
 					},
-					children: [
-						'wordle-used-title',
-						...groups.map(({ id }) => id),
-					],
-				},
-				'wordle-used-title': {
-					type: 'text',
-					props: {
-						content: 'Used letters',
-						size: 'sm',
-						align: 'center',
-					},
+					children: groups.map(({ id }) => id),
 				},
 				...Object.fromEntries(
 					groups.flatMap(({ id, label, color, letters }) => (
@@ -87,55 +67,15 @@ export const wordleSnapExtraElements = (
 							[
 								id,
 								{
-									type: 'stack',
+									type: 'text',
 									props: {
-										gap: 'sm',
-									},
-									children: [
-										`${id}-label`,
-										...chunk(letters, 6).map((_, index) => `${id}-row-${index}`),
-									],
-								},
-							],
-							[
-								`${id}-label`,
-								{
-									type: 'badge',
-									props: {
-										label: `${label} (${letters.length})`,
-										color,
-										variant: 'outline',
+										content: `${label}: ${letters.map(({ letter }) => letter).join(' ')}`,
+										size: SnapTextSizes.Sm,
+										align: SnapAlignments.Center,
+										...(color ? { color } : {}),
 									},
 								},
 							],
-							...chunk(letters, 6).flatMap((row, index) => (
-								[
-									[
-										`${id}-row-${index}`,
-										{
-											type: 'stack',
-											props: {
-												direction: 'horizontal',
-												gap: 'sm',
-												justify: 'center',
-											},
-											children: row.map(({ id }) => `${id}-badge`),
-										},
-									],
-									...row.map(({ id, letter }) => (
-										[
-											`${id}-badge`,
-											{
-												type: 'badge',
-												props: {
-													label: letter,
-													color,
-												},
-											},
-										]
-									)),
-								]
-							)),
 						] as const
 					)),
 				),

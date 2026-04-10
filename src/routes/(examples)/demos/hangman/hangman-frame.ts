@@ -1,8 +1,13 @@
 // Types
+import { AppSnapButtonRoles } from '$/lib/app-snap-tokens'
+import type { AppSnapPage } from '$/lib/snap-components'
 import type { FrameMeta } from '$/lib/frame'
 
 // Functions
 import { isTruthy } from '$/lib/isTruthy'
+import { snapButtonGroup, snapTargetButton } from '$/lib/snap-components'
+import { frameButtons } from '$/lib/frame'
+import { SnapButtonVariants, SnapDirections, SnapEffects, SnapGaps, SnapJustifyValues, SnapPaletteColors } from '$/lib/snap-spec'
 
 type HangmanStatus = 'turn' | 'invalid' | 'repeat' | 'win' | 'loss'
 
@@ -35,7 +40,7 @@ const WORDS = [
 
 const MAX_MISSES = 6
 
-const canGuess = (status: HangmanStatus) => (
+export const hangmanCanGuess = (status: HangmanStatus) => (
 	status === 'turn' || status === 'invalid' || status === 'repeat'
 )
 
@@ -164,34 +169,91 @@ export const buildHangmanFrame = ({
 	status,
 }: HangmanState): FrameMeta => ({
 	image: {
-		url: `/farcaster/demos/hangman?word=${word}&guesses=${guesses}&status=${status}`,
+		url: `/demos/hangman?word=${word}&guesses=${guesses}&status=${status}`,
 		aspectRatio: '1.91:1',
 	},
-	textInput: canGuess(status) ? 'Guess a letter' : undefined,
-	buttons: [
+	textInput: hangmanCanGuess(status) ? 'Guess a letter' : undefined,
+	buttons: frameButtons(
 		{
 			label: '‹ Demos',
 			action: 'post',
 			targetUrl: '/?/demos',
 		},
-		canGuess(status) && {
+		hangmanCanGuess(status) && {
 			label: status === 'invalid' || status === 'repeat' ? 'Try Again' : 'Guess',
 			action: 'post',
-			targetUrl: `/farcaster/demos/hangman?/guess&word=${word}&guesses=${guesses}`,
+			targetUrl: `/demos/hangman?/guess&word=${word}&guesses=${guesses}`,
 		},
-		(guesses.length > 0 || !canGuess(status)) && {
+		(guesses.length > 0 || !hangmanCanGuess(status)) && {
 			label: status === 'win' || status === 'loss' ? 'Play Again' : 'Reset',
 			action: 'post',
-			targetUrl: '/farcaster/demos/hangman?/open',
+			targetUrl: '/demos/hangman?/open',
 		},
-	].filter(isTruthy),
+	),
+})
+
+export const buildHangmanSnap = ({
+	word,
+	guesses,
+	status,
+}: HangmanState): AppSnapPage => ({
+	effects: status === 'win' ? [SnapEffects.Confetti] : undefined,
+	shareText: `Trying the Hangman demo in SKIFFLE. ${hangmanMessage({ word, guesses, status })}`,
+	theme: {
+		accent: (
+			status === 'win' ?
+				SnapPaletteColors.Green
+			: status === 'loss' || status === 'invalid' || status === 'repeat' ?
+				SnapPaletteColors.Red
+			:
+				SnapPaletteColors.Amber
+		),
+	},
+	buttons: [
+		snapButtonGroup({
+			direction: SnapDirections.Horizontal,
+			gap: SnapGaps.Sm,
+			justify: SnapJustifyValues.Center,
+			children: [
+				snapTargetButton({
+					label: '‹ Demos',
+					role: AppSnapButtonRoles.Back,
+					action: 'post',
+					targetUrl: '/?/demos',
+				}),
+				hangmanCanGuess(status) && snapTargetButton({
+					label: status === 'invalid' || status === 'repeat' ? 'Try Again' : 'Guess',
+					role: AppSnapButtonRoles.Cta,
+					variant: SnapButtonVariants.Primary,
+					action: 'post',
+					targetUrl: `/demos/hangman?/guess&word=${word}&guesses=${guesses}`,
+				}),
+			].filter(isTruthy),
+		}),
+		...(guesses.length > 0 || !hangmanCanGuess(status)
+			? [
+				snapButtonGroup({
+					direction: SnapDirections.Horizontal,
+					gap: SnapGaps.Sm,
+					justify: SnapJustifyValues.Center,
+					children: [
+						snapTargetButton({
+							label: status === 'win' || status === 'loss' ? 'Play Again' : 'Reset',
+							action: 'post',
+							targetUrl: '/demos/hangman?/open',
+						}),
+					],
+				}),
+			]
+			: []),
+	],
 })
 
 export const nextHangmanState = (
 	state: HangmanState,
 	input: string | undefined,
 ): HangmanState => {
-	if (!canGuess(state.status)) {
+	if (!hangmanCanGuess(state.status)) {
 		return state
 	}
 

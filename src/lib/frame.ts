@@ -54,6 +54,14 @@ export type FrameMeta = {
 import { isTruthy } from '$/lib/isTruthy'
 import { resolveUrl } from '$/lib/resolveUrl'
 
+export const frameButtons = (
+	...buttons: (FrameButton | undefined | false)[]
+): FrameMeta['buttons'] => (
+	buttons
+		.filter(isTruthy)
+		.slice(0, 4) as FrameMeta['buttons']
+)
+
 export const serializeFrameMeta = (
 	frameMeta: FrameMeta,
 	baseUrl?: URL | string,

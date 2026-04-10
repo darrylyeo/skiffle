@@ -1,3 +1,4 @@
+import type { AppSnapPage } from './lib/snap-components'
 import type { FrameMeta, FrameSignaturePacket } from './lib/frame'
 
 
@@ -34,6 +35,11 @@ declare global {
 			 * Farcaster frame metadata associated with this page, including image aspect ratio and buttons to render when this page's URL is embedded in a Farcaster cast.
 			 */
 			frame?: Omit<FrameMeta, 'image'> & { image?: Omit<FrameMeta['image'], 'url'> & { url?: string } },
+
+			/**
+			 * Snap-specific UI configuration returned by route loads/actions.
+			 */
+			snap?: AppSnapPage,
 		}
 
 		// interface PageState {}

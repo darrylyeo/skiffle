@@ -1,6 +1,9 @@
 // Types
-import { type FrameMeta } from '$/lib/frame'
+import { AppSnapButtonRoles } from '$/lib/app-snap-tokens'
+import { snapBackButton, snapButtonGroup, snapTargetButton } from '$/lib/snap-components'
+import { type FrameButton, type FrameMeta } from '$/lib/frame'
 import { resolve } from '$app/paths'
+import { SnapButtonVariants, SnapDirections, SnapGaps, SnapJustifyValues } from '$/lib/snap-spec'
 
 
 // Actions
@@ -29,49 +32,76 @@ export const actions: Actions = {
 			{
 				label: 'Counter',
 				action: 'post',
-				targetUrl: '/farcaster/demos/counter?/open',
-			},
-			{
-				label: 'Hangman',
-				action: 'post',
-				targetUrl: '/farcaster/demos/hangman?/open',
-			},
-			{
-				label: 'Wordle',
-				action: 'post',
-				targetUrl: '/farcaster/demos/wordle?/open',
+				targetUrl: '/demos/counter?/open',
 			},
 			{
 				label: 'Rock Paper Scissors',
 				action: 'post',
-				targetUrl: '/farcaster/demos/rock-paper-scissors?/open',
+				targetUrl: '/demos/rock-paper-scissors?/open',
 			},
 			{
 				label: 'Tic-tac-toe',
 				action: 'post',
-				targetUrl: '/farcaster/demos/tic-tac-toe?/open',
+				targetUrl: '/demos/tic-tac-toe?/open',
+			},
+			{
+				label: 'Hangman',
+				action: 'post',
+				targetUrl: '/demos/hangman?/open',
+			},
+			{
+				label: 'Wordle',
+				action: 'post',
+				targetUrl: '/demos/wordle?/open',
 			},
 			{
 				label: 'Tips',
 				action: 'post',
-				targetUrl: '/farcaster/demos/tips?/open',
+				targetUrl: '/demos/tips?/open',
 			},
-			// {
-			// 	label: 'Mint',
-			// 	action: 'mint',
-			// 	targetUrl: 'eip155:7777777:0x55f5a5d980992e01256d86e7ef03a22fd5fe84af',
-			// },
-			// {
-			// 	label: 'Useless Tx',
-			// 	action: 'tx',
-			// 	targetUrl: '/tx',
-			// },
-		]
+		] satisfies FrameButton[]
 
 		const itemsPerPage = 2
 		const totalPages = Math.ceil(demos.length / itemsPerPage)
+		const pageDemos = demos.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage)
 		
 		return {
+			snap: {
+				shareText: 'Browsing the routes in the SKIFFLE demo and how the project maps them into Farcaster interactions.',
+				buttons: [
+					snapButtonGroup({
+						direction: SnapDirections.Horizontal,
+						gap: SnapGaps.Sm,
+						justify: SnapJustifyValues.Center,
+						children: [
+							snapBackButton('/'),
+							snapTargetButton({
+								label: 'More Demos ›',
+								role: AppSnapButtonRoles.Pager,
+								action: 'post',
+								targetUrl: `?${new URLSearchParams({
+									...Object.fromEntries(url.searchParams.entries()),
+									page: String((currentPage + 1) % totalPages),
+								})}`,
+							}),
+						],
+					}),
+					snapButtonGroup({
+						direction: SnapDirections.Horizontal,
+						gap: SnapGaps.Sm,
+						justify: SnapJustifyValues.Center,
+						children: [
+							...pageDemos.map((demo) => snapTargetButton({
+								label: demo.label,
+								role: AppSnapButtonRoles.Cta,
+								variant: SnapButtonVariants.Primary,
+								action: demo.action,
+								targetUrl: demo.targetUrl,
+							})),
+						],
+					}),
+				],
+			},
 			frame: {
 				image: {
 					url: '.',
@@ -83,7 +113,7 @@ export const actions: Actions = {
 						action: 'post',
 						targetUrl: '/',
 					},
-					...demos.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage),
+					...pageDemos,
 					{
 						label: 'More Demos ›',
 						action: 'post',

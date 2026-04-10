@@ -1,17 +1,9 @@
 <script lang="ts">
 	// Types/constants
-	import { hangmanLetters, hangmanLives, hangmanMessage, hangmanMisses, hangmanUsedLetters } from './hangman-frame'
-
-	type Props = {
-		data: {
-			word: number
-			guesses: string
-			status: 'turn' | 'invalid' | 'repeat' | 'win' | 'loss'
-		}
-	}
+	import type { PageData } from './$types'
 
 	// Props
-	let { data }: Props = $props()
+	let { data }: { data: PageData } = $props()
 </script>
 
 
@@ -19,17 +11,17 @@
 	<header>
 		<p>Word Game</p>
 		<h1>Hangman</h1>
-		<strong>{hangmanMessage(data)}</strong>
+		<strong>{data.message}</strong>
 	</header>
 
 	<div class="lives" aria-label="Lives">
-		{#each hangmanLives(data) as alive, index (`life:${index}`)}
+		{#each data.lives as alive, index (`life:${index}`)}
 			<span data-alive={alive}></span>
 		{/each}
 	</div>
 
 	<div class="word" aria-label="Hidden word">
-		{#each hangmanLetters(data) as letter (letter.id)}
+		{#each data.letters as letter (letter.id)}
 			<span data-revealed={letter.revealed}>
 				{letter.revealed ? letter.label : '_'}
 			</span>
@@ -40,8 +32,8 @@
 		<div class="panel">
 			<p>Used</p>
 			<div class="used" aria-label="Used guesses">
-				{#if hangmanUsedLetters(data).length}
-					{#each hangmanUsedLetters(data) as letter (letter.id)}
+				{#if data.usedLetters.length}
+					{#each data.usedLetters as letter (letter.id)}
 						<span data-hit={letter.hit}>{letter.label}</span>
 					{/each}
 				{:else}
@@ -53,8 +45,8 @@
 		<div class="panel">
 			<p>Misses</p>
 			<div class="misses" aria-label="Missed guesses">
-				{#if hangmanMisses(data).length}
-					{#each hangmanMisses(data) as miss (`miss:${miss}`)}
+				{#if data.misses.length}
+					{#each data.misses as miss (`miss:${miss}`)}
 						<span>{miss}</span>
 					{/each}
 				{:else}
