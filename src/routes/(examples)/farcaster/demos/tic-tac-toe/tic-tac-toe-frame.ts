@@ -1,11 +1,20 @@
 // Types
 import type { FrameMeta } from '$/lib/frame'
 
+// Functions
+import { isTruthy } from '$/lib/isTruthy'
+
 type TicTacToeStatus = 'turn' | 'invalid' | 'x-win' | 'o-win' | 'draw'
 
 type TicTacToeState = {
 	board: string,
 	status: TicTacToeStatus,
+}
+
+export type TicTacToeCell = {
+	id: string,
+	label: string,
+	highlighted: boolean,
 }
 
 const EMPTY_BOARD = '---------'
@@ -65,6 +74,22 @@ const withMove = (
 	`${board.slice(0, index)}${mark}${board.slice(index + 1)}`
 )
 
+const winningLine = (board: string) => (
+	WIN_LINES.find(([a, b, c]) => (
+		board[a] !== '-'
+		&& board[a] === board[b]
+		&& board[b] === board[c]
+	))
+)
+
+const canPlay = (status: TicTacToeStatus) => (
+	status === 'turn' || status === 'invalid'
+)
+
+const isFreshBoard = (board: string) => (
+	board === EMPTY_BOARD
+)
+
 export const parseTicTacToeState = (url: URL): TicTacToeState => {
 	const board = normalizeBoard(url.searchParams.get('board'))
 	const terminal = boardTerminalStatus(board)
@@ -89,15 +114,24 @@ export const ticTacToeMessage = (status: TicTacToeStatus) => (
 		'Enter your move (1-9).'
 )
 
-export const ticTacToeBoardRows = (board: string) => (
+export const ticTacToeBoardRows = (board: string): TicTacToeCell[][] => (
 	[
 		board.slice(0, 3),
 		board.slice(3, 6),
 		board.slice(6, 9),
-	].map((row) => (
-		row
-			.split('')
-			.map((cell) => cell === '-' ? '·' : cell)
+	].map((row, rowIndex) => (
+		row.split('').map((cell, cellIndex) => ({
+			id: `${rowIndex}:${cellIndex}`,
+			label: (
+				cell === '-'
+					? String(rowIndex * 3 + cellIndex + 1)
+					: cell
+			),
+			highlighted: (
+				winningLine(board)?.includes(rowIndex * 3 + cellIndex)
+				?? false
+			),
+		}))
 	))
 )
 
@@ -106,24 +140,24 @@ export const buildTicTacToeFrame = ({ board, status }: TicTacToeState): FrameMet
 		url: `/farcaster/demos/tic-tac-toe?board=${board}&status=${status}`,
 		aspectRatio: '1.91:1',
 	},
-	textInput: 'Move (1-9)',
+	textInput: canPlay(status) ? 'Move (1-9)' : undefined,
 	buttons: [
 		{
 			label: '‹ Demos',
 			action: 'post',
 			targetUrl: '/?/demos',
 		},
-		{
-			label: 'Play',
+		canPlay(status) && {
+			label: status === 'invalid' ? 'Try Again' : 'Play',
 			action: 'post',
 			targetUrl: `/farcaster/demos/tic-tac-toe?/play&board=${board}`,
 		},
-		{
-			label: 'Reset',
+		(!isFreshBoard(board) || !canPlay(status)) && {
+			label: canPlay(status) ? 'Reset' : 'Play Again',
 			action: 'post',
 			targetUrl: '/farcaster/demos/tic-tac-toe?/open',
 		},
-	],
+	].filter(isTruthy),
 })
 
 export const nextTicTacToeState = (

@@ -326,6 +326,30 @@ const snapCaptionForFrame = (
 	}
 }
 
+const snapEffectsForFrame = (
+	frame: FrameMeta,
+	baseUrl: URL | string,
+) => {
+	try {
+		const stateUrl = new URL(
+			resolveUrl(
+				frame.image.url || String(baseUrl),
+				baseUrl,
+			),
+		)
+
+		return (
+			stateUrl.searchParams.get('status') === 'x-win'
+			|| stateUrl.searchParams.get('status') === 'win'
+			|| stateUrl.searchParams.get('outcome') === 'win'
+		)
+			? ['confetti']
+			: undefined
+	} catch {
+		return undefined
+	}
+}
+
 export const framePageToSnap = (
 	{ title, frame }: FramePage,
 	baseUrl: URL | string,
@@ -373,7 +397,15 @@ export const framePageToSnap = (
 		hero: {
 			type: 'image',
 			props: {
-				url: snapResolvedUrl(frameImageUrlForCurrentPage(baseUrl), baseUrl),
+				url: snapResolvedUrl(
+					frameImageUrlForCurrentPage(
+						resolveUrl(
+							frame.image.url || String(baseUrl),
+							baseUrl,
+						),
+					),
+					baseUrl,
+				),
 				aspect: frameAspectRatioToSnapAspect(frame.image.aspectRatio),
 				alt: title ?? 'SKIFFLE preview',
 			},
@@ -459,6 +491,7 @@ export const framePageToSnap = (
 
 	return {
 		version: '1.0',
+		effects: snapEffectsForFrame(frame, baseUrl),
 		theme: { accent: 'purple' },
 		ui: {
 			root: 'page',

@@ -37,14 +37,24 @@ export const actions: Actions = {
 				targetUrl: '/farcaster/demos/tips?/open',
 			},
 			{
+				label: 'Hangman',
+				action: 'post',
+				targetUrl: '/farcaster/demos/hangman?/open',
+			},
+			{
+				label: 'Wordle',
+				action: 'post',
+				targetUrl: '/farcaster/demos/wordle?/open',
+			},
+			{
+				label: 'Rock Paper Scissors',
+				action: 'post',
+				targetUrl: '/farcaster/demos/rock-paper-scissors?/open',
+			},
+			{
 				label: 'Tic-tac-toe',
 				action: 'post',
 				targetUrl: '/farcaster/demos/tic-tac-toe?/open',
-			},
-			{
-				label: 'Coin Flip',
-				action: 'post',
-				targetUrl: '/farcaster/demos/coin-flip?/open',
 			},
 			// {
 			// 	label: 'Mint',
