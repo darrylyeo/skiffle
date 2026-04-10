@@ -6,6 +6,7 @@ import {
 	buildCoinFlipFrame,
 	buildCoinFlipSnap,
 	coinFlipFace,
+	coinFlipHistoryBadges,
 	coinFlipMessage,
 	coinFlipStateFromHref,
 	freshCoinFlipState,
@@ -20,6 +21,8 @@ export const load: PageServerLoad = ({ url }) => {
 		title: 'Coin Flip',
 		...state,
 		face: coinFlipFace(state),
+		hasEdge: state.edge > 0,
+		historyBadges: coinFlipHistoryBadges(state),
 		message: coinFlipMessage(state),
 		frame: buildCoinFlipFrame(state),
 		snap: buildCoinFlipSnap(state),
@@ -32,6 +35,8 @@ export const actions: Actions = {
 
 		return {
 			...state,
+			hasEdge: state.edge > 0,
+			historyBadges: coinFlipHistoryBadges(state),
 			frame: buildCoinFlipFrame(state),
 			snap: buildCoinFlipSnap(state),
 		}
@@ -48,6 +53,8 @@ export const actions: Actions = {
 
 		return {
 			...next,
+			hasEdge: next.edge > 0,
+			historyBadges: coinFlipHistoryBadges(next),
 			frame: buildCoinFlipFrame(next),
 			snap: buildCoinFlipSnap(next),
 		}

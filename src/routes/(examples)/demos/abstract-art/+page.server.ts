@@ -15,11 +15,12 @@ import {
 
 export const load: PageServerLoad = ({ url }) => {
 	const state = parseAbstractArtState(url)
+	const view = abstractArtView(state)
 
 	return {
-		title: 'Abstract Art',
+		title: view.title,
 		...state,
-		...abstractArtView(state),
+		...view,
 		frame: buildAbstractArtFrame(state),
 		snap: buildAbstractArtSnap(state),
 	}

@@ -9,7 +9,6 @@
 
 <article class="column">
 	<header class="column">
-		<p class="eyebrow">Abstract art</p>
 		<div class="meta row inline">
 			<h2>{data.title}</h2>
 			<p class="badge">{data.paletteName}</p>
@@ -46,8 +45,8 @@
 	article {
 		height: 100%;
 		min-height: 0;
-		gap: 0.85em;
-		padding: 0.2em 0.35em 0.35em;
+		gap: 1.15em;
+		padding: 0.45em 0.55em 0.55em;
 		border-radius: 1.65em;
 		overflow: hidden;
 		background:
@@ -57,17 +56,9 @@
 	}
 
 	header.column {
-		gap: 0.45em;
+		gap: 0.5em;
+		padding: 0.25em 0.15em 0;
 		flex-shrink: 0;
-	}
-
-	.eyebrow {
-		margin: 0;
-		font-size: 0.72em;
-		font-weight: 800;
-		letter-spacing: 0.18em;
-		text-transform: uppercase;
-		color: rgba(255, 230, 210, 0.72);
 	}
 
 	.meta {
@@ -110,6 +101,7 @@
 		border-radius: 1.35em;
 		overflow: hidden;
 		box-sizing: border-box;
+		margin: 0.1em 0;
 	}
 
 	.stage > .mark {
@@ -126,6 +118,7 @@
 
 	footer.column {
 		gap: 0.35em;
+		padding: 0 0.15em 0.2em;
 		flex-shrink: 0;
 	}
 

@@ -23,6 +23,7 @@ export type AbstractArtView = {
 	paletteName: string
 	caption: string
 	sceneStyle: string
+	backgroundStyle: string
 	veilStyle: string
 	shapes: AbstractArtShape[]
 }
@@ -211,10 +212,21 @@ export const abstractArtView = (state: AbstractArtState): AbstractArtView => {
 		paletteName: palette.name,
 		caption,
 		sceneStyle: `background:radial-gradient(circle at 18% 18%, ${rgba(palette.colors[0], 0.34)}, transparent 26%), radial-gradient(circle at 82% 16%, ${rgba(palette.colors[1], 0.26)}, transparent 24%), radial-gradient(circle at 50% 100%, ${rgba(palette.colors[2], 0.18)}, transparent 38%), linear-gradient(135deg, ${palette.background[0]}, ${palette.background[1]}); border:1px solid ${rgba('#ffffff', 0.1)}; box-shadow:inset 0 1px 0 ${rgba('#ffffff', 0.12)}, 0 24px 60px ${rgba(palette.shadow, 0.34)};`,
+		backgroundStyle: `background:radial-gradient(circle at 18% 18%, ${rgba(palette.colors[0], 0.28)}, transparent 26%), radial-gradient(circle at 82% 16%, ${rgba(palette.colors[1], 0.2)}, transparent 24%), radial-gradient(circle at 50% 100%, ${rgba(palette.colors[2], 0.16)}, transparent 38%), linear-gradient(135deg, ${palette.background[0]}, ${palette.background[1]});`,
 		veilStyle: `background:linear-gradient(135deg, ${rgba('#ffffff', 0.12)}, ${rgba('#ffffff', 0)} 32%, ${rgba(palette.colors[3], 0.08)} 64%, ${rgba('#ffffff', 0)}); opacity:0.9; transform:rotate(${(-8 + rand() * 16).toFixed(1)}deg) scale(1.08);`,
 		shapes,
 	}
 }
+
+export const abstractArtBackgroundView = (
+	seed: number,
+	palette: number,
+) => (
+	abstractArtView({
+		seed: normalizeSeed(seed),
+		palette: normalizePalette(palette),
+	})
+)
 
 export const buildAbstractArtFrame = (state: AbstractArtState): FrameMeta => ({
 	image: {
