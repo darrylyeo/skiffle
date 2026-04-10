@@ -16,32 +16,60 @@ export const CHANNELS_PAGE_SIZE = 4
 /** Link buttons per frame page, limited by frame button constraints. */
 export const CHANNELS_FRAME_PAGE_SIZE = 2
 
-/** Max channel cards rendered on the HTML page for the current `page` query. */
-export const CHANNELS_LIST_MAX = 8
+export const CHANNELS_WEB_STEP = 8
+
+const normalizedPage = (
+	page: number,
+	totalPages: number,
+) => (
+	Number.isFinite(page)
+		? Math.min(Math.max(0, Math.trunc(page)), totalPages - 1)
+		: 0
+)
+
+const normalizedVisibleCount = (
+	count: number,
+	totalCount: number,
+) => (
+	totalCount === 0
+		? 0
+		: Number.isFinite(count)
+			? Math.min(
+				totalCount,
+				Math.max(CHANNELS_WEB_STEP, Math.trunc(count)),
+			)
+			: Math.min(CHANNELS_WEB_STEP, totalCount)
+)
+
+const channelDetailUrl = (channelId: string) => (
+	`/farcaster/channels/channel/${encodeURIComponent(channelId)}`
+)
 
 export const channelsPagination = (
 	channels: DemoChannel[],
 	url: URL,
 ) => {
-	const currentPage = Number(url.searchParams.get('page') ?? 0)
-	const offset = currentPage * CHANNELS_PAGE_SIZE
 	const totalPages = Math.max(1, Math.ceil(channels.length / CHANNELS_PAGE_SIZE))
+	const currentPage = normalizedPage(Number(url.searchParams.get('page') ?? 0), totalPages)
+	const offset = currentPage * CHANNELS_PAGE_SIZE
 	const shownForPage = channels.slice(
 		offset,
 		offset + CHANNELS_PAGE_SIZE,
 	)
 
 	const shownForFrame = shownForPage.slice(0, CHANNELS_FRAME_PAGE_SIZE)
-
+	const visibleCount = normalizedVisibleCount(Number(url.searchParams.get('count') ?? CHANNELS_WEB_STEP), channels.length - offset)
 	const displayChannels = channels.slice(
 		offset,
-		offset + CHANNELS_LIST_MAX,
+		offset + visibleCount,
 	)
 
 	return {
 		currentPage,
-		totalPages,
 		displayChannels,
+		hasMoreChannels: offset + visibleCount < channels.length,
+		totalPages,
+		visibleCount,
 		shownForPage,
 		shownForFrame,
 	}
@@ -69,8 +97,8 @@ const frameMetaFromPaginationState = ({
 				},
 				...shownForFrame.map((channel) => ({
 					label: channel.name.slice(0, 32),
-					action: 'link' as const,
-					targetUrl: channel.url,
+					action: 'post' as const,
+					targetUrl: `${channelDetailUrl(channel.id)}?/open`,
 				})),
 				currentPage < totalPages - 1
 					? {
@@ -132,10 +160,10 @@ const snapFromPaginationState = ({
 			justify: SnapJustifyValues.Center,
 			children: shownForPage.slice(0, 2).map((channel) => snapTargetButton({
 				label: channel.name.slice(0, 32),
-				role: AppSnapButtonRoles.External,
+				role: AppSnapButtonRoles.Cta,
 				variant: SnapButtonVariants.Primary,
-				action: 'link',
-				targetUrl: channel.url,
+				action: 'post',
+				targetUrl: `${channelDetailUrl(channel.id)}?/open`,
 			})),
 		}),
 		...(shownForPage.length > 2
@@ -146,10 +174,10 @@ const snapFromPaginationState = ({
 					justify: SnapJustifyValues.Center,
 					children: shownForPage.slice(2).map((channel) => snapTargetButton({
 						label: channel.name.slice(0, 32),
-						role: AppSnapButtonRoles.External,
+						role: AppSnapButtonRoles.Cta,
 						variant: SnapButtonVariants.Primary,
-						action: 'link',
-						targetUrl: channel.url,
+						action: 'post',
+						targetUrl: `${channelDetailUrl(channel.id)}?/open`,
 					})),
 				}),
 			]
@@ -163,9 +191,12 @@ export const channelsPageView = (
 ) => {
 	const state = channelsPagination(channels, url)
 	return {
+		currentPage: state.currentPage,
 		displayChannels: state.displayChannels,
 		frame: frameMetaFromPaginationState(state),
+		hasMoreChannels: state.hasMoreChannels,
 		snap: snapFromPaginationState(state),
+		visibleCount: state.visibleCount,
 	}
 }
 

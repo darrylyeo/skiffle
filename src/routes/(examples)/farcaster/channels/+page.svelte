@@ -1,6 +1,6 @@
 <script lang="ts">
 	// Types/constants
-	import type { DemoChannel } from '../api/farcaster-client'
+	import type { PageData } from './$types'
 
 	const channelHostname = (href: string) => {
 		try {
@@ -28,14 +28,12 @@
 			|| 'FC'
 	)
 
-	type Props = {
-		data: {
-			displayChannels: DemoChannel[]
-		}
-	}
+	const channelDetailHref = (channelId: string) => (
+		`/farcaster/channels/channel/${encodeURIComponent(channelId)}`
+	)
 
 	// Props
-	let { data }: Props = $props()
+	let { data }: { data: PageData } = $props()
 </script>
 
 
@@ -54,7 +52,7 @@
 			{@const hostname = channelHostname(channel.url)}
 			{@const description = channelDescription(channel.description)}
 
-			<section class="card column">
+			<a class="card column" href={channelDetailHref(channel.id)}>
 				<div class="badge">{channelInitials(channel.name)}</div>
 
 				<div class="body column">
@@ -67,15 +65,25 @@
 						<span><strong>{channel.followerCount.toLocaleString()}</strong> followers</span>
 						<span>·</span>
 						<span><strong>{channel.memberCount.toLocaleString()}</strong> members</span>
+						{#if channel.castingMode}
+							<span>·</span>
+							<span>{channel.castingMode}</span>
+						{/if}
 					</p>
 
 					<p class="description">
 						{description}{description.length < channel.description.trim().length ? '...' : ''}
 					</p>
 				</div>
-			</section>
+			</a>
 		{/each}
 	</div>
+
+	{#if data.hasMoreChannels}
+		<p class="more row">
+			<a href={`?page=${data.currentPage}&count=${data.visibleCount + 8}`}>Load more channels</a>
+		</p>
+	{/if}
 </article>
 
 
@@ -93,6 +101,7 @@
 	}
 
 	.card {
+		display: flex;
 		justify-content: flex-start;
 		padding: 1.1em;
 		border-radius: 1em;
@@ -100,6 +109,8 @@
 			linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03)),
 			rgba(35, 17, 61, 0.3);
 		border: 1px solid rgba(255, 255, 255, 0.08);
+		color: inherit;
+		text-decoration: none;
 	}
 
 	.badge {
@@ -145,6 +156,19 @@
 
 	.annotation a {
 		color: inherit;
+	}
+
+	.more {
+		justify-content: center;
+	}
+
+	.more a {
+		padding: 0.75em 1.1em;
+		border: 1px solid rgba(255, 255, 255, 0.14);
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.06);
+		color: rgba(255, 255, 255, 0.9);
+		text-decoration: none;
 	}
 
 	.url.row.inline {

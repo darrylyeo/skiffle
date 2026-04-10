@@ -7,13 +7,16 @@ export const load: PageLoad = async ({
 	data,
 	url,
 }) => {
-	const { displayChannels, frame, snap } = channelsPageView(data.channels, url)
+	const { currentPage, displayChannels, frame, hasMoreChannels, snap, visibleCount } = channelsPageView(data.channels, url)
 
 	return {
+		currentPage,
 		...data,
 		title: 'Popular Farcaster channels',
 		displayChannels,
 		frame,
+		hasMoreChannels,
 		snap,
+		visibleCount,
 	}
 }
