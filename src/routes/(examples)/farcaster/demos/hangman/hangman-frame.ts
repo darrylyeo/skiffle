@@ -18,6 +18,12 @@ export type HangmanLetter = {
 	revealed: boolean,
 }
 
+export type HangmanUsedLetter = {
+	id: string,
+	label: string,
+	hit: boolean,
+}
+
 const WORDS = [
 	'svelte',
 	'caster',
@@ -127,6 +133,17 @@ export const hangmanMisses = ({
 	guesses,
 }: HangmanState) => (
 	missesForState(word, guesses).map((letter) => letter.toUpperCase())
+)
+
+export const hangmanUsedLetters = ({
+	word,
+	guesses,
+}: HangmanState): HangmanUsedLetter[] => (
+	[...guesses].map((letter, index) => ({
+		id: `${letter}:${index}`,
+		label: letter.toUpperCase(),
+		hit: WORDS[normalizeWordIndex(word)].includes(letter),
+	}))
 )
 
 export const hangmanLives = ({

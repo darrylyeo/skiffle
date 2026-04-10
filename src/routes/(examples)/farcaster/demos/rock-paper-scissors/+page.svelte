@@ -100,6 +100,10 @@
 		gap: 1.1em;
 		padding: 0 0.35em;
 		overflow: hidden;
+		background:
+			radial-gradient(circle at top left, rgba(255, 129, 72, 0.28), transparent 34%),
+			radial-gradient(circle at top right, rgba(138, 99, 210, 0.3), transparent 44%),
+			linear-gradient(140deg, #8a63d2 0%, #5c3099 50%, #ff5b1f 100%);
 	}
 
 	header {
@@ -111,7 +115,7 @@
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: rgba(255, 255, 255, 0.68);
+		color: rgba(255, 228, 216, 0.8);
 	}
 
 	h2 {
@@ -124,7 +128,7 @@
 		max-width: 25em;
 		font-size: 0.92em;
 		line-height: 1.35;
-		color: rgba(255, 255, 255, 0.72);
+		color: rgba(255, 241, 234, 0.78);
 	}
 
 	.matchup {
@@ -147,17 +151,18 @@
 		gap: 0.25em;
 		border-radius: 0.8em;
 		background:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)),
-			rgba(0, 0, 0, 0.18);
+			linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05)),
+			rgba(54, 20, 94, 0.32);
 		box-shadow:
-			inset 0 1px 0 rgba(255, 255, 255, 0.08),
-			0 0.5em 1.5em rgba(0, 0, 0, 0.15);
+			inset 0 1px 0 rgba(255, 255, 255, 0.12),
+			0 0.8em 1.8em rgba(48, 17, 82, 0.22);
+		border: 1px solid rgba(255, 232, 223, 0.12);
 	}
 
 	.choice > span,
 	.metric > span {
 		font-size: 0.78em;
-		color: rgba(255, 255, 255, 0.68);
+		color: rgba(255, 232, 223, 0.74);
 	}
 
 	.choice > strong,
@@ -178,14 +183,14 @@
 
 	.choice[data-role="player"] {
 		background:
-			linear-gradient(180deg, rgba(56, 189, 248, 0.18), rgba(255, 255, 255, 0.03)),
-			rgba(0, 0, 0, 0.18);
+			linear-gradient(180deg, rgba(255, 154, 88, 0.24), rgba(255, 255, 255, 0.05)),
+			rgba(69, 28, 117, 0.32);
 	}
 
 	.choice[data-role="cpu"] {
 		background:
-			linear-gradient(180deg, rgba(251, 113, 133, 0.16), rgba(255, 255, 255, 0.03)),
-			rgba(0, 0, 0, 0.18);
+			linear-gradient(180deg, rgba(170, 123, 255, 0.22), rgba(255, 255, 255, 0.05)),
+			rgba(69, 28, 117, 0.32);
 	}
 
 	.versus {
@@ -195,22 +200,23 @@
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		background-color: rgba(0, 0, 0, 0.2);
-		color: rgba(255, 255, 255, 0.75);
+		background-color: rgba(67, 27, 114, 0.42);
+		color: rgba(255, 241, 234, 0.82);
+		border: 1px solid rgba(255, 232, 223, 0.12);
 	}
 
 	article[data-outcome="win"] .versus {
-		background-color: rgba(34, 197, 94, 0.22);
-		color: rgba(240, 253, 244, 0.95);
+		background-color: rgba(255, 106, 47, 0.34);
+		color: rgba(255, 245, 239, 0.96);
 	}
 
 	article[data-outcome="loss"] .versus {
-		background-color: rgba(239, 68, 68, 0.22);
-		color: rgba(254, 242, 242, 0.95);
+		background-color: rgba(118, 70, 186, 0.34);
+		color: rgba(247, 241, 255, 0.96);
 	}
 
 	article[data-outcome="draw"] .versus {
-		background-color: rgba(255, 255, 255, 0.16);
+		background-color: rgba(83, 41, 138, 0.38);
 	}
 
 	.confetti {

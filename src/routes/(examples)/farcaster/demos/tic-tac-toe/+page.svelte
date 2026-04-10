@@ -14,6 +14,7 @@
 			rows: {
 				id: string,
 				label: string,
+				occupied: boolean,
 				highlighted: boolean,
 			}[][],
 			message: string,
@@ -61,7 +62,7 @@
 		{#each data.rows as row, rowIndex (`row:${rowIndex}`)}
 			<div class='board-row'>
 				{#each row as cell (cell.id)}
-					<div class='cell' data-highlighted={cell.highlighted}>
+					<div class='cell' data-occupied={cell.occupied} data-highlighted={cell.highlighted}>
 						{cell.label}
 					</div>
 				{/each}
@@ -89,9 +90,13 @@
 		justify-content: center;
 		align-items: center;
 		text-align: center;
-		gap: 1.15em;
-		padding: 0 0.35em;
+		gap: 1.05em;
+		padding: 0.45em 0.55em 0.7em;
 		overflow: hidden;
+		background:
+			radial-gradient(circle at top left, rgba(255, 129, 72, 0.26), transparent 32%),
+			radial-gradient(circle at top right, rgba(138, 99, 210, 0.28), transparent 44%),
+			linear-gradient(160deg, #8a63d2 0%, #5c3099 56%, #ff5b1f 100%);
 	}
 
 	header {
@@ -99,41 +104,42 @@
 	}
 
 	.eyebrow {
-		font-size: 0.78em;
+		font-size: 0.76em;
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: rgba(255, 255, 255, 0.68);
+		color: rgba(255, 227, 214, 0.8);
 	}
 
 	h2 {
-		font-size: 1.6em;
+		font-size: 1.62em;
 		font-weight: 700;
 		color: rgba(255, 255, 255, 0.95);
 	}
 
 	.annotation {
-		max-width: 24em;
-		font-size: 0.92em;
+		max-width: 19em;
+		font-size: 0.9em;
 		line-height: 1.35;
-		color: rgba(255, 255, 255, 0.72);
+		color: rgba(255, 241, 234, 0.78);
 	}
 
 	.board {
-		gap: 0.35em;
-		padding: 0.9em;
-		border-radius: 1em;
+		gap: 0.5em;
+		padding: 0.95em;
+		border-radius: 1.2em;
 		background:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)),
-			rgba(0, 0, 0, 0.18);
+			linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05)),
+			rgba(56, 21, 98, 0.34);
 		box-shadow:
-			inset 0 1px 0 rgba(255, 255, 255, 0.08),
-			0 0.5em 1.5em rgba(0, 0, 0, 0.16);
+			inset 0 1px 0 rgba(255, 255, 255, 0.12),
+			0 0.9em 2em rgba(49, 17, 84, 0.22);
+		border: 1px solid rgba(255, 232, 223, 0.12);
 	}
 
 	.board-row {
 		display: flex;
-		gap: 0.35em;
+		gap: 0.5em;
 	}
 
 	.board-row > * {
@@ -144,54 +150,63 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 2.45em;
-		height: 2.45em;
-		border-radius: 0.5em;
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		font-size: 1.65em;
+		width: 2.65em;
+		height: 2.65em;
+		border-radius: 0.7em;
+		border: 1px solid rgba(255, 232, 223, 0.12);
+		font-size: 1.9em;
 		font-weight: 700;
-		background-color: rgba(255, 255, 255, 0.12);
-		color: rgba(255, 255, 255, 0.95);
-		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+		background-color: rgba(62, 26, 106, 0.42);
+		color: rgba(255, 255, 255, 0.96);
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 	}
 
-	.cell[data-highlighted='true'] {
-		background-color: rgba(56, 189, 248, 0.28);
-		border-color: rgba(125, 211, 252, 0.45);
+	.cell[data-occupied="false"] {
+		color: rgba(255, 233, 223, 0.58);
+	}
+
+	.cell[data-highlighted="true"] {
+		background:
+			linear-gradient(180deg, rgba(255, 171, 112, 0.3), rgba(255, 255, 255, 0.04)),
+			rgba(255, 98, 38, 0.3);
+		border-color: rgba(255, 196, 153, 0.48);
 		box-shadow:
 			inset 0 1px 0 rgba(255, 255, 255, 0.15),
-			0 0 0.8em rgba(56, 189, 248, 0.2);
+			0 0 0.8em rgba(255, 128, 73, 0.2);
 	}
 
-	.board[data-status='draw'] .cell {
-		background-color: rgba(255, 255, 255, 0.16);
+	.board[data-status="draw"] .cell {
+		background-color: rgba(93, 49, 152, 0.42);
 	}
 
-	article[data-status='o-win'] .board {
+	article[data-status="o-win"] .board {
 		background:
-			linear-gradient(180deg, rgba(248, 113, 113, 0.12), rgba(255, 255, 255, 0.03)),
-			rgba(0, 0, 0, 0.18);
+			linear-gradient(180deg, rgba(119, 70, 186, 0.26), rgba(255, 255, 255, 0.05)),
+			rgba(56, 21, 98, 0.34);
 	}
 
 	.legend {
-		gap: 0.75em;
+		gap: 0.72em;
 		justify-content: center;
 	}
 
 	.chip {
-		min-width: 5.5em;
-		padding: 0.55em 0.75em;
+		min-width: 5.8em;
+		padding: 0.6em 0.8em;
 		border-radius: 0.7em;
-		background-color: rgba(0, 0, 0, 0.18);
+		background:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)),
+			rgba(56, 21, 98, 0.28);
+		border: 1px solid rgba(255, 232, 223, 0.1);
 	}
 
 	.chip > span {
 		font-size: 0.76em;
-		color: rgba(255, 255, 255, 0.65);
+		color: rgba(255, 233, 223, 0.72);
 	}
 
 	.chip > strong {
-		font-size: 1.3em;
+		font-size: 1.32em;
 		color: rgba(255, 255, 255, 0.96);
 	}
 

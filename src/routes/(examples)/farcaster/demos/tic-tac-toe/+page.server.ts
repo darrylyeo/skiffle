@@ -34,7 +34,7 @@ const actionInputText = async ({
 			request
 				.formData()
 				.then((formData) => (
-					`${formData.get('text') ?? ''}`.trim()
+					`${formData.get('inputText') ?? ''}`.trim()
 				))
 				.catch(() => '')
 		)

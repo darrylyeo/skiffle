@@ -14,6 +14,7 @@ type TicTacToeState = {
 export type TicTacToeCell = {
 	id: string,
 	label: string,
+	occupied: boolean,
 	highlighted: boolean,
 }
 
@@ -127,6 +128,7 @@ export const ticTacToeBoardRows = (board: string): TicTacToeCell[][] => (
 					? String(rowIndex * 3 + cellIndex + 1)
 					: cell
 			),
+			occupied: cell !== '-',
 			highlighted: (
 				winningLine(board)?.includes(rowIndex * 3 + cellIndex)
 				?? false
@@ -138,7 +140,7 @@ export const ticTacToeBoardRows = (board: string): TicTacToeCell[][] => (
 export const buildTicTacToeFrame = ({ board, status }: TicTacToeState): FrameMeta => ({
 	image: {
 		url: `/farcaster/demos/tic-tac-toe?board=${board}&status=${status}`,
-		aspectRatio: '1.91:1',
+		aspectRatio: '1:1',
 	},
 	textInput: canPlay(status) ? 'Move (1-9)' : undefined,
 	buttons: [

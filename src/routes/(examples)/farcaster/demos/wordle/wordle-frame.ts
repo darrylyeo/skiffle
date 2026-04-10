@@ -18,6 +18,12 @@ export type WordleCell = {
 	state: 'correct' | 'present' | 'miss' | 'empty',
 }
 
+export type WordleUsedLetter = {
+	id: string,
+	letter: string,
+	state: 'correct' | 'present' | 'miss',
+}
+
 const WORDS = [
 	'frame',
 	'casts',
@@ -120,6 +126,18 @@ const evaluationForGuess = (
 	return states
 }
 
+const mergedWordleLetterState = (
+	current: WordleUsedLetter['state'] | undefined,
+	next: WordleUsedLetter['state'],
+) => (
+	current === 'correct' || next === 'correct' ?
+		'correct'
+	: current === 'present' || next === 'present' ?
+		'present'
+	:
+		'miss'
+)
+
 export const wordleRows = ({
 	word,
 	guesses,
@@ -138,6 +156,32 @@ export const wordleRows = ({
 			state: states[columnIndex],
 		}))
 	})
+}
+
+export const wordleUsedLetters = ({
+	word,
+	guesses,
+}: WordleState): WordleUsedLetter[] => {
+	const letters = new Map<string, WordleUsedLetter['state']>()
+	const target = wordForIndex(word)
+
+	for (const guess of guesses) {
+		for (const [index, letter] of [...guess.toUpperCase()].entries()) {
+			letters.set(
+				letter,
+				mergedWordleLetterState(
+					letters.get(letter),
+					evaluationForGuess(target, guess)[index],
+				),
+			)
+		}
+	}
+
+	return [...letters.entries()].map(([letter, state], index) => ({
+		id: `${letter}:${index}`,
+		letter,
+		state,
+	}))
 }
 
 export const wordleMessage = ({
@@ -164,7 +208,7 @@ export const buildWordleFrame = ({
 }: WordleState): FrameMeta => ({
 	image: {
 		url: `/farcaster/demos/wordle?word=${word}&guesses=${guesses.join(',')}&status=${status}`,
-		aspectRatio: '1.91:1',
+		aspectRatio: '1:1',
 	},
 	textInput: canGuess(status) ? 'Enter a 5-letter word' : undefined,
 	buttons: [

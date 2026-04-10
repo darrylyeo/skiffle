@@ -1,6 +1,6 @@
 <script lang="ts">
-	// Functions
-	import { isValidHttpUrl } from '../api/farcaster-client'
+	// Types/constants
+	import type { DemoChannel } from '../api/farcaster-client'
 
 	const channelHostname = (href: string) => {
 		try {
@@ -10,16 +10,32 @@
 		}
 	}
 
+	const channelDescription = (description: string) => (
+		description
+			.replaceAll(/\s+/g, ' ')
+			.trim()
+			.slice(0, 110)
+	)
 
+	const channelInitials = (name: string) => (
+		name
+			.split(/[^A-Za-z0-9]+/)
+			.filter((part) => part.length > 0)
+			.slice(0, 2)
+			.map((part) => part[0]?.toUpperCase() ?? '')
+			.join('')
+			|| name.slice(0, 2).toUpperCase()
+			|| 'FC'
+	)
+
+	type Props = {
+		data: {
+			displayChannels: DemoChannel[]
+		}
+	}
 
 	// Props
-	const {
-		data,
-	} = $props()
-
-	let {
-		displayChannels,
-	} = data
+	let { data }: Props = $props()
 </script>
 
 
@@ -34,48 +50,14 @@
 	</header>
 
 	<div id="channels" class="row wrap">
-		{#each displayChannels as channel (channel.id)}
-			{@const headerOk = (
-				Boolean(channel.headerImageUrl)
-				&& isValidHttpUrl(channel.headerImageUrl)
-			)}
-			{@const imageOk = (
-				Boolean(channel.imageUrl)
-				&& isValidHttpUrl(channel.imageUrl)
-			)}
-			{@const bannerUrl = (
-				headerOk
-					? channel.headerImageUrl
-				: imageOk
-					? channel.imageUrl
-				:
-					''
-			)}
-			{@const showAvatar = headerOk && imageOk}
+		{#each data.displayChannels as channel (channel.id)}
 			{@const hostname = channelHostname(channel.url)}
+			{@const description = channelDescription(channel.description)}
 
 			<section class="card column">
-				{#if bannerUrl}
-					<div class="media">
-						<img
-							class="banner"
-							src={bannerUrl}
-							alt=""
-						/>
-						{#if showAvatar}
-							<img
-								class="image"
-								src={channel.imageUrl}
-								alt={channel.name}
-							/>
-						{/if}
-					</div>
-				{/if}
+				<div class="badge">{channelInitials(channel.name)}</div>
 
-				<div
-					class="body column"
-					class:pad-for-avatar={showAvatar}
-				>
+				<div class="body column">
 					<p class="url row inline">
 						<strong>{channel.name}</strong>
 						<span>{hostname}</span>
@@ -87,7 +69,9 @@
 						<span><strong>{channel.memberCount.toLocaleString()}</strong> members</span>
 					</p>
 
-					<p class="description">{channel.description}</p>
+					<p class="description">
+						{description}{description.length < channel.description.trim().length ? '...' : ''}
+					</p>
 				</div>
 			</section>
 		{/each}
@@ -109,40 +93,33 @@
 	}
 
 	.card {
-		overflow: hidden;
+		justify-content: flex-start;
+		padding: 1.1em;
 		border-radius: 1em;
-		background-color: rgba(255, 255, 255, 0.05);
+		background:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03)),
+			rgba(35, 17, 61, 0.3);
+		border: 1px solid rgba(255, 255, 255, 0.08);
 	}
 
-	.card > .media {
-		position: relative;
-	}
-
-	.card > .media > .banner {
-		display: block;
-		width: 100%;
-		aspect-ratio: 2 / 1;
-		object-fit: cover;
-	}
-
-	.card > .media > .image {
-		position: absolute;
-		left: 1rem;
-		bottom: -2.25rem;
-		width: 4.5rem;
-		height: 4.5rem;
-		border-radius: 0.75rem;
-		object-fit: cover;
-		box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.45);
+	.badge {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 3rem;
+		height: 3rem;
+		border-radius: 0.8rem;
+		background:
+			linear-gradient(135deg, rgba(255, 173, 113, 0.34), rgba(138, 99, 210, 0.2)),
+			rgba(255, 255, 255, 0.06);
+		color: rgba(255, 255, 255, 0.96);
+		font-family: 'Fira Code', monospace;
+		font-size: 1rem;
+		font-weight: 700;
 	}
 
 	.card > .body {
-		padding: 1.25em;
 		gap: 0.65em;
-	}
-
-	.card > .body.pad-for-avatar {
-		padding-top: 2.85rem;
 	}
 
 	p {
@@ -159,9 +136,6 @@
 	.description {
 		font-size: 0.9em;
 		line-height: 1.35;
-		display: -webkit-box;
-		-webkit-line-clamp: 3;
-		-webkit-box-orient: vertical;
 	}
 
 	.annotation {
