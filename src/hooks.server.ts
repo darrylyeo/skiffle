@@ -17,10 +17,7 @@ const styledHtmlDocumentForSatori = (
 	styleText: string,
 	fullPageHtml: string,
 ): JSXElement => (
-	<>
-		<style>{styleText}</style>
-		{htmlToVNode(fullPageHtml)}
-	</>
+	htmlToVNode(`<style>${styleText}</style>${fullPageHtml}`)
 )
 
 const installedTwemojiSvgPath = (code: string) => (
