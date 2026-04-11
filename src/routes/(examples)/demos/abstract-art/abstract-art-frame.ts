@@ -329,7 +329,9 @@ export const buildAbstractArtFrame = (state: AbstractArtState): FrameMeta => ({
 })
 
 export const buildAbstractArtSnap = (state: AbstractArtState): AppSnapPage => ({
-	shareText: `Trying the Generative Art demo in SKIFFLE. "${abstractArtView(state).title}".`,
+	castIntent: {
+		text: `Trying the Generative Art demo in SKIFFLE. "${abstractArtView(state).title}".`,
+	},
 	theme: {
 		accent: PALETTES[normalizePalette(state.palette)].accent,
 	},

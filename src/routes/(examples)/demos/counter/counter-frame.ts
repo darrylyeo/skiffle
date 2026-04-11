@@ -87,7 +87,9 @@ export const counterSnap = (count: number): AppSnapPage => {
 	const c = clampCount(count)
 
 	return {
-		shareText: counterShareText(c),
+		castIntent: {
+			text: counterShareText(c),
+		},
 		theme: {
 			accent: SnapPaletteColors.Teal,
 		},

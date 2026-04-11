@@ -4,7 +4,12 @@
 
 // Types/constants
 import { AppSnapButtonRoles, AppSnapNodeTypes } from '$/lib/app-snap-tokens'
-import type { AppSnapButton, AppSnapButtonNode, AppSnapPage } from '$/lib/snap-components'
+import {
+	type AppSnapButton,
+	type AppSnapButtonNode,
+	type AppSnapPage,
+	castIntentEmbeds,
+} from '$/lib/snap-components'
 import type { FrameButton, FrameMeta } from '$/lib/frame'
 import type { SnapExtraElements } from '$/lib/snap-page-extra'
 
@@ -192,11 +197,13 @@ const snapPressFromButton = (
 	baseUrl: URL | string,
 ): SnapPressAction | undefined => {
 	if (press.action === SnapActions.ComposeCast) {
+		const embeds = castIntentEmbeds({ pageEmbeds: press.embeds })
+
 		return {
 			action: SnapActions.ComposeCast,
 			params: {
 				text: press.text,
-				...(press.embeds?.length ? { embeds: press.embeds } : {}),
+				...(embeds.length ? { embeds } : {}),
 			},
 		}
 	}
@@ -454,6 +461,10 @@ export const framePageToSnap = (
 	baseUrl: URL | string,
 ): SnapResponse => {
 	const currentPageUrl = snapCurrentPageUrl(baseUrl)
+	const shareComposeEmbeds = castIntentEmbeds({
+		pageEmbeds: snap?.castIntent?.embeds,
+		currentPageUrl,
+	})
 	const extraElements = snapExtraElementProviders
 		.map((provider) => provider(frame, baseUrl))
 		.find((value) => value !== undefined)
@@ -558,14 +569,14 @@ export const framePageToSnap = (
 					action: SnapActions.ComposeCast,
 					params: {
 						text: (
-							snap?.shareText
+							snap?.castIntent?.text
 							?? (
 								title
 									? `Checking out ${title} on SKIFFLE.`
 									: 'Checking out SKIFFLE on Farcaster.'
 							)
 						).slice(0, 320),
-						embeds: [currentPageUrl],
+						...(shareComposeEmbeds.length ? { embeds: shareComposeEmbeds } : {}),
 					},
 				},
 			},

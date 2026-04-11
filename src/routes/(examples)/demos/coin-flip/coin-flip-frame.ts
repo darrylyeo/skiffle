@@ -240,7 +240,9 @@ export const buildCoinFlipFrame = (state: CoinFlipState): FrameMeta => ({
 })
 
 export const buildCoinFlipSnap = (state: CoinFlipState): AppSnapPage => ({
-	shareText: coinFlipShareText(state),
+	castIntent: {
+		text: coinFlipShareText(state),
+	},
 	theme: {
 		accent: (
 			state.lastResult === 'edge'

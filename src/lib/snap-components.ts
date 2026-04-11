@@ -54,12 +54,35 @@ export type AppSnapButtonGroup = {
 
 export type AppSnapButtonNode = AppSnapButton | AppSnapButtonGroup
 
+export type AppSnapCastIntent = {
+	text?: string
+	embeds?: string[]
+}
+
+export const defaultCastIntentEmbeds: readonly string[] = []
+
+export const castIntentEmbeds = ({
+	pageEmbeds,
+	currentPageUrl,
+}: {
+	pageEmbeds?: string[]
+	currentPageUrl?: string
+}) => (
+	[
+		...defaultCastIntentEmbeds,
+		...(pageEmbeds ?? []),
+		...(currentPageUrl ? [currentPageUrl] : []),
+	]
+		.map((url) => url.trim())
+		.filter((url) => url.length > 0)
+)
+
 export type AppSnapPage = {
 	theme?: {
 		accent?: SnapPaletteColor
 	}
 	effects?: SnapEffect[]
-	shareText?: string
+	castIntent?: AppSnapCastIntent
 	buttons?: AppSnapButtonNode[]
 }
 

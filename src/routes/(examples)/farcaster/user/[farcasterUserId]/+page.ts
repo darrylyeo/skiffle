@@ -18,7 +18,9 @@ export const load: PageLoad = async ({
 		...parentData,
 		title: `${parentData.user.display_name} (@${parentData.user.username})`,
 		snap: {
-			shareText: `Looking at ${parentData.user.display_name} (@${parentData.user.username}) in the SKIFFLE Farcaster profile demo.`,
+			castIntent: {
+				text: `Looking at ${parentData.user.display_name} (@${parentData.user.username}) in the SKIFFLE Farcaster profile demo.`,
+			},
 			buttons: [
 				snapButtonGroup({
 					direction: SnapDirections.Horizontal,

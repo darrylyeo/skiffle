@@ -245,7 +245,9 @@ export const buildWordleSnap = ({
 	status,
 }: WordleState): AppSnapPage => ({
 	effects: status === 'win' ? [SnapEffects.Confetti] : undefined,
-	shareText: `Trying the Wordle demo in SKIFFLE. ${wordleMessage({ word, guesses, status })}`,
+	castIntent: {
+		text: `Trying the Wordle demo in SKIFFLE. ${wordleMessage({ word, guesses, status })}`,
+	},
 	theme: {
 		accent: (
 			status === 'win' ?

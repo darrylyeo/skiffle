@@ -9,7 +9,9 @@ export const load: PageLoad = async () => {
 	return {
 		title: 'SKIFFLE – a website in a snap 🫰',
 		snap: {
-			shareText: 'Check out SKIFFLE, a SvelteKit project for embedding full server-rendered a website in Farcaster Snaps.',
+			castIntent: {
+				text: 'Check out SKIFFLE, a SvelteKit project for embedding full server-rendered a website in Farcaster Snaps.',
+			},
 			buttons: [
 				snapButtonGroup({
 					direction: SnapDirections.Horizontal,

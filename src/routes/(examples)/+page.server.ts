@@ -84,7 +84,9 @@ export const actions: Actions = {
 		
 		return {
 			snap: {
-				shareText: 'Browsing the routes in the SKIFFLE demo and how the project maps them into Farcaster interactions.',
+				castIntent: {
+					text: 'Browsing the routes in the SKIFFLE demo and how the project maps them into Farcaster interactions.',
+				},
 				buttons: [
 					snapButtonGroup({
 						direction: SnapDirections.Horizontal,

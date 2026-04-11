@@ -198,7 +198,9 @@ export const buildHangmanSnap = ({
 	status,
 }: HangmanState): AppSnapPage => ({
 	effects: status === 'win' ? [SnapEffects.Confetti] : undefined,
-	shareText: `Trying the Hangman demo in SKIFFLE. ${hangmanMessage({ word, guesses, status })}`,
+	castIntent: {
+		text: `Trying the Hangman demo in SKIFFLE. ${hangmanMessage({ word, guesses, status })}`,
+	},
 	theme: {
 		accent: (
 			status === 'win' ?
