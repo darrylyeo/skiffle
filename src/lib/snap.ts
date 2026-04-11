@@ -317,6 +317,23 @@ const snapCurrentPageUrl = (baseUrl: URL | string) => (
 	)
 )
 
+const snapFooterUrlBadgeContent = (href: string) => {
+	try {
+		const u = new URL(href)
+
+		return (
+			`${u.host}${u.pathname}${u.search}${u.hash}`
+				.replace(/%2f/gi, '/')
+		)
+	} catch {
+		return (
+			href
+				.replace(/^https?:\/\//i, '')
+				.replace(/%2f/gi, '/')
+		)
+	}
+}
+
 const snapFooterContextUrl = (
 	baseUrl: URL | string,
 	context?: string,
@@ -504,9 +521,7 @@ export const framePageToSnap = (
 		'page-url': {
 			type: SnapElementTypes.Text,
 			props: {
-				content: currentPageUrl
-					.replace(/^https?:\/\//, '')
-					.replace(/%2f/gi, '/'),
+				content: snapFooterUrlBadgeContent(currentPageUrl),
 				size: SnapTextSizes.Sm,
 				align: SnapAlignments.Center,
 			},
