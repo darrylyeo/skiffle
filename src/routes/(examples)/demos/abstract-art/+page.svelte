@@ -8,10 +8,16 @@
 
 
 <article class="column">
-	<header class="column">
+	<header>
 		<div class="meta row inline">
-			<h2>{data.title}</h2>
-			<p class="badge">{data.paletteName}</p>
+			<div class="title column">
+				<p class="eyebrow">Generative Art</p>
+				<h2>"{data.title}"</h2>
+			</div>
+			<div class="badges row inline">
+				<p class="badge badge-palette">{data.paletteColor}</p>
+				<p class="badge">#{data.seed}</p>
+			</div>
 		</div>
 	</header>
 
@@ -34,10 +40,6 @@
 		></div>
 	</section>
 
-	<footer class="column">
-		<p class="caption">{data.caption}</p>
-		<p class="seed">Seed {data.seed}</p>
-	</footer>
 </article>
 
 
@@ -55,29 +57,54 @@
 			linear-gradient(165deg, rgba(24, 18, 40, 0.55), rgba(12, 10, 22, 0.35));
 	}
 
-	header.column {
-		gap: 0.5em;
-		padding: 0.25em 0.15em 0;
+	header {
+		padding: 0.3em 0.18em 0;
 		flex-shrink: 0;
 	}
 
 	.meta {
-		align-items: baseline;
+		align-items: flex-start;
 		justify-content: space-between;
-		gap: 0.75em;
-		flex-wrap: wrap;
+		gap: 1em;
+		width: 100%;
+	}
+
+	.title {
+		gap: 0.35em;
+		flex: 1;
+		min-width: 0;
+	}
+
+	.eyebrow {
+		margin: 0;
+		font-size: 0.68em;
+		font-weight: 700;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: rgba(255, 226, 204, 0.58);
 	}
 
 	h2 {
 		margin: 0;
-		font-size: 1.05em;
+		font-size: 1.34em;
 		font-weight: 800;
-		letter-spacing: -0.02em;
+		line-height: 1.04;
+		letter-spacing: -0.03em;
+		text-align: left;
 		color: rgba(255, 252, 248, 0.96);
+	}
+
+	.badges {
+		align-items: flex-start;
+		justify-content: flex-end;
+		gap: 0.45em;
+		flex-shrink: 0;
+		padding-top: 0.08em;
 	}
 
 	.badge {
 		margin: 0;
+		flex-shrink: 0;
 		padding: 0.28em 0.65em;
 		border-radius: 999px;
 		border: 1px solid rgba(255, 255, 255, 0.16);
@@ -85,11 +112,17 @@
 		font-size: 0.68em;
 		font-weight: 800;
 		letter-spacing: 0.12em;
-		text-transform: uppercase;
+		text-transform: none;
 		color: rgba(255, 236, 220, 0.78);
 		box-shadow:
 			inset 0 1px 0 rgba(255, 255, 255, 0.1),
 			0 0.35em 0.9em rgba(0, 0, 0, 0.18);
+	}
+
+	.badge-palette {
+		text-transform: capitalize;
+		color: rgba(255, 244, 236, 0.88);
+		background: linear-gradient(135deg, rgba(255, 184, 126, 0.18), rgba(255, 255, 255, 0.06));
 	}
 
 	.stage {
@@ -101,7 +134,7 @@
 		border-radius: 1.35em;
 		overflow: hidden;
 		box-sizing: border-box;
-		margin: 0.1em 0;
+		margin: 0.2em 0 0;
 	}
 
 	.stage > .mark {
@@ -116,26 +149,4 @@
 		pointer-events: none;
 	}
 
-	footer.column {
-		gap: 0.35em;
-		padding: 0 0.15em 0.2em;
-		flex-shrink: 0;
-	}
-
-	.caption {
-		margin: 0;
-		font-size: 0.82em;
-		line-height: 1.45;
-		font-weight: 600;
-		color: rgba(255, 236, 224, 0.78);
-	}
-
-	.seed {
-		margin: 0;
-		font-size: 0.72em;
-		font-weight: 700;
-		letter-spacing: 0.06em;
-		text-transform: uppercase;
-		color: rgba(255, 220, 200, 0.52);
-	}
 </style>

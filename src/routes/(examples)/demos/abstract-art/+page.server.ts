@@ -18,7 +18,7 @@ export const load: PageServerLoad = ({ url }) => {
 	const view = abstractArtView(state)
 
 	return {
-		title: view.title,
+		title: `Generative Art · "${view.title}"`,
 		...state,
 		...view,
 		frame: buildAbstractArtFrame(state),

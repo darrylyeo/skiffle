@@ -20,8 +20,7 @@ export type AbstractArtShape = {
 
 export type AbstractArtView = {
 	title: string
-	paletteName: string
-	caption: string
+	paletteColor: string
 	sceneStyle: string
 	backgroundStyle: string
 	veilStyle: string
@@ -50,12 +49,71 @@ const PALETTES = [
 		background: ['#1d1634', '#3a214d'],
 		colors: ['#ff7ab6', '#ff9b71', '#a78bfa', '#6ee7b7'],
 	},
+	{
+		name: 'Blue Static',
+		accent: SnapPaletteColors.Blue,
+		shadow: '#11213c',
+		background: ['#11243f', '#244c7a'],
+		colors: ['#89c2ff', '#a0e7ff', '#8b9dff', '#f5f7ff'],
+	},
+	{
+		name: 'Teal Current',
+		accent: SnapPaletteColors.Teal,
+		shadow: '#0f2730',
+		background: ['#112d32', '#14515b'],
+		colors: ['#5ce1c6', '#9ef7e7', '#5db0ff', '#f4fffd'],
+	},
+	{
+		name: 'Red Shift',
+		accent: SnapPaletteColors.Red,
+		shadow: '#32131f',
+		background: ['#2a1020', '#61233f'],
+		colors: ['#ff7a8a', '#ffb08b', '#ffd3b6', '#ffdce5'],
+	},
+	{
+		name: 'Pink Echo',
+		accent: SnapPaletteColors.Pink,
+		shadow: '#30152c',
+		background: ['#291327', '#5b2550'],
+		colors: ['#ff8fd8', '#ffb2ef', '#ffd1c7', '#fff2fd'],
+	},
+	{
+		name: 'Gray Signal',
+		accent: SnapPaletteColors.Gray,
+		shadow: '#20232b',
+		background: ['#1b2029', '#353d4a'],
+		colors: ['#d2d7e1', '#9ba7b8', '#c3cedc', '#eef2f7'],
+	},
 ] as const
 
-const CAPTIONS = [
-	'Layered gradients, shadows, borders, transforms, and texture-like beams.',
-	'Every refresh keeps the same route but remixes the composition from the URL state.',
-	'Built to stay decorative while remaining within Satori-safe CSS territory.',
+const TITLE_PREFIXES = [
+	'Signal',
+	'Velvet',
+	'Quiet',
+	'Static',
+	'Lucid',
+	'After',
+	'Soft',
+	'Neon',
+	'Shifting',
+	'Midnight',
+	'Hollow',
+	'Golden',
+] as const
+
+const TITLE_SUFFIXES = [
+	'Relay',
+	'Bloom',
+	'Arcade',
+	'Drift',
+	'Current',
+	'Echo',
+	'Field',
+	'Weather',
+	'Ribbon',
+	'Parade',
+	'Mirage',
+	'Signal',
 ] as const
 
 const normalizeSeed = (value: number) => (
@@ -100,6 +158,16 @@ const pickColor = (
 
 const percent = (value: number) => (
 	`${value.toFixed(1)}%`
+)
+
+const radialGradient = (
+	rand: () => number,
+	color: string,
+	alpha: number,
+	sizeMin: number,
+	sizeRange: number,
+) => (
+	`radial-gradient(circle at ${percent(8 + rand() * 84)} ${percent(6 + rand() * 88)}, ${rgba(color, alpha)}, transparent ${percent(sizeMin + rand() * sizeRange)})`
 )
 
 const blobStyle = (
@@ -189,9 +257,8 @@ const sceneParams = (state: AbstractArtState) => (
 
 export const abstractArtView = (state: AbstractArtState): AbstractArtView => {
 	const palette = PALETTES[state.palette]
-	const rand = random(state.seed + state.palette * 997)
-	const title = `${palette.name} #${String(state.seed).slice(-4)}`
-	const caption = CAPTIONS[(state.seed + state.palette) % CAPTIONS.length]
+	const rand = random(state.seed)
+	const title = `${TITLE_PREFIXES[Math.floor(rand() * TITLE_PREFIXES.length)]} ${TITLE_SUFFIXES[Math.floor(rand() * TITLE_SUFFIXES.length)]}`
 	const shapes = [
 		...Array.from({ length: 5 }, (_, index) => ({
 			id: `blob:${index}`,
@@ -206,13 +273,22 @@ export const abstractArtView = (state: AbstractArtState): AbstractArtView => {
 			style: ringStyle(index, rand, palette.colors, palette.shadow),
 		})),
 	]
+	const sceneRadials = [
+		radialGradient(rand, palette.colors[0], 0.34, 18, 18),
+		radialGradient(rand, palette.colors[1], 0.26, 16, 16),
+		radialGradient(rand, palette.colors[2], 0.18, 24, 18),
+	]
+	const backgroundRadials = [
+		radialGradient(rand, palette.colors[0], 0.28, 16, 18),
+		radialGradient(rand, palette.colors[1], 0.2, 14, 16),
+		radialGradient(rand, palette.colors[2], 0.16, 22, 18),
+	]
 
 	return {
 		title,
-		paletteName: palette.name,
-		caption,
-		sceneStyle: `background:radial-gradient(circle at 18% 18%, ${rgba(palette.colors[0], 0.34)}, transparent 26%), radial-gradient(circle at 82% 16%, ${rgba(palette.colors[1], 0.26)}, transparent 24%), radial-gradient(circle at 50% 100%, ${rgba(palette.colors[2], 0.18)}, transparent 38%), linear-gradient(135deg, ${palette.background[0]}, ${palette.background[1]}); border:1px solid ${rgba('#ffffff', 0.1)}; box-shadow:inset 0 1px 0 ${rgba('#ffffff', 0.12)}, 0 24px 60px ${rgba(palette.shadow, 0.34)};`,
-		backgroundStyle: `background:radial-gradient(circle at 18% 18%, ${rgba(palette.colors[0], 0.28)}, transparent 26%), radial-gradient(circle at 82% 16%, ${rgba(palette.colors[1], 0.2)}, transparent 24%), radial-gradient(circle at 50% 100%, ${rgba(palette.colors[2], 0.16)}, transparent 38%), linear-gradient(135deg, ${palette.background[0]}, ${palette.background[1]});`,
+		paletteColor: palette.accent,
+		sceneStyle: `background:${sceneRadials.join(', ')}, linear-gradient(135deg, ${palette.background[0]}, ${palette.background[1]}); border:1px solid ${rgba('#ffffff', 0.1)}; box-shadow:inset 0 1px 0 ${rgba('#ffffff', 0.12)}, 0 24px 60px ${rgba(palette.shadow, 0.34)};`,
+		backgroundStyle: `background:${backgroundRadials.join(', ')}, linear-gradient(135deg, ${palette.background[0]}, ${palette.background[1]});`,
 		veilStyle: `background:linear-gradient(135deg, ${rgba('#ffffff', 0.12)}, ${rgba('#ffffff', 0)} 32%, ${rgba(palette.colors[3], 0.08)} 64%, ${rgba('#ffffff', 0)}); opacity:0.9; transform:rotate(${(-8 + rand() * 16).toFixed(1)}deg) scale(1.08);`,
 		shapes,
 	}
@@ -240,12 +316,12 @@ export const buildAbstractArtFrame = (state: AbstractArtState): FrameMeta => ({
 			targetUrl: '/?/demos',
 		},
 		{
-			label: 'Remix',
+			label: 'Generate',
 			action: 'post',
 			targetUrl: `/demos/abstract-art?/remix&${sceneParams(state)}`,
 		},
 		{
-			label: 'Palette',
+			label: 'Change color',
 			action: 'post',
 			targetUrl: `/demos/abstract-art?/palette&${sceneParams(state)}`,
 		},
@@ -253,7 +329,7 @@ export const buildAbstractArtFrame = (state: AbstractArtState): FrameMeta => ({
 })
 
 export const buildAbstractArtSnap = (state: AbstractArtState): AppSnapPage => ({
-	shareText: `Trying the Abstract Art demo in SKIFFLE. ${abstractArtView(state).title}.`,
+	shareText: `Trying the Generative Art demo in SKIFFLE. "${abstractArtView(state).title}".`,
 	theme: {
 		accent: PALETTES[normalizePalette(state.palette)].accent,
 	},
@@ -270,14 +346,14 @@ export const buildAbstractArtSnap = (state: AbstractArtState): AppSnapPage => ({
 					targetUrl: '/?/demos',
 				}),
 				snapTargetButton({
-					label: 'Remix',
+					label: 'Generate',
 					role: AppSnapButtonRoles.Cta,
 					variant: SnapButtonVariants.Primary,
 					action: 'post',
 					targetUrl: `/demos/abstract-art?/remix&${sceneParams(state)}`,
 				}),
 				snapTargetButton({
-					label: 'Palette',
+					label: 'Change color',
 					action: 'post',
 					targetUrl: `/demos/abstract-art?/palette&${sceneParams(state)}`,
 				}),
