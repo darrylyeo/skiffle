@@ -117,12 +117,10 @@
 
 	header {
 		position: relative;
-		z-index: 1;
 	}
 
 	.card {
 		position: relative;
-		z-index: 1;
 		justify-content: flex-start;
 		flex: 1;
 		gap: 2rem;
