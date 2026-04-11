@@ -90,6 +90,8 @@ type SnapExtraElementProvider = (
 const LOOPBACK_HOST = /^(localhost|127\.0\.0\.1|\[::1\]|::1)(:\d+)?$/
 const SNAP_FOOTER_CONTEXT_PARAM = 'snapFooter'
 
+const skiffleAuthorFarcasterFid = 3854
+
 const frameImageUrlForCurrentPage = (url: URL | string) => {
 	const frameImageUrl = new URL(String(url))
 	frameImageUrl.searchParams.set('frameImage', '')
@@ -464,7 +466,7 @@ export const framePageToSnap = (
 	const footerChildren = (
 		isGoMenuOpen
 			? ['page-go-input', 'page-go-actions']
-			: ['page-url', 'page-actions', 'page-follow-separator', 'page-follow']
+			: ['page-url', 'page-actions', 'page-follow-separator', 'page-follow-tip-row']
 	)
 
 	const pageChildren = (
@@ -649,17 +651,44 @@ export const framePageToSnap = (
 				},
 			},
 		},
+		'page-follow-tip-row': {
+			type: SnapElementTypes.Stack,
+			props: {
+				direction: SnapDirections.Horizontal,
+				gap: SnapGaps.Sm,
+				justify: SnapJustifyValues.Center,
+			},
+			children: ['page-follow', 'page-tip'],
+		},
 		'page-follow': {
 			type: SnapElementTypes.Button,
 			props: {
 				label: 'Follow @darrylyeo',
 				variant: SnapButtonVariants.Secondary,
+				icon: SnapIcons.User,
 			},
 			on: {
 				[SnapEvents.Press]: {
-					action: SnapActions.OpenUrl,
+					action: SnapActions.ViewProfile,
 					params: {
-						target: 'https://farcaster.xyz/darrylyeo',
+						fid: skiffleAuthorFarcasterFid,
+					},
+				},
+			},
+		},
+		'page-tip': {
+			type: SnapElementTypes.Button,
+			props: {
+				label: 'Tip @darrylyeo',
+				variant: SnapButtonVariants.Secondary,
+				icon: SnapIcons.Coins,
+			},
+			on: {
+				[SnapEvents.Press]: {
+					action: SnapActions.SendToken,
+					params: {
+						token: 'eip155:8453/erc20:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+						recipientFid: skiffleAuthorFarcasterFid,
 					},
 				},
 			},
