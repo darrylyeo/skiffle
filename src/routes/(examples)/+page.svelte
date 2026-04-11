@@ -29,9 +29,9 @@
 		</h2>
 	</div>
 
-	<p class="sticker sticker-main">now in a snap!</p>
-	<p class="sticker sticker-wowow">wowow</p>
-	<p class="sticker sticker-idea">needs a better acronym</p>
+	<p class="callout callout-1">now in a snap!</p>
+	<p class="callout callout-2">wowow</p>
+	<p class="callout callout-3">needs a better acronym</p>
 
 	<img
 		class="decal brand brand-svelte"
@@ -69,16 +69,16 @@
 		style="bottom: 33%; right: 19%; width: 2.55em; height: 2.55em; transform: rotate(8deg)"
 	/>
 
-	<span class="decal demo-spark" aria-hidden="true" style="bottom: 6%; left: 2%; width: 1.85em; height: 1.85em; transform: rotate(-10deg)">👤</span>
-	<span class="decal demo-spark" aria-hidden="true" style="top: 29%; right: 18%; width: 1.85em; height: 1.85em; transform: rotate(8deg)">📻</span>
-	<span class="decal demo-spark" aria-hidden="true" style="top: 5%; right: 13%; width: 1.85em; height: 1.85em; transform: rotate(-6deg)">🔢</span>
-	<span class="decal demo-spark" aria-hidden="true" style="bottom: 32%; right: 12%; width: 1.85em; height: 1.85em; transform: rotate(7deg)">🪙</span>
-	<span class="decal demo-spark" aria-hidden="true" style="bottom: 5%; right: 3%; width: 1.85em; height: 1.85em; transform: rotate(-8deg)">🎨</span>
-	<span class="decal demo-spark" aria-hidden="true" style="bottom: 25%; left: 18%; width: 1.85em; height: 1.85em; transform: rotate(10deg)">✂️</span>
-	<span class="decal demo-spark" aria-hidden="true" style="top: 21%; left: 11%; width: 1.85em; height: 1.85em; transform: rotate(-9deg)">❎️</span>
-	<span class="decal demo-spark" aria-hidden="true" style="top: 10%; left: 4%; width: 1.85em; height: 1.85em; transform: rotate(6deg)">🔠</span>
-	<span class="decal demo-spark" aria-hidden="true" style="left: 18%; top: 40%; width: 1.85em; height: 1.85em; transform: rotate(-6deg)">🟩</span>
-	<span class="decal demo-spark" aria-hidden="true" style="bottom: 7%; right: 23%; width: 1.85em; height: 1.85em; transform: rotate(9deg)">📽️</span>
+	<span class="decal demo" aria-hidden="true" style="bottom: 6%; left: 2%; width: 1.85em; height: 1.85em; transform: rotate(-10deg)">👤</span>
+	<span class="decal demo" aria-hidden="true" style="top: 29%; right: 18%; width: 1.85em; height: 1.85em; transform: rotate(8deg)">📻</span>
+	<span class="decal demo" aria-hidden="true" style="top: 5%; right: 13%; width: 1.85em; height: 1.85em; transform: rotate(-6deg)">🔢</span>
+	<span class="decal demo" aria-hidden="true" style="bottom: 32%; right: 12%; width: 1.85em; height: 1.85em; transform: rotate(7deg)">🪙</span>
+	<span class="decal demo" aria-hidden="true" style="bottom: 5%; right: 3%; width: 1.85em; height: 1.85em; transform: rotate(-8deg)">🎨</span>
+	<span class="decal demo" aria-hidden="true" style="bottom: 25%; left: 18%; width: 1.85em; height: 1.85em; transform: rotate(10deg)">✂️</span>
+	<span class="decal demo" aria-hidden="true" style="top: 21%; left: 11%; width: 1.85em; height: 1.85em; transform: rotate(-9deg)">📽️</span>
+	<span class="decal demo" aria-hidden="true" style="top: 10%; left: 4%; width: 1.85em; height: 1.85em; transform: rotate(6deg)">🔠</span>
+	<span class="decal demo" aria-hidden="true" style="left: 18%; top: 40%; width: 1.85em; height: 1.85em; transform: rotate(-6deg)">🟩</span>
+	<span class="decal demo" aria-hidden="true" style="bottom: 7%; right: 27%; width: 1.85em; height: 1.85em; transform: rotate(9deg)">❎️</span>
 </article>
 
 
@@ -95,12 +95,12 @@
 		padding: 2.5em 4em;
 		border-radius: 1em;
 		border: 1px solid rgba(255, 255, 255, 0.12);
-		background:
+		background-color: rgba(9, 7, 22, 0.17);
+		background-image:
 			radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.075), transparent 38%),
 			radial-gradient(circle at 12% 18%, rgba(255, 126, 92, 0.06), transparent 28%),
 			radial-gradient(circle at 88% 20%, rgba(138, 99, 210, 0.075), transparent 26%),
-			linear-gradient(180deg, rgba(255, 255, 255, 0.022), rgba(255, 255, 255, 0.01)),
-			rgba(9, 7, 22, 0.07);
+			linear-gradient(180deg, rgba(255, 255, 255, 0.022), rgba(255, 255, 255, 0.01));
 		box-shadow:
 			inset 0 1px 0 rgba(255, 255, 255, 0.14),
 			0 1em 2.8em rgba(10, 7, 28, 0.18);
@@ -111,30 +111,30 @@
 
 	.hero-copy {
 		position: relative;
-		z-index: 2;
 		gap: 1.15em;
 		align-items: center;
-		padding: 0.65em 1.2em 0.75em;
+		padding: 0.85em 1.2em;
 		border-radius: 1.2em;
-		background:
-			linear-gradient(180deg, rgba(14, 11, 30, 0.1), rgba(14, 11, 30, 0.03));
+		background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(14, 11, 30, 0.04));
 		box-shadow:
 			inset 0 1px 0 rgba(255, 255, 255, 0.05);
 	}
 
 	.decal {
 		position: absolute;
-		z-index: 1;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		pointer-events: none;
 		text-shadow: none;
+		background-color: rgba(255, 255, 255, 0.05);
+		backdrop-filter: blur(25px);
+		overflow: visible;
 	}
 
 	.brand,
 	.emoji-badge,
-	.demo-spark {
+	.demo {
 		border: 1px solid rgba(255, 255, 255, 0.16);
 		box-shadow: 0 0.6em 1.4em rgba(0, 0, 0, 0.16);
 	}
@@ -181,7 +181,7 @@
 		object-fit: contain;
 	}
 
-	.demo-spark {
+	.demo {
 		border-radius: 999px;
 		background:
 			radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.18), transparent 36%),
@@ -193,7 +193,7 @@
 		font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Noto Emoji', sans-serif;
 	}
 
-	.sticker {
+	.callout {
 		position: absolute;
 		z-index: 2;
 		padding: 0.55em 0.9em 0.5em;
@@ -211,33 +211,33 @@
 		text-transform: uppercase;
 		transform: rotate(8deg);
 		text-shadow: none;
-	}
 
-	.sticker-main {
-		top: 1.15em;
-		right: 9.05em;
-	}
+		&.callout-1 {
+			top: 1.15em;
+			right: 9.05em;
+		}
 
-	.sticker-idea {
-		bottom: 4.5em;
-		right: 1.2em;
-		font-size: 0.74em;
-		letter-spacing: 0.04em;
-		text-transform: none;
-		background: linear-gradient(135deg, rgba(255, 164, 110, 0.78), rgba(255, 109, 53, 0.72));
-		color: rgba(51, 24, 11, 0.92);
-		transform: rotate(-9deg);
-	}
+		&.callout-2 {
+			bottom: 2.2em;
+			left: 6.2em;
+			padding-inline: 0.75em;
+			font-size: 0.68em;
+			letter-spacing: 0.08em;
+			background: linear-gradient(135deg, rgba(138, 99, 210, 0.8), rgba(98, 75, 208, 0.72));
+			color: rgba(255, 248, 255, 0.92);
+			transform: rotate(5deg);
+		}
 
-	.sticker-wowow {
-		bottom: 2.2em;
-		left: 6.2em;
-		padding-inline: 0.75em;
-		font-size: 0.68em;
-		letter-spacing: 0.08em;
-		background: linear-gradient(135deg, rgba(138, 99, 210, 0.8), rgba(98, 75, 208, 0.72));
-		color: rgba(255, 248, 255, 0.92);
-		transform: rotate(-9deg);
+		&.callout-3 {
+			bottom: 4.8em;
+			right: -1.25em;
+			font-size: 0.74em;
+			letter-spacing: 0.04em;
+			text-transform: none;
+			background: linear-gradient(135deg, rgba(255, 164, 110, 0.58), rgba(255, 109, 53, 0.52));
+			color: rgba(251, 224, 211, 0.92);
+			transform: rotate(-9deg);
+		}
 	}
 
 	h1 {
