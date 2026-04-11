@@ -125,12 +125,15 @@
 		z-index: 1;
 		justify-content: flex-start;
 		flex: 1;
+		gap: 2rem;
 
 		padding: 1.25em;
 		border-radius: 1em;
-		background-color: rgba(255, 255, 255, 0.1);
 		background-color: rgba(0, 0, 0, 0.1);
-		overflow: hidden;
+	}
+
+	p {
+		font-size: 0.95em;
 	}
 
 	p,
