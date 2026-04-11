@@ -86,7 +86,6 @@
 
 	main {
 		flex: 1;
-		overflow: hidden;
 	}
 
 	.footer {
