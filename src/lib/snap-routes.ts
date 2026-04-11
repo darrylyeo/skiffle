@@ -59,6 +59,42 @@ type SnapRouteData = {
 	gotoUrl?: string
 }
 
+const SNAP_CORS_ALLOW_HEADERS = 'Accept, Content-Type'
+const SNAP_CORS_ALLOW_METHODS = 'GET, POST, OPTIONS'
+
+export const snapCorsHeaders = (
+	headers?: HeadersInit,
+) => {
+	const nextHeaders = new Headers(headers)
+
+	nextHeaders.set('access-control-allow-origin', '*')
+	nextHeaders.set('access-control-allow-methods', SNAP_CORS_ALLOW_METHODS)
+	nextHeaders.set('access-control-allow-headers', SNAP_CORS_ALLOW_HEADERS)
+
+	const vary = nextHeaders.get('vary')
+	nextHeaders.set(
+		'vary',
+		[
+			...(vary?.split(',').map((value) => value.trim()).filter(Boolean) ?? []),
+			'Origin',
+		]
+			.filter((value, index, values) => values.indexOf(value) === index)
+			.join(', '),
+	)
+
+	return nextHeaders
+}
+
+export const snapOptionsResponse = () => (
+	new Response(
+		null,
+		{
+			status: 204,
+			headers: snapCorsHeaders(),
+		},
+	)
+)
+
 const decodeHtml = (value: string) => (
 	value
 		.replaceAll('&quot;', '"')
@@ -175,11 +211,11 @@ const createSnapResponse = (
 		JSON.stringify(body),
 		{
 			status: 200,
-			headers: {
+			headers: snapCorsHeaders({
 				'content-type': SnapMediaType,
 				'vary': 'Accept',
 				'link': link,
-			},
+			}),
 		},
 	)
 }

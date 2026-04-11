@@ -74,7 +74,7 @@ import {
 	parseFrameSignatureJson,
 	readSnapJfsPayload,
 } from './lib/snap-jfs'
-import { snapGetResponse, snapPostResponse } from './lib/snap-routes'
+import { snapCorsHeaders, snapGetResponse, snapOptionsResponse, snapPostResponse } from './lib/snap-routes'
 import { SnapMediaType } from './lib/snap-spec'
 
 
@@ -95,6 +95,16 @@ export const handle: Handle = async ({
 				'accept': 'image/png',
 			}),
 		})
+	}
+
+	if (
+		event.request.method === 'OPTIONS'
+		&& (
+			wantsSnapJson(event.request)
+			|| event.request.headers.has('access-control-request-method')
+		)
+	) {
+		return snapOptionsResponse()
 	}
 
 	// Farcaster Snap (content negotiation)
@@ -245,9 +255,21 @@ export const handle: Handle = async ({
 				}
 			} catch (err) {
 				console.error('Snap JFS error', err)
-				return new Response('Unauthorized', { status: 401 })
+				return new Response(
+					'Unauthorized',
+					{
+						status: 401,
+						headers: snapCorsHeaders(),
+					},
+				)
 			}
-			return new Response('Snap POST not supported for this URL', { status: 404 })
+			return new Response(
+				'Snap POST not supported for this URL',
+				{
+					status: 404,
+					headers: snapCorsHeaders(),
+				},
+			)
 		}
 
 		event.request = new Request(
