@@ -42,12 +42,12 @@ export const actions: Actions = {
 				targetUrl: '/demos/coin-flip?/open',
 			},
 			{
-				label: '🎨 Abstract Art',
+				label: '🎨 Generative Art',
 				action: 'post',
 				targetUrl: '/demos/abstract-art?/open',
 			},
 			{
-				label: '✊ Rock Paper Scissors',
+				label: '✂️ Rock Paper Scissors',
 				action: 'post',
 				targetUrl: '/demos/rock-paper-scissors?/open',
 			},

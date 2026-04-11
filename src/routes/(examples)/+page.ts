@@ -7,9 +7,9 @@ const githubBranchUrl = 'https://github.com/darrylyeo/skiffle/tree/snap'
 
 export const load: PageLoad = async () => {
 	return {
-		title: 'SKIFFLE – a website in a snap!',
+		title: 'SKIFFLE – a website in a snap 🫰',
 		snap: {
-			shareText: 'Checking out the SKIFFLE demo, a SvelteKit project for embedding full server-rendered websites in Farcaster Snaps.',
+			shareText: 'Check out SKIFFLE, a SvelteKit project for embedding full server-rendered a website in Farcaster Snaps.',
 			buttons: [
 				snapButtonGroup({
 					direction: SnapDirections.Horizontal,

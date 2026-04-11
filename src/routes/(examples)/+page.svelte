@@ -1,21 +1,13 @@
 <script lang="ts">
-	// Components
-	import AbstractArtBackground from '$lib/AbstractArtBackground.svelte'
-
 	// Assets
 	import farcasterLogoUrl from '$lib/assets/branding/farcaster-logo.svg'
 	import svelteLogoUrl from '$lib/assets/branding/svelte-logo.svg'
-
-	// Functions
-	import { abstractArtBackgroundView } from './demos/abstract-art/abstract-art-frame'
-
-	const background = abstractArtBackgroundView(10871, 2)
+	import banjoEmojiUrl from '$lib/assets/emoji/banjo.svg'
+	import snapEmojiUrl from '$lib/assets/emoji/snap.svg'
 </script>
 
 
 <article class="card column">
-	<AbstractArtBackground {background} />
-
 	<div class="hero-copy column">
 		<h1 class="logo" aria-label="SKIFFLE">
 			<span class="logo-letter"><span class="svelte">S</span></span>
@@ -38,88 +30,55 @@
 	</div>
 
 	<p class="sticker sticker-main">now in a snap!</p>
-	<p class="sticker sticker-idea">probably needs a better acronym now</p>
 	<p class="sticker sticker-wowow">wowow</p>
+	<p class="sticker sticker-idea">needs a better acronym</p>
 
-	{#each [
-		{
-			src: svelteLogoUrl,
-			className: 'decal brand brand-svelte',
-			style: 'top:2.5em;left:-1em;width:9.9em;transform:rotate(-11deg);',
-		},
-		{
-			src: farcasterLogoUrl,
-			className: 'decal brand brand-farcaster',
-			style: 'top:5.5em;right:-0.5em;width:9em;transform:rotate(9deg);',
-		},
-	] as decal (decal.className)}
-		<img class={decal.className} src={decal.src} alt="" aria-hidden="true" style={decal.style} />
-	{/each}
+	<img
+		class="decal brand brand-svelte"
+		src={svelteLogoUrl}
+		alt=""
+		aria-hidden="true"
+		style="bottom: 22%; left: -1%; width: 7rem; height: 7rem; transform: rotate(-11deg)"
+	/>
+	<img
+		class="decal brand brand-farcaster"
+		src={farcasterLogoUrl}
+		alt=""
+		aria-hidden="true"
+		style="top: 13%; right: -1%; width: 7rem; height: 7rem; transform: rotate(9deg)"
+	/>
 
-	{#each [
-		{
-			content: '🖼️',
-			className: 'decal emoji-badge emoji-frame',
-			style: 'top:8em;left:12.8em;transform:rotate(-7deg);',
-		},
-		{
-			content: '🫰',
-			className: 'decal emoji-badge emoji-snap',
-			style: 'top:2.2em;right:10.35em;transform:rotate(11deg);',
-		},
-		{
-			content: '🪕',
-			className: 'decal emoji-badge emoji-banjo',
-			style: 'bottom:1.65em;right:2.6em;transform:rotate(8deg);',
-		},
-	] as decal (decal.className)}
-		<span class={decal.className} aria-hidden="true" style={decal.style}>{decal.content}</span>
-	{/each}
+	<span
+		class="decal emoji-badge"
+		aria-hidden="true"
+		style="top: 4%; left: 18%; width: 2.55em; height: 2.55em; transform: rotate(-7deg)"
+	>🖼️</span>
 
-	{#each [
-		{
-			content: '👤',
-			style: 'top:12.2em;left:1.2em;transform:rotate(-10deg);',
-		},
-		{
-			content: '📻',
-			style: 'top:4.85em;left:13.2em;transform:rotate(8deg);',
-		},
-		{
-			content: '🔢',
-			style: 'top:2.35em;left:19.35em;transform:rotate(-6deg);',
-		},
-		{
-			content: '🪙',
-			style: 'top:10.75em;right:1.35em;transform:rotate(7deg);',
-		},
-		{
-			content: '🎨',
-			style: 'bottom:5.1em;right:6.25em;transform:rotate(-8deg);',
-		},
-		{
-			content: '✊️',
-			style: 'bottom:3.55em;left:9.2em;transform:rotate(10deg);',
-		},
-		{
-			content: '❎️',
-			style: 'bottom:7.15em;left:2.4em;transform:rotate(-9deg);',
-		},
-		{
-			content: '🔠',
-			style: 'top:8.55em;left:5.1em;transform:rotate(6deg);',
-		},
-		{
-			content: '🟩',
-			style: 'bottom:8.25em;right:2.45em;transform:rotate(-6deg);',
-		},
-		{
-			content: '📽️',
-			style: 'bottom:2.7em;right:11.15em;transform:rotate(9deg);',
-		},
-	] as decal (`${decal.content}:${decal.style}`)}
-		<span class="decal demo-spark" aria-hidden="true" style={decal.style}>{decal.content}</span>
-	{/each}
+	<img
+		class="decal emoji-badge emoji-badge-image"
+		src={banjoEmojiUrl}
+		alt=""
+		aria-hidden="true"
+		style="bottom: 4%; left: 26%; width: 2.55em; height: 2.55em; transform: rotate(11deg)"
+	/>
+	<img
+		class="decal emoji-badge emoji-badge-image"
+		src={snapEmojiUrl}
+		alt=""
+		aria-hidden="true"
+		style="bottom: 33%; right: 19%; width: 2.55em; height: 2.55em; transform: rotate(8deg)"
+	/>
+
+	<span class="decal demo-spark" aria-hidden="true" style="bottom: 6%; left: 2%; width: 1.85em; height: 1.85em; transform: rotate(-10deg)">👤</span>
+	<span class="decal demo-spark" aria-hidden="true" style="top: 29%; right: 18%; width: 1.85em; height: 1.85em; transform: rotate(8deg)">📻</span>
+	<span class="decal demo-spark" aria-hidden="true" style="top: 5%; right: 13%; width: 1.85em; height: 1.85em; transform: rotate(-6deg)">🔢</span>
+	<span class="decal demo-spark" aria-hidden="true" style="bottom: 32%; right: 12%; width: 1.85em; height: 1.85em; transform: rotate(7deg)">🪙</span>
+	<span class="decal demo-spark" aria-hidden="true" style="bottom: 5%; right: 3%; width: 1.85em; height: 1.85em; transform: rotate(-8deg)">🎨</span>
+	<span class="decal demo-spark" aria-hidden="true" style="bottom: 25%; left: 18%; width: 1.85em; height: 1.85em; transform: rotate(10deg)">✂️</span>
+	<span class="decal demo-spark" aria-hidden="true" style="top: 21%; left: 11%; width: 1.85em; height: 1.85em; transform: rotate(-9deg)">❎️</span>
+	<span class="decal demo-spark" aria-hidden="true" style="top: 10%; left: 4%; width: 1.85em; height: 1.85em; transform: rotate(6deg)">🔠</span>
+	<span class="decal demo-spark" aria-hidden="true" style="left: 18%; top: 40%; width: 1.85em; height: 1.85em; transform: rotate(-6deg)">🟩</span>
+	<span class="decal demo-spark" aria-hidden="true" style="bottom: 7%; right: 23%; width: 1.85em; height: 1.85em; transform: rotate(9deg)">📽️</span>
 </article>
 
 
@@ -132,9 +91,19 @@
 
 	.card {
 		position: relative;
-		padding: 2.95em 4.4em 3.3em;
+		overflow: visible;
+		padding: 2.5em 4em;
 		border-radius: 1em;
-		background: radial-gradient(circle, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.075));
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		background:
+			radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.075), transparent 38%),
+			radial-gradient(circle at 12% 18%, rgba(255, 126, 92, 0.06), transparent 28%),
+			radial-gradient(circle at 88% 20%, rgba(138, 99, 210, 0.075), transparent 26%),
+			linear-gradient(180deg, rgba(255, 255, 255, 0.022), rgba(255, 255, 255, 0.01)),
+			rgba(9, 7, 22, 0.07);
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.14),
+			0 1em 2.8em rgba(10, 7, 28, 0.18);
 		gap: 1.5em;
 
 		text-shadow: 2px 2px 2px rgba(255, 255, 255, 0.14), 0 0 10px rgba(255, 255, 255, 0.18);
@@ -145,6 +114,12 @@
 		z-index: 2;
 		gap: 1.15em;
 		align-items: center;
+		padding: 0.65em 1.2em 0.75em;
+		border-radius: 1.2em;
+		background:
+			linear-gradient(180deg, rgba(14, 11, 30, 0.1), rgba(14, 11, 30, 0.03));
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.05);
 	}
 
 	.decal {
@@ -165,41 +140,56 @@
 	}
 
 	.brand {
+		box-sizing: border-box;
+		object-fit: contain;
 		padding: 0.7em;
 		border-radius: 1em;
-		background: rgba(255, 255, 255, 0.08);
+		background:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06));
 		opacity: 0.82;
 	}
 
 	.brand-svelte {
-		background: rgba(255, 255, 255, 0.09);
+		border-radius: 999px;
+		background:
+			radial-gradient(circle at 35% 32%, rgba(255, 255, 255, 0.2), transparent 42%),
+			linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.04));
+		opacity: 0.58;
 	}
 
 	.brand-farcaster {
 		padding: 0.85em;
 		border-radius: 999px;
-		background: rgba(138, 99, 210, 0.12);
+		background:
+			radial-gradient(circle at 35% 32%, rgba(255, 255, 255, 0.14), transparent 42%),
+			linear-gradient(180deg, rgba(138, 99, 210, 0.2), rgba(138, 99, 210, 0.08));
 	}
 
 	.emoji-badge {
-		width: 2.55em;
-		height: 2.55em;
 		border-radius: 999px;
-		background: rgba(255, 255, 255, 0.08);
+		background:
+			radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.22), transparent 36%),
+			linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
 		font-size: 1.45em;
 		line-height: 1;
 		font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Noto Emoji', sans-serif;
 	}
 
+	.emoji-badge-image {
+		padding: 0.38em;
+		box-sizing: border-box;
+		object-fit: contain;
+	}
+
 	.demo-spark {
-		width: 1.85em;
-		height: 1.85em;
 		border-radius: 999px;
-		background: rgba(255, 255, 255, 0.06);
+		background:
+			radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.18), transparent 36%),
+			linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
 		color: rgba(255, 255, 255, 0.96);
 		font-size: 1em;
 		line-height: 1;
-		opacity: 0.92;
+		opacity: 0.84;
 		font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Noto Emoji', sans-serif;
 	}
 
@@ -210,7 +200,9 @@
 		border: 1px solid rgba(255, 255, 255, 0.28);
 		border-radius: 999px;
 		background: linear-gradient(135deg, rgba(255, 62, 0, 0.95), rgba(138, 99, 210, 0.95));
-		box-shadow: 0 0.6em 1.6em rgba(0, 0, 0, 0.22);
+		box-shadow:
+			0 0.6em 1.6em rgba(0, 0, 0, 0.18),
+			inset 0 1px 0 rgba(255, 255, 255, 0.18);
 		color: rgba(255, 255, 255, 0.96);
 		font-size: 0.95em;
 		font-weight: 800;
@@ -227,19 +219,19 @@
 	}
 
 	.sticker-idea {
-		bottom: 1.15em;
+		bottom: 4.5em;
 		right: 1.2em;
 		font-size: 0.74em;
 		letter-spacing: 0.04em;
 		text-transform: none;
 		background: linear-gradient(135deg, rgba(255, 164, 110, 0.78), rgba(255, 109, 53, 0.72));
 		color: rgba(51, 24, 11, 0.92);
-		transform: rotate(6deg);
+		transform: rotate(-9deg);
 	}
 
 	.sticker-wowow {
-		bottom: 1.2em;
-		left: 1.2em;
+		bottom: 2.2em;
+		left: 6.2em;
 		padding-inline: 0.75em;
 		font-size: 0.68em;
 		letter-spacing: 0.08em;
