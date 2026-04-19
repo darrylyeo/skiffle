@@ -74,7 +74,7 @@ import {
 	parseFrameSignatureJson,
 	readSnapJfsPayload,
 } from './lib/snap-jfs'
-import { snapCorsHeaders, snapGetResponse, snapOptionsResponse, snapPostResponse } from './lib/snap-routes'
+import { snapCorsHeaders, snapGetResponse, snapOptionsResponse, snapPostResponse, withSnapHtmlDiscovery } from './lib/snap-routes'
 import { SnapMediaType } from './lib/snap-spec'
 
 
@@ -284,5 +284,19 @@ export const handle: Handle = async ({
 		return await resolve(event)
 	}
 
-	return await resolve(event)
+	const response = await resolve(event)
+
+	if (
+		event.request.method === 'GET'
+		&& !wantsSnapJson(event.request)
+		&& response.ok
+	) {
+		const contentType = response.headers.get('content-type') ?? ''
+		if (contentType.includes('text/html')) {
+			const html = await response.text()
+			return withSnapHtmlDiscovery(response, event.url, html)
+		}
+	}
+
+	return response
 }
