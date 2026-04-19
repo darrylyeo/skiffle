@@ -17,6 +17,59 @@ const wantsSnapJson = (request: Request) => (
 		.includes(SnapMediaType)
 )
 
+const htmlResponse = (response: Response) => (
+	(response.headers.get('content-type') ?? '')
+		.includes('text/html')
+)
+
+const snapAlternateLinkHeader = (url: URL) => (
+	`<${url.href}>; rel="alternate"; type="${SnapMediaType}"`
+)
+
+const withSnapAlternateLinkHeader = (
+	request: Request,
+	response: Response,
+	url: URL,
+) => {
+	if (
+		wantsSnapJson(request)
+		|| !htmlResponse(response)
+		|| response.headers.get('link')?.includes(`type="${SnapMediaType}"`)
+	) {
+		return response
+	}
+
+	return new Response(
+		response.body,
+		{
+			status: response.status,
+			statusText: response.statusText,
+			headers: (() => {
+				const headers = new Headers(response.headers)
+				const existingLink = headers.get('link')
+				headers.set(
+					'link',
+					existingLink
+						? `${existingLink}, ${snapAlternateLinkHeader(url)}`
+						: snapAlternateLinkHeader(url),
+				)
+				return headers
+			})(),
+		},
+	)
+}
+
+const resolveWithSnapAlternateLinkHeader = async (
+	event: Parameters<Handle>[0]['event'],
+	resolve: Parameters<Handle>[0]['resolve'],
+) => (
+	withSnapAlternateLinkHeader(
+		event.request,
+		await resolve(event),
+		event.url,
+	)
+)
+
 /** `JSXElement.props` is typed `unknown`; Satori vnode children match this shape at runtime. */
 const vnodeProps = (node: SatoriNode) => (
 	node.props as {
@@ -74,7 +127,7 @@ import {
 	parseFrameSignatureJson,
 	readSnapJfsPayload,
 } from './lib/snap-jfs'
-import { snapCorsHeaders, snapGetResponse, snapOptionsResponse, snapPostResponse, withSnapHtmlDiscovery } from './lib/snap-routes'
+import { snapCorsHeaders, snapGetResponse, snapOptionsResponse, snapPostResponse } from './lib/snap-routes'
 import { SnapMediaType } from './lib/snap-spec'
 
 
@@ -242,7 +295,7 @@ export const handle: Handle = async ({
 				},
 			)
 
-			return await resolve(event)
+			return await resolveWithSnapAlternateLinkHeader(event, resolve)
 		}
 
 		if (isLikelyJfsCompact(bodyText) || hasSnapJfsEnvelope(bodyText)) {
@@ -281,22 +334,8 @@ export const handle: Handle = async ({
 			},
 		)
 
-		return await resolve(event)
+		return await resolveWithSnapAlternateLinkHeader(event, resolve)
 	}
 
-	const response = await resolve(event)
-
-	if (
-		event.request.method === 'GET'
-		&& !wantsSnapJson(event.request)
-		&& response.ok
-	) {
-		const contentType = response.headers.get('content-type') ?? ''
-		if (contentType.includes('text/html')) {
-			const html = await response.text()
-			return withSnapHtmlDiscovery(response, event.url, html)
-		}
-	}
-
-	return response
+	return await resolveWithSnapAlternateLinkHeader(event, resolve)
 }

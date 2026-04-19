@@ -220,46 +220,6 @@ const createSnapResponse = (
 	)
 }
 
-const mergeVaryToken = (existing: string | null, token: string) => (
-	[
-		...(existing?.split(',').map((value) => value.trim()).filter(Boolean) ?? []),
-		token,
-	]
-		.filter((value, index, values) => values.indexOf(value) === index)
-		.join(', ')
-)
-
-/** @see https://docs.farcaster.xyz/snap/http-headers#link-responses */
-export const withSnapHtmlDiscovery = (
-	response: Response,
-	requestUrl: URL,
-	html: string,
-) => {
-	if (!parseFramePageFromHtml(html)) {
-		return new Response(html, {
-			status: response.status,
-			statusText: response.statusText,
-			headers: response.headers,
-		})
-	}
-	const self = resolveUrl(requestUrl.pathname + requestUrl.search, requestUrl)
-	const link = `<${self}>; rel="alternate"; type="${SnapMediaType}"`
-	const headers = new Headers(response.headers)
-	const existingLink = headers.get('link')
-	headers.set(
-		'link',
-		existingLink
-			? `${existingLink}, ${link}`
-		: link,
-	)
-	headers.set('vary', mergeVaryToken(headers.get('vary'), 'Accept'))
-	return new Response(html, {
-		status: response.status,
-		statusText: response.statusText,
-		headers,
-	})
-}
-
 const isRecord = (value: unknown): value is Record<string, unknown> => (
 	typeof value === 'object'
 	&& value !== null
