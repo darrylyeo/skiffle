@@ -12,97 +12,6 @@ import { loadSatoriAdditionalAsset } from '$/lib/satori-emoji'
 
 type SatoriNode = JSXElement
 
-const wantsSnapJson = (request: Request) => (
-	(request.headers.get('accept') ?? '')
-		.includes(SnapMediaType)
-)
-
-const htmlResponse = (response: Response) => (
-	(response.headers.get('content-type') ?? '')
-		.includes('text/html')
-)
-
-const snapAlternateLinkHeader = (url: URL) => (
-	`<${url.href}>; rel="alternate"; type="${SnapMediaType}"`
-)
-
-const withSnapAlternateLinkHeader = (
-	request: Request,
-	response: Response,
-	url: URL,
-) => {
-	if (
-		wantsSnapJson(request)
-		|| !htmlResponse(response)
-		|| response.headers.get('link')?.includes(`type="${SnapMediaType}"`)
-	) {
-		return response
-	}
-
-	return new Response(
-		response.body,
-		{
-			status: response.status,
-			statusText: response.statusText,
-			headers: (() => {
-				const headers = new Headers(response.headers)
-				const existingLink = headers.get('link')
-				headers.set(
-					'link',
-					existingLink
-						? `${existingLink}, ${snapAlternateLinkHeader(url)}`
-						: snapAlternateLinkHeader(url),
-				)
-				return headers
-			})(),
-		},
-	)
-}
-
-const resolveWithSnapAlternateLinkHeader = async (
-	event: Parameters<Handle>[0]['event'],
-	resolve: Parameters<Handle>[0]['resolve'],
-) => (
-	withSnapAlternateLinkHeader(
-		event.request,
-		await resolve(event),
-		event.url,
-	)
-)
-
-/** `JSXElement.props` is typed `unknown`; Satori vnode children match this shape at runtime. */
-const vnodeProps = (node: SatoriNode) => (
-	node.props as {
-		children?: unknown,
-		style?: Record<string, string | undefined>,
-	}
-)
-
-const childrenOf = (node: SatoriNode) => (
-	(
-		(c) => (
-			c === undefined ? []
-			: typeof c === 'string' ? []
-			: Array.isArray(c) ? c
-			: [c]
-		)
-	)(vnodeProps(node).children)
-)
-
-const findTag = (node: SatoriNode, type: string) => (
-	childrenOf(node).find((child) => child?.type === type)
-)
-
-/** `html()` from satori-html always wraps the document in a synthetic root `div`; with `Fragment` + `<style>`, that wrapper is a sibling of `style`, not `html`. */
-const vnodeTreeForFrameExtract = (root: SatoriNode) => (
-	(
-		findTag(root, 'html')
-			? root
-			: childrenOf(root).find((child) => child?.type === 'div')
-	)
-	?? root
-)
-
 
 // Fonts
 import { fonts } from '$/styles/fonts'
@@ -136,6 +45,43 @@ export const handle: Handle = async ({
 	event,
 	resolve,
 }) => {
+	const resolvedWithSnapAlternateLink = async () => {
+		const resolved = await resolve(event)
+		if (
+			(resolved.headers.get('content-type') ?? '')
+				.includes(SnapMediaType)
+			|| !(resolved.headers.get('content-type') ?? '')
+				.includes('text/html')
+			|| resolved.headers.get('link')?.includes(`type="${SnapMediaType}"`)
+		) {
+			return resolved
+		}
+
+		const headers = new Headers(resolved.headers)
+		const existingLink = headers.get('link')
+		const snapLink = (
+			`<${event.url.href}>; rel="alternate"; type="${SnapMediaType}"`
+		)
+		headers.set(
+			'link',
+			existingLink ? `${existingLink}, ${snapLink}` : snapLink,
+		)
+		headers.set(
+			'vary',
+			[
+				...(headers.get('vary')?.split(',').map((value) => value.trim()).filter(Boolean) ?? []),
+				'Accept',
+			]
+				.filter((value, index, values) => values.indexOf(value) === index)
+				.join(', '),
+		)
+		return new Response(resolved.body, {
+			status: resolved.status,
+			statusText: resolved.statusText,
+			headers,
+		})
+	}
+
 	const contentTypes = event.request.headers.get('accept')
 
 	// Image redirect
@@ -153,7 +99,8 @@ export const handle: Handle = async ({
 	if (
 		event.request.method === 'OPTIONS'
 		&& (
-			wantsSnapJson(event.request)
+			(event.request.headers.get('accept') ?? '')
+				.includes(SnapMediaType)
 			|| event.request.headers.has('access-control-request-method')
 		)
 	) {
@@ -161,7 +108,11 @@ export const handle: Handle = async ({
 	}
 
 	// Farcaster Snap (content negotiation)
-	if (event.request.method === 'GET' && wantsSnapJson(event.request)) {
+	if (
+		event.request.method === 'GET'
+		&& (event.request.headers.get('accept') ?? '')
+			.includes(SnapMediaType)
+	) {
 		const snap = await snapGetResponse(event, resolve)
 		if (snap) {
 			return snap
@@ -182,6 +133,39 @@ export const handle: Handle = async ({
 		}
 
 		const html = await response.text()
+
+		/** `JSXElement.props` is typed `unknown`; Satori vnode children match this shape at runtime. */
+		const vnodeProps = (node: SatoriNode) => (
+			node.props as {
+				children?: unknown,
+				style?: Record<string, string | undefined>,
+			}
+		)
+
+		const childrenOf = (node: SatoriNode) => (
+			(
+				(c) => (
+					c === undefined ? []
+					: typeof c === 'string' ? []
+					: Array.isArray(c) ? c
+					: [c]
+				)
+			)(vnodeProps(node).children)
+		)
+
+		const findTag = (node: SatoriNode, type: string) => (
+			childrenOf(node).find((child) => child?.type === type)
+		)
+
+		/** `html()` from satori-html always wraps the document in a synthetic root `div`; with `Fragment` + `<style>`, that wrapper is a sibling of `style`, not `html`. */
+		const vnodeTreeForFrameExtract = (root: SatoriNode) => (
+			(
+				findTag(root, 'html')
+					? root
+					: childrenOf(root).find((child) => child?.type === 'div')
+			)
+			?? root
+		)
 
 		const stylesheetHrefs = [...new Set([
 			...[...html.matchAll(/<link\s+href="([^"]+)"[^>]*rel="stylesheet"/gi)].map((m) => m[1]),
@@ -295,7 +279,7 @@ export const handle: Handle = async ({
 				},
 			)
 
-			return await resolveWithSnapAlternateLinkHeader(event, resolve)
+			return await resolvedWithSnapAlternateLink()
 		}
 
 		if (isLikelyJfsCompact(bodyText) || hasSnapJfsEnvelope(bodyText)) {
@@ -334,8 +318,8 @@ export const handle: Handle = async ({
 			},
 		)
 
-		return await resolveWithSnapAlternateLinkHeader(event, resolve)
+		return await resolvedWithSnapAlternateLink()
 	}
 
-	return await resolveWithSnapAlternateLinkHeader(event, resolve)
+	return await resolvedWithSnapAlternateLink()
 }
