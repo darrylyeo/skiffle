@@ -38,6 +38,7 @@ import {
 } from './lib/snap-jfs'
 import { snapCorsHeaders, snapGetResponse, snapOptionsResponse, snapPostResponse } from './lib/snap-routes'
 import { SnapMediaType } from './lib/snap-spec'
+import { publicRequestUrl } from './lib/public-request-url'
 
 
 // Hooks
@@ -45,6 +46,15 @@ export const handle: Handle = async ({
 	event,
 	resolve,
 }) => {
+	const externalUrl = publicRequestUrl(event.request.url, event.request.headers)
+	if (externalUrl.href !== event.url.href) {
+		;(event as { url: URL }).url = externalUrl
+		event.request = new Request(
+			externalUrl,
+			event.request,
+		)
+	}
+
 	const resolvedWithSnapAlternateLink = async () => {
 		const resolved = await resolve(event)
 		if (
