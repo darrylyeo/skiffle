@@ -12,8 +12,9 @@ import {
 	framePageToSnap,
 	snapResolvedUrl,
 	type FramePage,
+	type SnapResponse,
 } from '$/lib/snap'
-import { SnapMediaType } from '$/lib/snap-spec'
+import { SnapMediaType, SnapVersion } from '$/lib/snap-spec'
 import { resolveUrl } from '$/lib/resolveUrl'
 
 type Resolve = Parameters<Handle>[0]['resolve']
@@ -220,6 +221,49 @@ const createSnapResponse = (
 	)
 }
 
+/** When `Accept` asks for snap but the page has no frame metadata — still return snap JSON (not HTML). @see https://docs.farcaster.xyz/snap/http-headers */
+const createSnapUnavailableResponse = (requestUrl: URL) => {
+	const body: SnapResponse = {
+		version: SnapVersion,
+		theme: {
+			accent: 'purple',
+		},
+		ui: {
+			root: 'page',
+			elements: {
+				page: {
+					type: 'stack',
+					props: {},
+					children: ['notice'],
+				},
+				notice: {
+					type: 'text',
+					props: {
+						content: 'No Farcaster frame on this URL (fc:frame:image).',
+						size: 'sm',
+					},
+				},
+			},
+		},
+	}
+	const self = resolveUrl(requestUrl.pathname + requestUrl.search, requestUrl)
+	const link = (
+		`<${self}>; rel="alternate"; type="${SnapMediaType}", `
+		+ `<${self}>; rel="alternate"; type="text/html"`
+	)
+	return new Response(
+		JSON.stringify(body),
+		{
+			status: 200,
+			headers: snapCorsHeaders({
+				'content-type': SnapMediaType,
+				'vary': 'Accept',
+				'link': link,
+			}),
+		},
+	)
+}
+
 const isRecord = (value: unknown): value is Record<string, unknown> => (
 	typeof value === 'object'
 	&& value !== null
@@ -336,11 +380,13 @@ const resolveFramePageFromUrl = async (
 export const snapGetResponse = async (
 	event: RequestEvent,
 	resolve: Resolve,
-) => {
+): Promise<Response> => {
 	const framePage = await resolveFramePage(event, resolve)
-	return framePage
-		? createSnapResponse(framePageToSnap(framePage, event.url), event.url)
-		: null
+	return (
+		framePage
+			? createSnapResponse(framePageToSnap(framePage, event.url), event.url)
+			: createSnapUnavailableResponse(event.url)
+	)
 }
 
 export const snapPostResponse = async (

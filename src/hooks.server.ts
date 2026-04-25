@@ -107,16 +107,14 @@ export const handle: Handle = async ({
 		return snapOptionsResponse()
 	}
 
-	// Farcaster Snap (content negotiation)
+	// Farcaster Snap (content negotiation) — MUST return snap JSON, never HTML
+	// @see https://docs.farcaster.xyz/snap/http-headers
 	if (
 		event.request.method === 'GET'
 		&& (event.request.headers.get('accept') ?? '')
 			.includes(SnapMediaType)
 	) {
-		const snap = await snapGetResponse(event, resolve)
-		if (snap) {
-			return snap
-		}
+		return await snapGetResponse(event, resolve)
 	}
 
 	// Svelte → HTML → Image
