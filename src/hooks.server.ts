@@ -183,7 +183,12 @@ export const handle: Handle = async ({
 			css,
 			...await Promise.all(
 				stylesheetHrefs.map(async (href) => {
-					const response = await fetch(new URL(href, event.request.url).href)
+					const response = await event.fetch(new URL(href, event.request.url))
+					if (!response.ok) {
+						throw new Error(
+							`frame stylesheet fetch failed ${response.status}: ${href}`,
+						)
+					}
 					return response.text()
 				})
 			),
