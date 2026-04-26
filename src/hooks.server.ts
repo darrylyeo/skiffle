@@ -8,7 +8,6 @@ import type { JSXElement } from 'satori/jsx'
 import satori from 'satori'
 import { Resvg } from '@resvg/resvg-js'
 import { styledHtmlDocumentForSatori } from '$/lib/frame-satori'
-import { loadSatoriAdditionalAsset } from '$/lib/satori-emoji'
 
 type SatoriNode = JSXElement
 
@@ -141,13 +140,6 @@ export const handle: Handle = async ({
 		}
 
 		const html = await response.text()
-		const assetOrigin = new URL(event.request.url).origin
-		/** Satori requires absolute `img` URLs; Vite may emit `/_app/...` when assets are not inlined. */
-		const htmlForSatori = (
-			html
-				.replaceAll('src="/_app/', `src="${assetOrigin}/_app/`)
-				.replaceAll('src="./_app/', `src="${assetOrigin}/_app/`)
-		)
 
 		/** `JSXElement.props` is typed `unknown`; Satori vnode children match this shape at runtime. */
 		const vnodeProps = (node: SatoriNode) => (
@@ -186,20 +178,11 @@ export const handle: Handle = async ({
 			...[...html.matchAll(/<link\s+href="([^"]+)"[^>]*rel="stylesheet"/gi)].map((m) => m[1]),
 			...[...html.matchAll(/<link\s+rel="stylesheet"[^>]*href="([^"]+)"/gi)].map((m) => m[1]),
 		])]
-		/** Netlify (and similar): `event.fetch` for `/_app/*` does not hit static CDN — use HTTP. */
-		const fetchFrameStylesheet = async (href: string) => {
-			const url = new URL(href, event.request.url)
-			const requestOrigin = new URL(event.request.url).origin
-			if (url.origin === requestOrigin && url.pathname.startsWith('/_app/')) {
-				return fetch(url, { headers: { accept: 'text/css' } })
-			}
-			return event.fetch(url)
-		}
 		const styles = [
 			css,
 			...await Promise.all(
 				stylesheetHrefs.map(async (href) => {
-					const response = await fetchFrameStylesheet(href)
+					const response = await event.fetch(new URL(href, event.request.url))
 					if (!response.ok) {
 						throw new Error(
 							`frame stylesheet fetch failed ${response.status}: ${href}`,
@@ -210,7 +193,7 @@ export const handle: Handle = async ({
 			),
 		]
 
-		const reactNode = styledHtmlDocumentForSatori(styles.join('\n'), htmlForSatori)
+		const reactNode = styledHtmlDocumentForSatori(styles.join('\n'), html)
 
 		const extractRoot = vnodeTreeForFrameExtract(reactNode)
 		const htmlEl = findTag(extractRoot, 'html')
@@ -235,13 +218,12 @@ export const handle: Handle = async ({
 		const width = Number(style.width.match(/\d+/)![0])
 		const height = Number(style.height.match(/\d+/)![0])
 
-		const fonts = await getSatoriFonts()
+		const fonts = await getSatoriFonts(new URL(event.request.url).origin)
 
 		const svg = await satori(
 			contentRoot,
 			{
 				fonts,
-				loadAdditionalAsset: loadSatoriAdditionalAsset,
 				width,
 				height,
 			}

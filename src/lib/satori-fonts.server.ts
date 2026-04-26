@@ -1,5 +1,3 @@
-import { read } from '$app/server'
-
 const woffUrlFromBasename = (
 	glob: Record<string, string>,
 	basename: string,
@@ -10,9 +8,21 @@ const woffUrlFromBasename = (
 	))?.[1]
 )
 
-const bufferFromAssetUrl = async (url: string) => (
-	await read(url).arrayBuffer()
-)
+const bufferFromAssetUrl = async (url: string, origin: string) => {
+	const href = (
+		url.startsWith('http://') || url.startsWith('https://')
+			? url
+		: url.startsWith('/')
+			? `${origin}${url}`
+		:
+			new URL(url, `${origin}/`).href
+	)
+	const response = await fetch(href)
+	if (!response.ok) {
+		throw new Error(`font fetch failed ${response.status}: ${href}`)
+	}
+	return response.arrayBuffer()
+}
 
 const firaWoffs = import.meta.glob(
 	'/node_modules/@fontsource/fira-code/files/fira-code-*.woff',
@@ -30,6 +40,7 @@ const familyFonts = async (
 	shortName: string,
 	subsets: string[],
 	weights: number[],
+	origin: string,
 ) => (
 	Promise.all(
 		subsets.flatMap((subset) => (
@@ -41,7 +52,7 @@ const familyFonts = async (
 				}
 				return {
 					name,
-					data: await bufferFromAssetUrl(url),
+					data: await bufferFromAssetUrl(url, origin),
 					style: 'normal' as const,
 					weight,
 				}
@@ -53,7 +64,7 @@ const familyFonts = async (
 		))
 )
 
-const loadSatoriFonts = async () => ([
+const loadSatoriFonts = async (origin: string) => ([
 	...await familyFonts(
 		'Fira Code',
 		firaWoffs,
@@ -73,6 +84,7 @@ const loadSatoriFonts = async () => ([
 			600,
 			700,
 		],
+		origin,
 	),
 	...await familyFonts(
 		'Ubuntu',
@@ -91,11 +103,12 @@ const loadSatoriFonts = async () => ([
 			500,
 			700,
 		],
+		origin,
 	),
 ])
 
 let cache: Awaited<ReturnType<typeof loadSatoriFonts>> | undefined
 
-export const getSatoriFonts = async () => (
-	cache ??= await loadSatoriFonts()
+export const getSatoriFonts = async (origin: string) => (
+	cache ??= await loadSatoriFonts(origin)
 )
