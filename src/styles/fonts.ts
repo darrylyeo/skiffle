@@ -1,7 +1,9 @@
 import { readFileSync } from 'fs'
 
+import { absolutePathFontsourceFile } from '$/lib/npm-package-path'
+
 const readFont = (pkg: string, file: string) => (
-	readFileSync(`${process.cwd()}/node_modules/${pkg}/files/${file}`)
+	readFileSync(absolutePathFontsourceFile(pkg, file))
 )
 
 const familyFonts = (

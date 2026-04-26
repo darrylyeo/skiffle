@@ -1,9 +1,7 @@
 import { existsSync, readFileSync } from 'fs'
 import twemoji from 'twemoji'
 
-const installedTwemojiSvgPath = (code: string) => (
-	`${process.cwd()}/node_modules/@datawrapper/twemoji-svg/svg/${code}.svg`
-)
+import { absolutePathFontsourceFile, absolutePathTwemojiSvg } from '$/lib/npm-package-path'
 
 const dataUrlFromSvg = (svg: string) => (
 	`data:image/svg+xml;base64,${Buffer.from(svg, 'utf8').toString('base64')}`
@@ -20,15 +18,19 @@ const fontCache = new Map<string, {
 }[]>()
 
 const fontArrayBuffer = (pkg: string, file: string) => {
-	const buffer = readFileSync(`${process.cwd()}/node_modules/${pkg}/files/${file}`)
+	const buffer = readFileSync(absolutePathFontsourceFile(pkg, file))
 	return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength)
 }
 
-const installedEmojiSvg = (code: string) => (
-	existsSync(installedTwemojiSvgPath(code))
-		? readFileSync(installedTwemojiSvgPath(code), 'utf8')
-		: undefined
-)
+const installedEmojiSvg = (code: string) => {
+	const path = absolutePathTwemojiSvg(code)
+	return (
+		existsSync(path) ?
+			readFileSync(path, 'utf8')
+		:
+			undefined
+	)
+}
 
 const cacheFonts = (
 	key: string,
