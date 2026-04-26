@@ -14,7 +14,7 @@ type SatoriNode = JSXElement
 
 
 // Fonts
-import { fonts } from '$/styles/fonts'
+import { getSatoriFonts } from '$/lib/satori-fonts.server'
 
 
 // Styles
@@ -213,6 +213,8 @@ export const handle: Handle = async ({
 		}
 		const width = Number(style.width.match(/\d+/)![0])
 		const height = Number(style.height.match(/\d+/)![0])
+
+		const fonts = await getSatoriFonts()
 
 		const svg = await satori(
 			contentRoot,

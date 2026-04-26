@@ -1,7 +1,12 @@
-import { existsSync, readFileSync } from 'fs'
+import { read } from '$app/server'
+import notoJpWoffUrl from '@fontsource/noto-sans-jp/files/noto-sans-jp-japanese-400-normal.woff?url'
+import notoSymbolsWoffUrl from '@fontsource/noto-sans-symbols-2/files/noto-sans-symbols-2-symbols-400-normal.woff?url'
 import twemoji from 'twemoji'
 
-import { absolutePathFontsourceFile, absolutePathTwemojiSvg } from '$/lib/npm-package-path'
+const twemojiSvgUrls = import.meta.glob(
+	'/node_modules/@datawrapper/twemoji-svg/svg/*.svg',
+	{ eager: true, import: 'default', query: '?url' },
+) as Record<string, string>
 
 const dataUrlFromSvg = (svg: string) => (
 	`data:image/svg+xml;base64,${Buffer.from(svg, 'utf8').toString('base64')}`
@@ -17,20 +22,12 @@ const fontCache = new Map<string, {
 	lang?: string,
 }[]>()
 
-const fontArrayBuffer = (pkg: string, file: string) => {
-	const buffer = readFileSync(absolutePathFontsourceFile(pkg, file))
-	return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength)
-}
-
-const installedEmojiSvg = (code: string) => {
-	const path = absolutePathTwemojiSvg(code)
-	return (
-		existsSync(path) ?
-			readFileSync(path, 'utf8')
-		:
-			undefined
-	)
-}
+const twemojiUrlForCode = (code: string) => (
+	Object.entries(twemojiSvgUrls).find(([path]) => (
+		path.endsWith(`/${code}.svg`)
+		|| path.endsWith(`${code}.svg`)
+	))?.[1]
+)
 
 const cacheFonts = (
 	key: string,
@@ -46,36 +43,38 @@ const cacheFonts = (
 	fonts
 )
 
-const japaneseFallbackFonts = () => (
-	fontCache.get('ja-JP')
-		?? cacheFonts(
-			'ja-JP',
-			[
-				{
-					name: 'Noto Sans JP',
-					data: fontArrayBuffer('@fontsource/noto-sans-jp', 'noto-sans-jp-japanese-400-normal.woff'),
-					style: 'normal',
-					weight: 400,
-					lang: 'ja-JP',
-				},
-			],
-		)
-)
+const japaneseFallbackFonts = async () => {
+	const cached = fontCache.get('ja-JP')
+	if (cached) {
+		return cached
+	}
+	const fonts = [
+		{
+			name: 'Noto Sans JP',
+			data: await read(notoJpWoffUrl).arrayBuffer(),
+			style: 'normal' as const,
+			weight: 400,
+			lang: 'ja-JP',
+		},
+	]
+	return cacheFonts('ja-JP', fonts)
+}
 
-const symbolFallbackFonts = () => (
-	fontCache.get('unknown')
-		?? cacheFonts(
-			'unknown',
-			[
-				{
-					name: 'Noto Sans Symbols 2',
-					data: fontArrayBuffer('@fontsource/noto-sans-symbols-2', 'noto-sans-symbols-2-symbols-400-normal.woff'),
-					style: 'normal',
-					weight: 400,
-				},
-			],
-		)
-)
+const symbolFallbackFonts = async () => {
+	const cached = fontCache.get('unknown')
+	if (cached) {
+		return cached
+	}
+	const fonts = [
+		{
+			name: 'Noto Sans Symbols 2',
+			data: await read(notoSymbolsWoffUrl).arrayBuffer(),
+			style: 'normal' as const,
+			weight: 400,
+		},
+	]
+	return cacheFonts('unknown', fonts)
+}
 
 const twemojiCodeFromSegment = (segment: string) => (
 	twemoji.convert
@@ -113,15 +112,16 @@ const emojiDataUrlForSegment = async (segment: string) => {
 		return undefined
 	}
 
-	const localSvg = installedEmojiSvg(code)
-	if (localSvg) {
-		const dataUrl = dataUrlFromSvg(localSvg)
-		emojiCache.set(segment, dataUrl)
-		return dataUrl
+	const url = twemojiUrlForCode(code)
+	if (!url) {
+		missingEmojiCache.add(segment)
+		return undefined
 	}
 
-	missingEmojiCache.add(segment)
-	return undefined
+	const svg = await read(url).text()
+	const dataUrl = dataUrlFromSvg(svg)
+	emojiCache.set(segment, dataUrl)
+	return dataUrl
 }
 
 export const loadSatoriAdditionalAsset = async (
@@ -136,11 +136,11 @@ export const loadSatoriAdditionalAsset = async (
 	}
 
 	if (languageCode === 'ja-JP' || /[\u3000-\u30ff\u4e00-\u9fff]/.test(segment)) {
-		return japaneseFallbackFonts()
+		return await japaneseFallbackFonts()
 	}
 
 	if (languageCode === 'unknown' || isEmojiSegment(languageCode, segment) || /[\u2190-\u2bff\u0336]/.test(segment)) {
-		return symbolFallbackFonts()
+		return await symbolFallbackFonts()
 	}
 
 	return undefined
