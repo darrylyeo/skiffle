@@ -1,3 +1,17 @@
+const decodeEntitiesForBadge = (value: string) => {
+	let out = value
+	for (let i = 0; i < 10 && out.includes('&amp;'); i++) {
+		out = out.replaceAll('&amp;', '&')
+	}
+
+	return (
+		out
+			.replaceAll('&quot;', '"')
+			.replaceAll('&lt;', '<')
+			.replaceAll('&gt;', '>')
+	)
+}
+
 export const footerUrlBadgeContent = (href: string) => {
 	try {
 		const u = new URL(href)
@@ -7,16 +21,16 @@ export const footerUrlBadgeContent = (href: string) => {
 				: u.pathname.replace(/\/$/, '')
 		)
 
-		return (
+		return decodeEntitiesForBadge(
 			`${u.host}${path}${u.search}${u.hash}`
-				.replace(/%2f/gi, '/')
+				.replace(/%2f/gi, '/'),
 		)
 	} catch {
-		return (
+		return decodeEntitiesForBadge(
 			href
 				.replace(/^https?:\/\//i, '')
 				.replace(/%2f/gi, '/')
-				.replace(/\/+$/, '')
+				.replace(/\/+$/, ''),
 		)
 	}
 }
