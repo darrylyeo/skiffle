@@ -9,14 +9,8 @@ export default {
 	],
 
 	kit: {
-		adapter: (
-			process.env.SVELTEKIT_ADAPTER === 'netlify' ?
-				(await import('@sveltejs/adapter-netlify')).default()
-			: process.env.SVELTEKIT_ADAPTER === 'vercel' ?
-				(await import('@sveltejs/adapter-vercel')).default()
-			:
-				(await import('@sveltejs/adapter-auto')).default()
-		),
+		// adapter-auto picks Netlify / Vercel / etc. from NETLIFY, VERCEL, …
+		adapter: (await import('@sveltejs/adapter-auto')).default(),
 
 		alias: {
 			'$': './src',
