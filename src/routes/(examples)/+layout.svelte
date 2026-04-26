@@ -2,11 +2,9 @@
 	// Context
 	import { page } from '$app/stores'
 
-	let url = $page.url
+	import { footerUrlBadgeContent } from '$/lib/footer-url-badge'
 
-	const footerBaseUrl = (url: URL) => (
-		`${url.origin}${url.pathname === '/' ? '' : url.pathname.replace(/\/$/, '')}`
-	)
+	let url = $page.url
 
 	const footerQueryLine = (url: URL) => {
 		const query = [...url.searchParams.entries()]
@@ -49,7 +47,7 @@
 		<footer class="footer row">
 			<p>
 				<output class="url-badge">
-					<span>{footerBaseUrl(url)}</span>
+					<span>{footerUrlBadgeContent(url.href)}</span>
 
 					{#if footerQueryLine(url)}
 						<span class="query-line">{footerQueryLine(url)}</span>

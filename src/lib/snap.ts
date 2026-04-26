@@ -13,6 +13,7 @@ import {
 import type { FrameButton, FrameMeta } from '$/lib/frame'
 import type { SnapExtraElements } from '$/lib/snap-page-extra'
 
+import { footerUrlBadgeContent } from '$/lib/footer-url-badge'
 import { resolveUrl } from '$/lib/resolveUrl'
 import { coinFlipSnapExtraElements } from '$/routes/(examples)/demos/coin-flip/snap'
 import { hangmanSnapExtraElements } from '$/routes/(examples)/demos/hangman/snap'
@@ -326,23 +327,6 @@ const snapCurrentPageUrl = (baseUrl: URL | string) => (
 	)
 )
 
-const snapFooterUrlBadgeContent = (href: string) => {
-	try {
-		const u = new URL(href)
-
-		return (
-			`${u.host}${u.pathname}${u.search}${u.hash}`
-				.replace(/%2f/gi, '/')
-		)
-	} catch {
-		return (
-			href
-				.replace(/^https?:\/\//i, '')
-				.replace(/%2f/gi, '/')
-		)
-	}
-}
-
 const snapFooterContextUrl = (
 	baseUrl: URL | string,
 	context?: string,
@@ -534,7 +518,7 @@ export const framePageToSnap = (
 		'page-url': {
 			type: SnapElementTypes.Text,
 			props: {
-				content: snapFooterUrlBadgeContent(currentPageUrl),
+				content: footerUrlBadgeContent(currentPageUrl),
 				size: SnapTextSizes.Sm,
 				align: SnapAlignments.Center,
 			},
