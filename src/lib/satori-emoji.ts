@@ -118,7 +118,15 @@ const emojiDataUrlForSegment = async (segment: string) => {
 		return undefined
 	}
 
-	const svg = await read(url).text()
+	// Vite often inlines small SVGs as `data:` URLs. `read()` decodes the payload
+	// with `decodeURIComponent`, which can throw on some encodings; `fetch(data:)`
+	// follows the same URL semantics as browsers and Node.
+	const svg = (
+		url.startsWith('data:') ?
+			await fetch(url).then((response) => response.text())
+		:
+			await read(url).text()
+	)
 	const dataUrl = dataUrlFromSvg(svg)
 	emojiCache.set(segment, dataUrl)
 	return dataUrl
