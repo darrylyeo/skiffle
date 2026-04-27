@@ -82,6 +82,7 @@ export const handle: Handle = async ({
 				...(headers.get('vary')?.split(',').map((value) => value.trim()).filter(Boolean) ?? []),
 				'Accept',
 				'Sec-Fetch-Dest',
+				'Sec-Fetch-Mode',
 			]
 				.filter((value, index, values) => values.indexOf(value) === index)
 				.join(', '),
@@ -114,11 +115,17 @@ export const handle: Handle = async ({
 		return await snapGetResponse(event, resolve)
 	}
 
-	// Svelte → HTML → PNG only for real subresource image loads (`Sec-Fetch-Dest: image`).
-	// Clients resolve `og:image` / `fc:frame:image` with the same URL as the page but typically send image-only `Accept` and no `Sec-Fetch-Dest`; those must get HTML so the cast URL stays a Snap embed, not a bare image.
+	// Svelte → HTML → PNG only for classic `<img>` subresource loads (Fetch Metadata).
+	// `Sec-Fetch-Dest: image` alone can still match `fetch(..., { mode: "cors" })` image probes; those must get HTML so clients do not treat the Snap URL as a bare image host.
+	// Default `<img>` (no `crossorigin`) uses `Sec-Fetch-Mode: no-cors` and an `Accept` list that includes `image/`.
+	const secFetchDestRaster = event.request.headers.get('sec-fetch-dest')
+	const secFetchModeRaster = event.request.headers.get('sec-fetch-mode')
+	const acceptRaster = event.request.headers.get('accept') ?? ''
 	if (
 		event.request.method === 'GET'
-		&& event.request.headers.get('sec-fetch-dest') === 'image'
+		&& secFetchDestRaster === 'image'
+		&& secFetchModeRaster === 'no-cors'
+		&& acceptRaster.toLowerCase().includes('image/')
 	) {
 		const response = await resolve(event)
 
@@ -249,7 +256,7 @@ export const handle: Handle = async ({
 			{
 				headers: {
 					'content-type': 'image/png',
-					'vary': 'Sec-Fetch-Dest',
+					'vary': 'Sec-Fetch-Dest, Sec-Fetch-Mode',
 				},
 			},
 		)
