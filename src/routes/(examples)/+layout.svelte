@@ -1,29 +1,13 @@
 <script lang="ts">
-	// Context
-	import { page } from '$app/stores'
-
-	import { footerUrlBadgeContent } from '$/lib/footer-url-badge'
-
-	let url = $page.url
-
-	const footerQueryLine = (url: URL) => {
-		const query = [...url.searchParams.entries()]
-			.map(([key, value]) => (
-				value
-					? `${key}=${value}`
-					: key
-			))
-			.join('&')
-
-		return query
-			? `?${query.length > 56 ? `${query.slice(0, 53)}...` : query}`
-			: ''
-	}
-
-	// Props
+	// Types
 	import type { Snippet } from 'svelte'
 	import type { PageData } from './$types'
 
+	// Context
+	import { page } from '$app/state'
+
+
+	// Props
 	let {
 		children,
 		data,
@@ -31,6 +15,37 @@
 		children: Snippet,
 		data: PageData,
 	} = $props()
+
+	const u = $derived((() => {
+		const out = new URL(page.url.href)
+		for (let i = 0; i < 10; i++) {
+			const s = out.search
+			const h = out.hash
+			if (!s.includes('&amp;') && !h.includes('&amp;')) {
+				break
+			}
+			if (s.includes('&amp;')) {
+				out.search = s.replaceAll('&amp;', '&')
+			}
+			if (h.includes('&amp;')) {
+				out.hash = h.replaceAll('&amp;', '&')
+			}
+		}
+		return out
+	})())
+	const pathTail = $derived((
+		u.pathname
+		&& u.pathname !== '/'
+			? (() => {
+				try {
+					return decodeURI(u.pathname.replace(/\/$/, ''))
+				} catch {
+					return u.pathname.replace(/\/$/, '')
+				}
+			})()
+		: ''
+	))
+	const searchAndHashRaw = $derived(`${u.search}${u.hash}`)
 </script>
 
 
@@ -47,10 +62,10 @@
 		<footer class="footer row">
 			<p>
 				<output class="url-badge">
-					<span>{footerUrlBadgeContent(url.href)}</span>
+					<span>{`${u.host}${pathTail}`.replace(/%2f/gi, '/')}</span>
 
-					{#if footerQueryLine(url)}
-						<span class="query-line">{footerQueryLine(url)}</span>
+					{#if searchAndHashRaw}
+						<span class="query-line">{searchAndHashRaw.length > 60 ? `${searchAndHashRaw.slice(0, 57)}...` : searchAndHashRaw}</span>
 					{/if}
 				</output>
 			</p>

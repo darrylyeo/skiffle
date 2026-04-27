@@ -13,7 +13,6 @@ import {
 import type { FrameButton, FrameMeta } from '$/lib/frame'
 import type { SnapExtraElements } from '$/lib/snap-page-extra'
 
-import { footerUrlBadgeContent } from '$/lib/footer-url-badge'
 import { resolveUrl } from '$/lib/resolveUrl'
 import { coinFlipSnapExtraElements } from '$/routes/(examples)/demos/coin-flip/snap'
 import { hangmanSnapExtraElements } from '$/routes/(examples)/demos/hangman/snap'
@@ -520,7 +519,38 @@ export const framePageToSnap = (
 		'page-url': {
 			type: SnapElementTypes.Text,
 			props: {
-				content: footerUrlBadgeContent(currentPageUrl),
+				content: (() => {
+					try {
+						const out = new URL(currentPageUrl)
+						for (let i = 0; i < 10; i++) {
+							const s = out.search
+							const h = out.hash
+							if (!s.includes('&amp;') && !h.includes('&amp;')) {
+								break
+							}
+							if (s.includes('&amp;')) {
+								out.search = s.replaceAll('&amp;', '&')
+							}
+							if (h.includes('&amp;')) {
+								out.hash = h.replaceAll('&amp;', '&')
+							}
+						}
+						const path = (
+							out.pathname === '/' || out.pathname === ''
+								? ''
+								: out.pathname.replace(/\/$/, '')
+						)
+						return (
+							`${out.host}${path}${out.search}${out.hash}`
+								.replace(/%2f/gi, '/')
+						)
+					} catch {
+						return currentPageUrl
+							.replace(/^https?:\/\//i, '')
+							.replace(/%2f/gi, '/')
+							.replace(/\/+$/, '')
+					}
+				})(),
 				size: SnapTextSizes.Sm,
 				align: SnapAlignments.Center,
 			},
