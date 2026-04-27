@@ -74,7 +74,7 @@
 	<span class="decal demo" aria-hidden="true" style="top: 5%; right: 13%; width: 1.85em; height: 1.85em; transform: rotate(-6deg)">🔢</span>
 	<span class="decal demo" aria-hidden="true" style="bottom: 32%; right: 12%; width: 1.85em; height: 1.85em; transform: rotate(7deg)">🪙</span>
 	<span class="decal demo" aria-hidden="true" style="bottom: 5%; right: 3%; width: 1.85em; height: 1.85em; transform: rotate(-8deg)">🎨</span>
-	<span class="decal demo" aria-hidden="true" style="bottom: 25%; left: 18%; width: 1.85em; height: 1.85em; transform: rotate(10deg)">✂️</span>
+	<span class="decal demo" aria-hidden="true" style="bottom: 25%; left: 17%; width: 1.85em; height: 1.85em; transform: rotate(10deg)">✂️</span>
 	<span class="decal demo" aria-hidden="true" style="top: 21%; left: 11%; width: 1.85em; height: 1.85em; transform: rotate(-9deg)">📽️</span>
 	<span class="decal demo" aria-hidden="true" style="top: 10%; left: 4%; width: 1.85em; height: 1.85em; transform: rotate(6deg)">🔠</span>
 	<span class="decal demo" aria-hidden="true" style="left: 18%; top: 40%; width: 1.85em; height: 1.85em; transform: rotate(-6deg)">🟩</span>
@@ -219,8 +219,8 @@
 		}
 
 		&.callout-2 {
-			bottom: 2.2em;
-			left: 6.2em;
+			bottom: 3em;
+			left: 6.6em;
 			padding-inline: 0.75em;
 			font-size: 0.68em;
 			letter-spacing: 0.08em;
