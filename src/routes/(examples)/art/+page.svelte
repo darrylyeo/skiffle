@@ -12,7 +12,7 @@
 		<div class="meta row inline">
 			<div class="title column">
 				<p class="eyebrow">Generative Art</p>
-				<h2>"{data.title}"</h2>
+				<h2>"{data.pieceTitle}"</h2>
 			</div>
 			<div class="badges row inline">
 				<p class="badge badge-palette">{data.paletteColor}</p>

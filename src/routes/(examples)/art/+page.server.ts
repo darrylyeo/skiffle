@@ -3,6 +3,7 @@ import type { Actions, PageServerLoad } from './$types'
 
 // Functions
 import {
+	abstractArtDocumentTitle,
 	abstractArtStateFromHref,
 	abstractArtView,
 	buildAbstractArtFrame,
@@ -18,9 +19,9 @@ export const load: PageServerLoad = ({ url }) => {
 	const view = abstractArtView(state)
 
 	return {
-		title: `Generative Art · "${view.title}"`,
 		...state,
 		...view,
+		title: abstractArtDocumentTitle(state),
 		frame: buildAbstractArtFrame(state),
 		snap: buildAbstractArtSnap(state),
 	}
@@ -31,6 +32,7 @@ export const actions: Actions = {
 		const state = freshAbstractArtState(farcasterViewerFid ?? Date.now())
 
 		return {
+			title: abstractArtDocumentTitle(state),
 			...state,
 			frame: buildAbstractArtFrame(state),
 			snap: buildAbstractArtSnap(state),
@@ -50,6 +52,7 @@ export const actions: Actions = {
 		}
 
 		return {
+			title: abstractArtDocumentTitle(next),
 			...next,
 			frame: buildAbstractArtFrame(next),
 			snap: buildAbstractArtSnap(next),
@@ -69,6 +72,7 @@ export const actions: Actions = {
 		}
 
 		return {
+			title: abstractArtDocumentTitle(next),
 			...next,
 			frame: buildAbstractArtFrame(next),
 			snap: buildAbstractArtSnap(next),

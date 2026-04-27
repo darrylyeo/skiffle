@@ -6,7 +6,7 @@
 	import AbstractArtBackground from '$lib/AbstractArtBackground.svelte'
 
 	// Functions
-	import { abstractArtBackgroundView } from '../../demos/abstract-art/abstract-art-frame'
+	import { abstractArtBackgroundView } from '../../art/abstract-art-frame'
 
 	// Props
 	let { data }: { data: PageData } = $props()

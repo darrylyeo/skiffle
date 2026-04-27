@@ -8,6 +8,8 @@ import { snapButtonGroup, snapTargetButton } from '$/lib/snap-components'
 import { AppSnapButtonRoles } from '$/lib/app-snap-tokens'
 import { SnapButtonVariants, SnapDirections, SnapGaps, SnapJustifyValues, SnapPaletteColors } from '$/lib/snap-spec'
 
+const ABSTRACT_ART_PAGE_PATH = '/art' as const
+
 export type AbstractArtState = {
 	seed: number
 	palette: number
@@ -19,7 +21,7 @@ export type AbstractArtShape = {
 }
 
 export type AbstractArtView = {
-	title: string
+	pieceTitle: string
 	paletteColor: string
 	sceneStyle: string
 	backgroundStyle: string
@@ -258,7 +260,7 @@ const sceneParams = (state: AbstractArtState) => (
 export const abstractArtView = (state: AbstractArtState): AbstractArtView => {
 	const palette = PALETTES[state.palette]
 	const rand = random(state.seed)
-	const title = `${TITLE_PREFIXES[Math.floor(rand() * TITLE_PREFIXES.length)]} ${TITLE_SUFFIXES[Math.floor(rand() * TITLE_SUFFIXES.length)]}`
+	const pieceTitle = `${TITLE_PREFIXES[Math.floor(rand() * TITLE_PREFIXES.length)]} ${TITLE_SUFFIXES[Math.floor(rand() * TITLE_SUFFIXES.length)]}`
 	const shapes = [
 		...Array.from({ length: 5 }, (_, index) => ({
 			id: `blob:${index}`,
@@ -285,7 +287,7 @@ export const abstractArtView = (state: AbstractArtState): AbstractArtView => {
 	]
 
 	return {
-		title,
+		pieceTitle,
 		paletteColor: palette.accent,
 		sceneStyle: `background:${sceneRadials.join(', ')}, linear-gradient(135deg, ${palette.background[0]}, ${palette.background[1]}); border:1px solid ${rgba('#ffffff', 0.1)}; box-shadow:inset 0 1px 0 ${rgba('#ffffff', 0.12)}, 0 24px 60px ${rgba(palette.shadow, 0.34)};`,
 		backgroundStyle: `background:${backgroundRadials.join(', ')}, linear-gradient(135deg, ${palette.background[0]}, ${palette.background[1]});`,
@@ -304,9 +306,14 @@ export const abstractArtBackgroundView = (
 	})
 )
 
+export const abstractArtDocumentTitle = (state: AbstractArtState) => {
+	const view = abstractArtView(state)
+	return `Generative Art · "${view.pieceTitle}"`
+}
+
 export const buildAbstractArtFrame = (state: AbstractArtState): FrameMeta => ({
 	image: {
-		url: `/demos/abstract-art?${sceneParams(state)}`,
+		url: `${ABSTRACT_ART_PAGE_PATH}?${sceneParams(state)}`,
 		aspectRatio: '1:1',
 	},
 	buttons: frameButtons(
@@ -318,19 +325,19 @@ export const buildAbstractArtFrame = (state: AbstractArtState): FrameMeta => ({
 		{
 			label: 'Generate',
 			action: 'post',
-			targetUrl: `/demos/abstract-art?/remix&${sceneParams(state)}`,
+			targetUrl: `${ABSTRACT_ART_PAGE_PATH}?/remix&${sceneParams(state)}`,
 		},
 		{
 			label: 'Change color',
 			action: 'post',
-			targetUrl: `/demos/abstract-art?/palette&${sceneParams(state)}`,
+			targetUrl: `${ABSTRACT_ART_PAGE_PATH}?/palette&${sceneParams(state)}`,
 		},
 	),
 })
 
 export const buildAbstractArtSnap = (state: AbstractArtState): AppSnapPage => ({
 	castIntent: {
-		text: `Trying the Generative Art demo in SKIFFLE. "${abstractArtView(state).title}".`,
+		text: `Trying the Generative Art demo in SKIFFLE. "${abstractArtView(state).pieceTitle}".`,
 	},
 	theme: {
 		accent: PALETTES[normalizePalette(state.palette)].accent,
@@ -352,12 +359,12 @@ export const buildAbstractArtSnap = (state: AbstractArtState): AppSnapPage => ({
 					role: AppSnapButtonRoles.Cta,
 					variant: SnapButtonVariants.Primary,
 					action: 'post',
-					targetUrl: `/demos/abstract-art?/remix&${sceneParams(state)}`,
+					targetUrl: `${ABSTRACT_ART_PAGE_PATH}?/remix&${sceneParams(state)}`,
 				}),
 				snapTargetButton({
 					label: 'Change color',
 					action: 'post',
-					targetUrl: `/demos/abstract-art?/palette&${sceneParams(state)}`,
+					targetUrl: `${ABSTRACT_ART_PAGE_PATH}?/palette&${sceneParams(state)}`,
 				}),
 			],
 		}),

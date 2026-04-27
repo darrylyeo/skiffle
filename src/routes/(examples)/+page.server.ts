@@ -44,7 +44,7 @@ export const actions: Actions = {
 			{
 				label: '🎨 Generative Art',
 				action: 'post',
-				targetUrl: '/demos/abstract-art?/open',
+				targetUrl: '/art?/open',
 			},
 			{
 				label: '✂️ Rock Paper Scissors',
