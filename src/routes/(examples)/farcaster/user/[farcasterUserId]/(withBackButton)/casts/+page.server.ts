@@ -1,24 +1,61 @@
-import { getDemoCastsByFid } from '../../../../api/farcaster-client'
-import type { PageServerLoad } from './$types'
+import { getDemoCastsByFid } from '$/routes/(examples)/farcaster/api/farcaster-client'
+import type { Actions, PageServerLoad } from './$types'
+
+import { buildCastsSnapPage } from './casts-snap'
 
 export const load: PageServerLoad = async ({
 	parent,
-	params: { farcasterUserId },
-	locals: { rasterPreview },
+	url,
 }) => {
-	const data = await parent()
-
-	const { casts } = await getDemoCastsByFid({
-		fid: Number(farcasterUserId),
-		/**
-		 * Fewer casts for `?image=` (see `locals.rasterPreview` in `hooks.server.ts`).
-		 * A taller stack under the profile hero can make resvg panic on some SVG output from Satori.
-		 */
-		limit: rasterPreview ? 6 : 25,
+	const p = await parent()
+	const cursor = url.searchParams.get('cursor') ?? undefined
+	const { casts, nextCursor } = await getDemoCastsByFid({
+		fid: p.user.fid,
+		limit: 6,
+		cursor,
+	})
+	const { snap, frame } = buildCastsSnapPage({
+		user: p.user,
+		casts,
+		nextCursor,
+		parentSnap: p.snap,
+		parentFrame: p.frame,
 	})
 
 	return {
-		...data,
+		...p,
 		casts,
+		nextCursor,
+		snap,
+		frame,
 	}
 }
+
+export const actions = {
+	paginate: async ({
+		url,
+		parent,
+	}) => {
+		const p = await parent()
+		const cursor = url.searchParams.get('cursor') ?? undefined
+		const { casts, nextCursor } = await getDemoCastsByFid({
+			fid: p.user.fid,
+			limit: 6,
+			cursor,
+		})
+		const { snap, frame } = buildCastsSnapPage({
+			user: p.user,
+			casts,
+			nextCursor,
+			parentSnap: p.snap,
+			parentFrame: p.frame,
+		})
+
+		return {
+			casts,
+			nextCursor,
+			snap,
+			frame,
+		}
+	},
+} satisfies Actions
