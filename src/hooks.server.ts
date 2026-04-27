@@ -119,6 +119,7 @@ export const handle: Handle = async ({
 		event.request.method === 'GET'
 		&& event.url.searchParams.has('image')
 	) {
+		event.locals.rasterPreview = true
 		const savedUrl = new URL(event.url.href)
 		const savedRequest = event.request
 		const urlNoImage = new URL(event.url.href)

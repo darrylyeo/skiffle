@@ -21,6 +21,11 @@ declare global {
 
 			/** Last Snap JFS POST `inputs` (cell_grid, fields, etc.) when body was JFS compact. */
 			snapJfsInputs?: Record<string, unknown>,
+
+			/**
+			 * True while handling `GET ?image=` (Svelte → PNG). Set before URL is stripped for `resolve`.
+			 */
+			rasterPreview?: boolean,
 		}
 
 		interface PageData {
