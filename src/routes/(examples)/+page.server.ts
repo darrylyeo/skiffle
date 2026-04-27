@@ -34,7 +34,7 @@ export const actions: Actions = {
 		return {
 			snap: {
 				castIntent: {
-					text: 'Browsing the routes in the SKIFFLE demo and how the project maps them into Farcaster interactions.',
+					text: 'Browsing the SKIFFLE demo snapsite and learning about how SvelteKit routes map to Farcaster interactions 👀',
 				},
 				buttons: [
 					snapButtonGroup({

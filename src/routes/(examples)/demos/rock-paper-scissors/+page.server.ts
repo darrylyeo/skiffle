@@ -171,7 +171,7 @@ const buildRockPaperScissorsSnap = ({
 }: RockPaperScissorsState): AppSnapPage => ({
 	effects: outcome === 'win' ? [SnapEffects.Confetti] : undefined,
 	castIntent: {
-		text: `Trying the Rock Paper Scissors demo in SKIFFLE. ${rockPaperScissorsSummary({ rounds, wins, losses, draws, lastPlayer, lastCpu, outcome })}`,
+		text: `Playing Rock Paper Scissors. ${rockPaperScissorsSummary({ rounds, wins, losses, draws, lastPlayer, lastCpu, outcome })} on the SKIFFLE demo snapsite ✂️`,
 	},
 	theme: {
 		accent: (

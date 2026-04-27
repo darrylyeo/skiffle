@@ -18,7 +18,7 @@ export const load: PageLoad = async ({
 		title: `${parentData.user.display_name} casts`,
 		snap: {
 			castIntent: {
-				text: `Browsing ${parentData.user.display_name}'s recent casts in the SKIFFLE Farcaster demo.`,
+				text: `Browsing ${parentData.user.display_name}'s recent casts on the SKIFFLE demo snapsite 🗨️`,
 			},
 			buttons: [
 				findSnapButtonByRole(parentData.snap?.buttons, AppSnapButtonRoles.Back),

@@ -199,7 +199,7 @@ const buildTicTacToeFrame = ({ board, status }: TicTacToeState): FrameMeta => ({
 const buildTicTacToeSnap = ({ board, status }: TicTacToeState): AppSnapPage => ({
 	effects: status === 'x-win' ? [SnapEffects.Confetti] : undefined,
 	castIntent: {
-		text: `Trying the Tic-tac-toe demo in SKIFFLE. ${ticTacToeMessage(status)}`,
+		text: `Playing Tic-tac-toe. ${ticTacToeMessage(status)} on the SKIFFLE demo snapsite ⭕`,
 	},
 	theme: {
 		accent: (

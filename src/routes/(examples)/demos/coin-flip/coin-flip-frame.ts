@@ -167,17 +167,17 @@ export const coinFlipHistoryBadges = (state: CoinFlipState) => (
 
 export const coinFlipShareText = (state: CoinFlipState) => (
 	state.lastResult === 'edge'
-		? `I found Edge in the SKIFFLE coin flip demo after ${state.flips} flips.`
+		? `I landed an edge after ${state.flips} coin flips on the SKIFFLE demo snapsite 🪙`
 	: state.edge > 0
-		? `The SKIFFLE coin flip demo already hit Edge. Heads ${state.heads}, tails ${state.tails}, edge ${state.edge} after ${state.flips} flips.`
+		? `The coin flip demo already hit an edge. Heads ${state.heads}, tails ${state.tails}, edge ${state.edge} after ${state.flips} flips on the SKIFFLE demo snapsite 🪙`
 	: state.flips === 0
-		? 'Trying the SKIFFLE coin flip demo.'
+		? 'Playing the coin flip demo on the SKIFFLE demo snapsite 🪙'
 	: state.heads === state.tails
-		? `The SKIFFLE coin flip demo is tied at ${state.heads}-${state.tails} after ${state.flips} flips.`
+		? `The coin flip demo is tied ${state.heads}-${state.tails} after ${state.flips} flips on the SKIFFLE demo snapsite 🪙`
 	: state.heads > state.tails
-		? `Heads leads ${state.heads}-${state.tails} after ${state.flips} flips in the SKIFFLE coin flip demo.`
+		? `Heads leads ${state.heads}-${state.tails} after ${state.flips} flips on the SKIFFLE demo snapsite 🪙`
 	:
-		`Tails leads ${state.tails}-${state.heads} after ${state.flips} flips in the SKIFFLE coin flip demo.`
+		`Tails leads ${state.tails}-${state.heads} after ${state.flips} flips on the SKIFFLE demo snapsite 🪙`
 )
 
 export const nextCoinFlipState = (state: CoinFlipState): CoinFlipState => {

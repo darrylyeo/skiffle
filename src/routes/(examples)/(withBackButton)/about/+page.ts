@@ -23,7 +23,7 @@ export const load: PageLoad = async ({
 		title: 'About SKIFFLE',
 		snap: {
 			castIntent: {
-				text: 'Reading the SKIFFLE project overview: the same SvelteKit routes can serve HTML, frame previews, and Snap JSON.',
+				text: 'Reading the project overview for SKIFFLE. The same SvelteKit routes can serve HTML, frame previews, and Snap JSON on the SKIFFLE demo snapsite 📘',
 			},
 			buttons: [
 				snapButtonGroup({

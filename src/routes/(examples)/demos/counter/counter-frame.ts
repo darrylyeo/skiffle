@@ -58,7 +58,7 @@ export const counterPrimeFactorization = (count: number) => {
 }
 
 export const counterShareText = (count: number) => (
-	`How high can you go? I pushed the SKIFFLE counter demo to ${clampCount(count)}. Try it in /count.`
+	`How high can you go? I pushed the counter demo to ${clampCount(count)} on the SKIFFLE demo snapsite 🔢`
 )
 
 export const counterFrameMeta = (count: number): FrameMeta => {

@@ -80,7 +80,7 @@ const snapFromPaginationState = ({
 
 	return {
 		castIntent: {
-			text: `Viewing slide ${currentPage + 1} of ${totalPages} in SKIFFLE Tips. ${message}`,
+			text: `Reading tips, slide ${currentPage + 1} of ${totalPages}. ${message} on the SKIFFLE demo snapsite 💡`,
 		},
 		theme: {
 			accent: SnapPaletteColors.Amber,
