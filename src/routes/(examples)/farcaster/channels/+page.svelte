@@ -57,33 +57,24 @@
 		{#each data.displayChannels as channel (channel.id)}
 			{@const hostname = channelHostname(channel.url)}
 			{@const description = channelDescription(channel.description)}
-			{@const iconSrc = channelImageSrc(channel.imageUrl)}
-			{@const coverSrc = channelImageSrc(channel.headerImageUrl)}
+			{@const artSrc = channelImageSrc(channel.imageUrl) || channelImageSrc(channel.headerImageUrl)}
 
-			<a class="card column" href={channelDetailHref(channel.id)}>
-				{#if coverSrc}
-					<img
-						class="card-cover"
-						src={coverSrc}
-						alt=""
-						width="720"
-						height="120"
-					/>
-				{/if}
-
-				<div class="card-main">
-					{#if iconSrc}
+			<a class="card" href={channelDetailHref(channel.id)}>
+				<div class="card-art">
+					{#if artSrc}
 						<img
-							class="channel-icon"
-							src={iconSrc}
+							class="card-art-img"
+							src={artSrc}
 							alt=""
-							width="96"
-							height="96"
+							width="120"
+							height="120"
 						/>
 					{:else}
 						<div class="badge">{channelInitials(channel.name)}</div>
 					{/if}
+				</div>
 
+				<div class="card-main">
 					<div class="body column">
 						<p class="url row inline">
 							<strong>{channel.name}</strong>
@@ -132,11 +123,11 @@
 
 	.card {
 		display: flex;
-		flex-direction: column;
+		flex-direction: row;
 		align-items: stretch;
 		justify-content: flex-start;
 		overflow: hidden;
-		padding: 0;
+		min-height: 7.5rem;
 		border-radius: 1em;
 		background:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03)),
@@ -146,56 +137,61 @@
 		text-decoration: none;
 	}
 
-	.card-cover {
-		display: block;
-		width: 100%;
-		height: 3.75rem;
-		object-fit: cover;
-		object-position: center;
-		flex-shrink: 0;
-	}
-
-	.card-main {
+	.card-art {
 		display: flex;
 		flex-direction: row;
 		align-items: flex-start;
 		justify-content: flex-start;
-		gap: 0.85em;
-		padding: 1.1em;
-		flex: 1;
+		flex: 0 0 7.5rem;
+		width: 7.5rem;
+		align-self: stretch;
+		min-height: 7.5rem;
 	}
 
-	.channel-icon {
+	.card-art-img {
 		display: block;
-		width: 3rem;
-		height: 3rem;
-		border-radius: 0.8rem;
+		width: 7.5rem;
+		height: 7.5rem;
 		object-fit: cover;
 		object-position: center;
-		flex-shrink: 0;
-		border: 1px solid rgba(255, 255, 255, 0.12);
+		border-radius: 1em 0 0 1em;
+		border-right: 1px solid rgba(255, 255, 255, 0.1);
+	}
+
+	.card-art .badge {
+		border-radius: 1em 0 0 1em;
+		border-right: 1px solid rgba(255, 255, 255, 0.1);
+	}
+
+	.card > .card-main {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		justify-content: flex-start;
+		flex: 1;
+		min-width: 0;
+		padding: 1em 1.1em 1em 1em;
+		gap: 0;
 	}
 
 	.badge {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 3rem;
-		height: 3rem;
-		border-radius: 0.8rem;
+		width: 7.5rem;
+		height: 7.5rem;
 		background:
 			linear-gradient(135deg, rgba(255, 173, 113, 0.34), rgba(138, 99, 210, 0.2)),
 			rgba(255, 255, 255, 0.06);
 		color: rgba(255, 255, 255, 0.96);
 		font-family: 'Fira Code', monospace;
-		font-size: 1rem;
+		font-size: 1.35rem;
 		font-weight: 700;
-		flex-shrink: 0;
 	}
 
-	.card-main > .body {
+	.card > .card-main > .body {
 		gap: 0.65em;
-		flex: 1;
+		flex: 0 1 auto;
 		min-width: 0;
 	}
 
