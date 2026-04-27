@@ -40,7 +40,7 @@
 				<span>Snap-enabled pages</span>
 
 			{:else if data.currentPage === 3}
-				<span>Magic URL overloads</span>
+				<span>Magic URL overloads!</span>
 
 			{:else if data.currentPage === 4}
 				<span>What's next for SKIFFLE?</span>
@@ -58,7 +58,7 @@
 			<p>It extends SvelteKit to render image previews from HTML, resolve metadata, generate Snap elements, and handle server actions and relative URL navigation.</p>
 
 		{:else if data.currentPage === 1}
-			<p>Load page data and render content using regular HTML, Svelte templating syntax, <code>&lt;style&gt;</code> tags, and SvelteKit route components (<code>+layout.svelte</code> / <code>+page.svelte</code>) and <code>load()</code> functions (<code>+layout.server.ts</code> / <code>+layout.ts</code> / <code>+page.server.ts</code> / <code>+page.ts</code>).</p>
+			<p>Load page data and render content using regular HTML, Svelte templating syntax, <code>‹style›</code> tags, and SvelteKit route components (<code>+layout.svelte</code> / <code>+page.svelte</code>) and <code>load()</code> functions (<code>+layout.server.ts</code> / <code>+layout.ts</code> / <code>+page.server.ts</code> / <code>+page.ts</code>).</p>
 
 			<p>Link buttons to routes using relative URLs, or handle signature packets using <b>SvelteKit Form Actions</b> (define <code>actions</code> in <code>+page.server.ts</code> and set the target to <code>?/actionName</code>).</p>
 
@@ -70,26 +70,21 @@
 			<p>Legacy Farcaster Frames v1 metadata is also supported via <code>frame</code>.</p>
 
 		{:else if data.currentPage === 3}
-			<p class="accept-lead">
+			<p>
 				A snap-enabled page URL returns different responses depending on HTTP <code>Accept</code> headers:
 			</p>
 
-			<div class="accept-stack">
-				<div class="accept-item">
-					<code>application/vnd.farcaster.snap+json</code>
-					<span>Snap JSON response following the Farcaster Snap spec.</span>
-				</div>
+			<p>
+				<code>application/vnd.farcaster.snap+json</code>: Snap JSON response (following Farcaster Snap spec)
+			</p>
 
-				<div class="accept-item">
-					<code>image/*</code>
-					<span>PNG frame preview of the rendered page: Svelte to HTML/CSS to SVG via <code>satori</code>, then PNG via <code>resvg-js</code>.</span>
-				</div>
+			<p>
+				<code>image/*</code>: PNG image of the rendered webpage contents
+				<br>
+				<span>Pipeline: Svelte › HTML/CSS › SVG (via <code>satori</code>) › PNG (via <code>resvg-js</code>)</span>
+			</p>
 
-				<div class="accept-item">
-					<code>*/*</code>
-					<span>The normal HTML page rendered by SvelteKit.</span>
-				</div>
-			</div>
+			<p><code>*/*</code>: The normal HTML page rendered by SvelteKit.</p>
 
 			<p>This is handled by the global SvelteKit <code>handle()</code> middleware in <code>hooks.server.ts</code>.</p>
 
@@ -131,6 +126,8 @@
 	}
 
 	p {
+		display: flex;
+		flex-wrap: wrap;
 		font-size: 0.95em;
 	}
 
@@ -142,56 +139,13 @@
 		column-gap: 0.2em;
 		align-items: baseline;
 	}
-	p code {
+
+	code {
+		display: flex;
 		line-height: 1.6;
 		font-size: 0.825em;
 		padding: 0.05em 0.4em;
 		border-radius: 0.25em;
 		background-color: rgba(255, 255, 255, 0.1);
-	}
-
-	article.slide-magic-url {
-		gap: 1em;
-	}
-
-	article.slide-magic-url .card {
-		gap: 0.6em;
-		padding: 1em 1.1em;
-	}
-
-	article.slide-magic-url .accept-lead {
-		line-height: 1.35;
-		margin: 0;
-	}
-
-	article.slide-magic-url .accept-stack {
-		display: flex;
-		flex-direction: column;
-		gap: 0.4em;
-	}
-
-	article.slide-magic-url .accept-item {
-		display: flex;
-		flex-direction: column;
-		gap: 0.15em;
-		padding: 0.45em 0.65em;
-		border-radius: 0.65em;
-		background-color: rgba(255, 255, 255, 0.06);
-		line-height: 1.35;
-	}
-
-	article.slide-magic-url .accept-stack code {
-		font-size: 0.78em;
-		word-break: break-word;
-		line-height: 1.35;
-	}
-
-	article.slide-magic-url .accept-stack span {
-		font-size: 0.88em;
-		opacity: 0.92;
-	}
-
-	article.slide-magic-url .accept-stack span code {
-		font-size: 0.95em;
 	}
 </style>
