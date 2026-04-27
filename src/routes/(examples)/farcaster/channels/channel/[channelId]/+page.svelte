@@ -70,7 +70,8 @@
 
 		<FarcasterCastList casts={data.displayCasts} />
 
-		{#if data.hasMoreCasts}
+		<!-- load more disabled: change #if false -> #if data.hasMoreCasts to re-enable -->
+		{#if false}
 			<form class="more row" method="GET" action={resolve('/(examples)/farcaster/channels/channel/[channelId]', {
 				channelId: data.channel.id,
 			})}>
@@ -88,9 +89,12 @@
 
 	.hero {
 		overflow: hidden;
-		border: 1px solid rgba(255, 255, 255, 0.1);
+		border: 1px solid rgba(190, 165, 255, 0.12);
 		border-radius: 1em;
-		background: rgba(35, 17, 61, 0.24);
+		background:
+			linear-gradient(175deg, rgba(0, 0, 0, 0.32) 0%, rgba(48, 26, 78, 0.38) 100%),
+			linear-gradient(125deg, rgba(100, 62, 160, 0.22) 0%, transparent 45%),
+			rgba(12, 6, 26, 0.55);
 	}
 
 	.banner {
@@ -101,12 +105,10 @@
 
 	.banner-placeholder {
 		flex-shrink: 0;
-		background: linear-gradient(
-			125deg,
-			rgba(140, 90, 220, 0.55) 0%,
-			rgba(45, 22, 78, 0.95) 45%,
-			rgba(90, 50, 160, 0.5) 100%
-		);
+		background:
+			linear-gradient(118deg, rgba(72, 38, 118, 0.45) 0%, transparent 42%),
+			linear-gradient(210deg, rgba(0, 0, 0, 0.55) 0%, rgba(40, 20, 68, 0.4) 100%),
+			linear-gradient(125deg, rgba(110, 72, 168, 0.35) 0%, rgba(14, 6, 28, 0.75) 100%);
 	}
 
 	.hero-body {
@@ -135,8 +137,10 @@
 		justify-content: center;
 		flex-shrink: 0;
 		box-sizing: border-box;
-		border: 1px solid rgba(255, 255, 255, 0.12);
-		background: rgba(255, 255, 255, 0.1);
+		border: 1px solid rgba(190, 165, 255, 0.14);
+		background:
+			linear-gradient(145deg, rgba(100, 62, 155, 0.38), rgba(0, 0, 0, 0.35)),
+			rgba(20, 10, 40, 0.5);
 		color: rgba(255, 255, 255, 0.92);
 		font-size: 1rem;
 		font-weight: 600;
@@ -155,8 +159,10 @@
 		justify-content: center;
 		flex-shrink: 0;
 		box-sizing: border-box;
-		border: 1px solid rgba(255, 255, 255, 0.12);
-		background: rgba(255, 255, 255, 0.1);
+		border: 1px solid rgba(190, 165, 255, 0.14);
+		background:
+			linear-gradient(145deg, rgba(92, 58, 148, 0.4), rgba(0, 0, 0, 0.38)),
+			rgba(18, 8, 36, 0.52);
 		color: rgba(255, 255, 255, 0.9);
 		font-size: 0.55rem;
 		font-weight: 600;
@@ -190,9 +196,11 @@
 
 	.more button {
 		padding: 0.75em 1.1em;
-		border: 1px solid rgba(255, 255, 255, 0.14);
+		border: 1px solid rgba(190, 160, 255, 0.16);
 		border-radius: 999px;
-		background: rgba(255, 255, 255, 0.06);
+		background:
+			linear-gradient(165deg, rgba(88, 52, 145, 0.38), rgba(0, 0, 0, 0.42)),
+			rgba(16, 6, 32, 0.48);
 		color: rgba(255, 255, 255, 0.9);
 		font: inherit;
 		cursor: pointer;

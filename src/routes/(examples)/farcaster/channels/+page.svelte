@@ -40,6 +40,13 @@
 
 	// Props
 	let { data }: { data: PageData } = $props()
+
+	const channelRows = $derived(
+		Array.from(
+			{ length: Math.ceil(data.displayChannels.length / 2) },
+			(_, rowIndex) => data.displayChannels.slice(rowIndex * 2, rowIndex * 2 + 2),
+		)
+	)
 </script>
 
 
@@ -53,65 +60,70 @@
 		</p>
 	</header>
 
-	<div id="channels" class="row wrap">
-		{#each data.displayChannels as channel (channel.id)}
-			{@const hostname = channelHostname(channel.url)}
-			{@const description = channelDescription(channel.description)}
-			{@const iconSrc = channelImageSrc(channel.imageUrl)}
-			{@const coverSrc = channelImageSrc(channel.headerImageUrl)}
+	<div class="channels-grid column">
+		{#each channelRows as row, rowIndex (`channels-row:${rowIndex}:${row[0]?.id ?? ''}`)}
+			<div class="channels-row row">
+				{#each row as channel (channel.id)}
+					{@const hostname = channelHostname(channel.url)}
+					{@const description = channelDescription(channel.description)}
+					{@const iconSrc = channelImageSrc(channel.imageUrl)}
+					{@const coverSrc = channelImageSrc(channel.headerImageUrl)}
 
-			<a class="card column" href={channelDetailHref(channel.id)}>
-				<div class="card-cover-slot" aria-hidden={!coverSrc}>
-					{#if coverSrc}
-						<img
-							class="card-cover"
-							src={coverSrc}
-							alt=""
-							width="720"
-							height="120"
-						/>
-					{/if}
-				</div>
-
-				<div class="card-main">
-					{#if iconSrc}
-						<img
-							class="channel-icon"
-							src={iconSrc}
-							alt=""
-							width="96"
-							height="96"
-						/>
-					{:else}
-						<div class="badge">{channelInitials(channel.name)}</div>
-					{/if}
-
-					<div class="body column">
-						<p class="url row inline">
-							<strong>{channel.name}</strong>
-							<span>{hostname}</span>
-						</p>
-
-						<p class="annotation row inline wrap">
-							<span><strong>{channel.followerCount.toLocaleString()}</strong> followers</span>
-							<span>·</span>
-							<span><strong>{channel.memberCount.toLocaleString()}</strong> members</span>
-							{#if channel.castingMode}
-								<span>·</span>
-								<span>{channel.castingMode}</span>
+					<a class="card column" href={channelDetailHref(channel.id)}>
+						<div class="card-cover-slot" aria-hidden={!coverSrc}>
+							{#if coverSrc}
+								<img
+									class="card-cover"
+									src={coverSrc}
+									alt=""
+									width="720"
+									height="120"
+								/>
 							{/if}
-						</p>
+						</div>
 
-						<p class="description">
-							{description}{description.length < channel.description.trim().length ? '...' : ''}
-						</p>
-					</div>
-				</div>
-			</a>
+						<div class="card-main">
+							{#if iconSrc}
+								<img
+									class="channel-icon"
+									src={iconSrc}
+									alt=""
+									width="96"
+									height="96"
+								/>
+							{:else}
+								<div class="badge">{channelInitials(channel.name)}</div>
+							{/if}
+
+							<div class="body column">
+								<p class="url row inline">
+									<strong>{channel.name}</strong>
+									<span>{hostname}</span>
+								</p>
+
+								<p class="annotation row inline wrap">
+									<span><strong>{channel.followerCount.toLocaleString()}</strong> followers</span>
+									<span>·</span>
+									<span><strong>{channel.memberCount.toLocaleString()}</strong> members</span>
+									{#if channel.castingMode}
+										<span>·</span>
+										<span>{channel.castingMode}</span>
+									{/if}
+								</p>
+
+								<p class="description">
+									{description}{description.length < channel.description.trim().length ? '...' : ''}
+								</p>
+							</div>
+						</div>
+					</a>
+				{/each}
+			</div>
 		{/each}
 	</div>
 
-	{#if data.hasMoreChannels}
+	<!-- load more disabled: change #if false -> #if data.hasMoreChannels to re-enable -->
+	{#if false}
 		<p class="more row">
 			<a href={`?page=${data.currentPage}&count=${data.visibleCount + CHANNELS_PAGE_SIZE}`}>Load more channels</a>
 		</p>
@@ -127,20 +139,28 @@
 		gap: 1.35em;
 	}
 
-	#channels.row.wrap {
-		align-items: stretch;
-		align-content: space-between;
+	.channels-grid.column {
 		flex: 1;
 		min-height: 0;
+		width: 100%;
+		align-items: stretch;
+		justify-content: flex-start;
+		gap: 0.65em;
 	}
 
-	#channels {
-		gap: 1em;
+	.channels-row.row {
+		flex: 1;
+		min-height: 0;
+		width: 100%;
+		align-items: stretch;
+		justify-content: flex-start;
+		flex-wrap: nowrap;
+		gap: 0.65em;
 	}
 
-	#channels > * {
-		flex: 1 0 40%;
-		align-self: stretch;
+	.channels-row > .card {
+		flex: 1 1 0;
+		min-width: 0;
 		min-height: 0;
 	}
 
@@ -149,14 +169,16 @@
 		flex-direction: column;
 		align-items: stretch;
 		justify-content: flex-start;
-		height: 100%;
+		align-self: stretch;
 		overflow: hidden;
 		padding: 0;
 		border-radius: 1em;
 		background:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03)),
-			rgba(35, 17, 61, 0.3);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+			linear-gradient(155deg, rgba(118, 72, 178, 0.28) 0%, transparent 46%),
+			linear-gradient(215deg, rgba(0, 0, 0, 0.42) 0%, rgba(32, 14, 52, 0.38) 100%),
+			linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+			rgba(10, 4, 22, 0.52);
+		border: 1px solid rgba(200, 170, 255, 0.1);
 		color: inherit;
 		text-decoration: none;
 	}
@@ -207,8 +229,10 @@
 		height: 3rem;
 		border-radius: 0.8rem;
 		background:
-			linear-gradient(135deg, rgba(255, 173, 113, 0.34), rgba(138, 99, 210, 0.2)),
-			rgba(255, 255, 255, 0.06);
+			linear-gradient(140deg, rgba(132, 88, 200, 0.4) 0%, rgba(0, 0, 0, 0.35) 100%),
+			linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+			rgba(24, 10, 44, 0.55);
+		border: 1px solid rgba(200, 180, 255, 0.14);
 		color: rgba(255, 255, 255, 0.96);
 		font-family: 'Fira Code', monospace;
 		font-size: 1rem;
@@ -258,9 +282,11 @@
 
 	.more a {
 		padding: 0.75em 1.1em;
-		border: 1px solid rgba(255, 255, 255, 0.14);
+		border: 1px solid rgba(190, 160, 255, 0.16);
 		border-radius: 999px;
-		background: rgba(255, 255, 255, 0.06);
+		background:
+			linear-gradient(165deg, rgba(96, 56, 150, 0.35), rgba(0, 0, 0, 0.4)),
+			rgba(18, 8, 34, 0.45);
 		color: rgba(255, 255, 255, 0.9);
 		text-decoration: none;
 	}

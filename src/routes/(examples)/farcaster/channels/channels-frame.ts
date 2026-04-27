@@ -8,16 +8,13 @@ import { isTruthy } from '$/lib/isTruthy'
 import { snapButtonGroup, snapTargetButton } from '$/lib/snap-components'
 import { SnapButtonVariants, SnapDirections, SnapGaps, SnapJustifyValues, SnapPaletteColors } from '$/lib/snap-spec'
 
-import type { DemoChannel } from '../api/farcaster-client'
+import type { DemoChannel } from '$/routes/(examples)/farcaster/api/farcaster-client'
 
 /** Channels paged together for HTML/Snap state and default web visible count. */
 export const CHANNELS_PAGE_SIZE = 6
 
 /** Link buttons per frame page, limited by frame button constraints. */
 export const CHANNELS_FRAME_PAGE_SIZE = 2
-
-/** `#root` width in `+layout.svelte` for PNG / frame preview (`16:9` height = width * 9 / 16). */
-export const CHANNELS_FRAME_RASTER_WIDTH = 1200
 
 const normalizedPage = (
 	page: number,
@@ -94,7 +91,7 @@ const frameMetaFromPaginationState = ({
 				page: String(currentPage),
 				image: '',
 			})}`,
-			aspectRatio: '16:9',
+			aspectRatio: '1:1',
 		},
 		buttons: (
 			[
