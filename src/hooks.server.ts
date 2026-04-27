@@ -41,11 +41,13 @@ import { SnapMediaType } from './lib/snap-spec'
 import { publicRequestUrl } from './lib/public-request-url'
 
 
-const acceptHeaderWantsRasterImage = (accept: string) => {
+// True when `Accept` alone should select PNG (no `Sec-Fetch-Dest`).
+// If `Accept` includes `*/*`, require `Sec-Fetch-Dest: image` at the request level (see `requestWantsRasterPageImage`) so embed crawlers that send browser-like `Accept` without `Sec-Fetch-Dest` still get HTML and classify the URL as a Snap, not a bare image.
+const acceptHeaderWantsRasterImageWithoutWildcard = (accept: string) => {
 	const lower = accept.toLowerCase()
 	if (!lower.includes('image/')) return false
 	if (lower.includes('text/html')) return false
-	if (!lower.includes('*/*')) return true
+	if (lower.includes('*/*')) return false
 	return /\bimage\/[\w.+*-]+\s*(?:;|,|$)/i.test(accept)
 }
 
@@ -53,7 +55,7 @@ const requestWantsRasterPageImage = (request: Request) => (
 	request.method === 'GET'
 	&& (
 		request.headers.get('sec-fetch-dest') === 'image'
-		|| acceptHeaderWantsRasterImage(request.headers.get('accept') ?? '')
+		|| acceptHeaderWantsRasterImageWithoutWildcard(request.headers.get('accept') ?? '')
 	)
 )
 
