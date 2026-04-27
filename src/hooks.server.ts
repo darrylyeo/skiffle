@@ -114,22 +114,11 @@ export const handle: Handle = async ({
 		return await snapGetResponse(event, resolve)
 	}
 
-	// Svelte → HTML → Image (`Accept` / `Sec-Fetch-Dest`)
-	// True when `Accept` alone should select PNG (no `Sec-Fetch-Dest`).
-	// If `Accept` includes `*/*`, require `Sec-Fetch-Dest: image` at the request level so embed crawlers that send browser-like `Accept` without `Sec-Fetch-Dest` still get HTML and classify the URL as a Snap, not a bare image.
-	const acceptRaster = event.request.headers.get('accept') ?? ''
-	const acceptRasterLower = acceptRaster.toLowerCase()
+	// Svelte → HTML → PNG only for real subresource image loads (`Sec-Fetch-Dest: image`).
+	// Clients resolve `og:image` / `fc:frame:image` with the same URL as the page but typically send image-only `Accept` and no `Sec-Fetch-Dest`; those must get HTML so the cast URL stays a Snap embed, not a bare image.
 	if (
 		event.request.method === 'GET'
-		&& (
-			event.request.headers.get('sec-fetch-dest') === 'image'
-			|| (
-				acceptRasterLower.includes('image/')
-				&& !acceptRasterLower.includes('text/html')
-				&& !acceptRasterLower.includes('*/*')
-				&& /\bimage\/[\w.+*-]+\s*(?:;|,|$)/i.test(acceptRaster)
-			)
-		)
+		&& event.request.headers.get('sec-fetch-dest') === 'image'
 	) {
 		const response = await resolve(event)
 
@@ -260,7 +249,7 @@ export const handle: Handle = async ({
 			{
 				headers: {
 					'content-type': 'image/png',
-					'vary': 'Accept, Sec-Fetch-Dest',
+					'vary': 'Sec-Fetch-Dest',
 				},
 			},
 		)
