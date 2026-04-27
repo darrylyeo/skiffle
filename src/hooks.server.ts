@@ -8,6 +8,7 @@ import type { JSXElement } from 'satori/jsx'
 import satori from 'satori'
 import { Resvg } from '@resvg/resvg-js'
 import { styledHtmlDocumentForSatori } from '$/lib/frame-satori'
+import { loadSatoriAdditionalAsset } from '$/lib/satori-additional-asset'
 
 type SatoriNode = JSXElement
 
@@ -218,12 +219,13 @@ export const handle: Handle = async ({
 		const width = Number(style.width.match(/\d+/)![0])
 		const height = Number(style.height.match(/\d+/)![0])
 
-		const fonts = await getSatoriFonts(new URL(event.request.url).origin)
+		const fonts = await getSatoriFonts()
 
 		const svg = await satori(
 			contentRoot,
 			{
 				fonts,
+				loadAdditionalAsset: loadSatoriAdditionalAsset,
 				width,
 				height,
 			}
