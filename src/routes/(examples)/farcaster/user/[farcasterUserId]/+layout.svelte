@@ -23,16 +23,11 @@
 
 	// Functions
 	const formatCount = (n: number) => (
-		new Intl.NumberFormat(
-			'en-US',
-			{
-				notation: 'compact',
-				compactDisplay: 'short',
-				maximumFractionDigits: 1,
-			},
-		)
-			.format(n)
+		n >= 1_000_000 ? `${(n / 1_000_000).toFixed(1)}M`
+		: n >= 1000 ? `${(n / 1000).toFixed(1)}K`
+		: String(n)
 	)
+
 </script>
 
 
@@ -40,19 +35,11 @@
 	<div class="profile-hero column">
 		<div class="profile-top row wrap">
 			<div class="profile-identity row">
-				<div class="profile-avatar-wrap">
-					<img
-						class="profile-avatar"
-						src={data.user.pfp_url}
-						alt=""
-					/>
-
-					{#if data.user.pfp_verified}
-						<span class="profile-verified" aria-hidden="true">
-							✓
-						</span>
-					{/if}
-				</div>
+				<img
+					class="profile-avatar"
+					src={data.user.pfp_url}
+					alt=""
+				/>
 
 				<div class="profile-names column">
 					<h2 class="profile-display-name">
@@ -64,14 +51,20 @@
 							@{data.user.username}
 						</span>
 
+						{#if data.user.pfp_verified}
+							<span class="profile-chip is-verified">
+								Verified
+							</span>
+						{/if}
+
 						{#if data.user.account_level}
-							<span class="profile-chip profile-chip--level">
+							<span class="profile-chip is-level">
 								{data.user.account_level}
 							</span>
 						{/if}
 
 						{#if data.user.early_wallet_adopter}
-							<span class="profile-chip profile-chip--early">
+							<span class="profile-chip is-early">
 								Early
 							</span>
 						{/if}
@@ -113,7 +106,7 @@
 				</span>
 
 				<span class="stat-hint">
-					{data.user.follower_count.toLocaleString('en-US')}
+					{String(data.user.follower_count)}
 				</span>
 			</div>
 
@@ -127,7 +120,7 @@
 				</span>
 
 				<span class="stat-hint">
-					{data.user.following_count.toLocaleString('en-US')}
+					{String(data.user.following_count)}
 				</span>
 			</div>
 
@@ -140,12 +133,12 @@
 					{(
 						data.user.following_count > 0
 							? (data.user.follower_count / data.user.following_count).toFixed(1)
-							: '—'
+							: '-'
 					)}
 				</span>
 
 				<span class="stat-hint">
-					followers ÷ following
+					followers / following
 				</span>
 			</div>
 
@@ -170,7 +163,7 @@
 					</span>
 
 					<span class="stat-hint">
-						{data.user.eth_wallet_count} ETH · {data.user.solana_wallet_count} SOL
+						{data.user.eth_wallet_count} ETH / {data.user.solana_wallet_count} SOL
 					</span>
 				</div>
 			{/if}
@@ -208,25 +201,24 @@
 <style>
 	.profile {
 		flex: 1;
-		min-height: 0;
 		row-gap: 1.25em;
 	}
 
 	.profile-hero {
+		flex-grow: 1;
+		flex-shrink: 0;
 		padding: 1.35em 1.5em;
 		border-radius: 22px;
 		border: 1px solid rgba(255, 255, 255, 0.28);
-		background-color: rgba(0, 0, 0, 0.38);
 		background-image: linear-gradient(
 			165deg,
-			rgba(255, 255, 255, 0.14) 0%,
-			rgba(0, 0, 0, 0.12) 55%,
-			rgba(138, 99, 210, 0.35) 100%
+			rgba(55, 40, 78, 0.94) 0%,
+			rgba(18, 10, 26, 0.9) 42%,
+			rgba(95, 62, 145, 0.88) 100%
 		);
-		box-shadow:
-			0 4px 0 rgba(0, 0, 0, 0.2),
-			0 22px 48px rgba(0, 0, 0, 0.35);
+		box-shadow: 0 14px 36px rgba(0, 0, 0, 0.4);
 		row-gap: 1.1em;
+		justify-content: space-between;
 	}
 
 	.profile-top {
@@ -244,35 +236,14 @@
 		min-width: 0;
 	}
 
-	.profile-avatar-wrap {
-		position: relative;
-		flex-shrink: 0;
-	}
-
 	.profile-avatar {
+		flex-shrink: 0;
 		width: 5.5em;
 		height: 5.5em;
 		border-radius: 20px;
 		border: 3px solid rgba(255, 255, 255, 0.45);
 		box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
 		object-fit: cover;
-	}
-
-	.profile-verified {
-		position: absolute;
-		right: -0.2em;
-		bottom: -0.2em;
-		min-width: 1.35em;
-		height: 1.35em;
-		padding: 0 0.35em;
-		border-radius: 999px;
-		background-image: linear-gradient(135deg, #8a63d2, #ff3e00);
-		border: 2px solid rgba(255, 255, 255, 0.9);
-		font-size: 0.72em;
-		font-weight: 700;
-		line-height: 1.35em;
-		text-align: center;
-		color: #fff;
 	}
 
 	.profile-names {
@@ -288,7 +259,6 @@
 		line-height: 1.1;
 		letter-spacing: -0.02em;
 		color: #fff;
-		text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45);
 	}
 
 	.profile-handle-row {
@@ -313,13 +283,18 @@
 		color: rgba(255, 255, 255, 0.95);
 	}
 
-	.profile-chip--level {
+	.profile-chip.is-level {
 		background-color: rgba(138, 99, 210, 0.55);
 		border-color: rgba(255, 255, 255, 0.4);
 	}
 
-	.profile-chip--early {
+	.profile-chip.is-early {
 		background-color: rgba(255, 62, 0, 0.45);
+		border-color: rgba(255, 255, 255, 0.35);
+	}
+
+	.profile-chip.is-verified {
+		background-color: rgba(40, 200, 120, 0.35);
 		border-color: rgba(255, 255, 255, 0.35);
 	}
 
@@ -371,8 +346,9 @@
 
 	.stat-tile {
 		min-width: 7.5em;
-		flex: 1 1 7.5em;
 		max-width: 11em;
+		flex-grow: 1;
+		flex-shrink: 1;
 		padding: 0.65em 0.75em;
 		border-radius: 14px;
 		background-color: rgba(255, 255, 255, 0.1);

@@ -66,9 +66,11 @@
 		padding: 1em;
 		border: 1px solid rgba(255, 255, 255, 0.08);
 		border-radius: 1em;
-		background:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03)),
-			rgba(255, 255, 255, 0.03);
+		background-image: linear-gradient(
+			180deg,
+			rgba(255, 255, 255, 0.08),
+			rgba(255, 255, 255, 0.03)
+		);
 	}
 
 	.cast-top {

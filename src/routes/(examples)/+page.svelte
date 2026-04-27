@@ -51,7 +51,7 @@
 	<span
 		class="decal emoji-badge"
 		aria-hidden="true"
-		style="top: 4%; left: 18%; width: 2.55em; height: 2.55em; transform: rotate(-7deg)"
+		style="top: 6%; left: 18%; width: 2.55em; height: 2.55em; transform: rotate(-7deg)"
 	>🖼️</span>
 
 	<img
@@ -87,6 +87,7 @@
 		justify-content: center;
 		align-items: center;
 		text-align: center;
+		flex: 1;
 	}
 
 	.card {
@@ -213,7 +214,7 @@
 		text-shadow: none;
 
 		&.callout-1 {
-			top: 1.15em;
+			top: 1.66em;
 			right: 9.05em;
 		}
 

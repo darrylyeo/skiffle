@@ -101,6 +101,10 @@
 		flex: 1;
 	}
 
+	main > :global(:only-child) {
+		flex: 1;
+	}
+
 	.footer {
 		justify-content: space-between;
 		align-items: center;

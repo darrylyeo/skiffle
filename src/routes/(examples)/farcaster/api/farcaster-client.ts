@@ -64,7 +64,7 @@ export type DemoUser = {
 
 const shortHexAddress = (addr: string) => (
 	addr.length > 12
-		? `${addr.slice(0, 6)}…${addr.slice(-4)}`
+		? `${addr.slice(0, 6)}...${addr.slice(-4)}`
 		: addr
 )
 
