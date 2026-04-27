@@ -16,6 +16,8 @@ import {
 
 import { coinFlipHistoryBadges, parseCoinFlipState } from './coin-flip-frame'
 
+const SNAP_STACK_MAX_CHILDREN = 6
+
 const badgeColor = (result: 'heads' | 'tails' | 'edge') => (
 	result === 'heads'
 		? SnapPaletteColors.Amber
@@ -41,7 +43,7 @@ export const coinFlipSnapExtraElements = (
 		}
 
 		const rows = badges.reduce<typeof badges[]>((groups, badge, index) => {
-			const row = Math.floor(index / 8)
+			const row = Math.floor(index / SNAP_STACK_MAX_CHILDREN)
 
 			return [
 				...groups.slice(0, row),

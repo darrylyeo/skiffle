@@ -32,6 +32,19 @@ const nextRandom = (value: number) => (
 	(value * 48_271) % 2_147_483_647
 )
 
+/** Deterministic 32-bit mix of URL `seed` and 1-based flip index (avoids mod-40 bias from raw LCG). */
+const flipEntropy32 = (seed: number, flipIndex: number) => {
+	let a = (seed ^ Math.imul(flipIndex, 0x9e3779b9)) >>> 0
+	a = Math.imul(a ^ (a >>> 16), 0x85ebca6b) >>> 0
+	a = Math.imul(a ^ (a >>> 13), 0xc2b2ae35) >>> 0
+
+	return (a ^ (a >>> 16)) >>> 0
+}
+
+const rollMod40 = (seed: number, flipIndex: number) => (
+	Math.floor((flipEntropy32(seed, flipIndex) / 4_294_967_296) * 40)
+)
+
 const HISTORY_LIMIT = 16
 
 const normalizeHistory = (value: string | null | undefined) => (
@@ -43,21 +56,19 @@ const normalizeHistory = (value: string | null | undefined) => (
 
 const flipResult = (
 	seed: number,
-	flips: number,
-): CoinFlipResult => (
-	(() => {
-		const roll = nextRandom(seed + flips * 97) % 40
+	flipIndex: number,
+): CoinFlipResult => {
+	const roll = rollMod40(seed, flipIndex)
 
-		return (
-			roll < 2 ?
-				'edge'
-			: roll % 2 === 0 ?
-				'heads'
-			:
-				'tails'
-		)
-	})()
-)
+	return (
+		roll < 2 ?
+			'edge'
+		: roll % 2 === 0 ?
+			'heads'
+		:
+			'tails'
+	)
+}
 
 const resultLabel = (result: CoinFlipResult | undefined) => (
 	result === 'heads'

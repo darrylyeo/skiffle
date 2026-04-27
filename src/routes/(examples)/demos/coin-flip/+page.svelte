@@ -282,7 +282,7 @@
 	}
 
 	.coin-mark {
-		font-size: clamp(5.8em, 27vw, 7.4em);
+		font-size: 8.25em;
 		font-weight: 900;
 		line-height: 1;
 		letter-spacing: -0.04em;
