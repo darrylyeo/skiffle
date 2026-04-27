@@ -41,6 +41,23 @@ import { SnapMediaType } from './lib/snap-spec'
 import { publicRequestUrl } from './lib/public-request-url'
 
 
+const acceptHeaderWantsRasterImage = (accept: string) => {
+	const lower = accept.toLowerCase()
+	if (!lower.includes('image/')) return false
+	if (lower.includes('text/html')) return false
+	if (!lower.includes('*/*')) return true
+	return /\bimage\/[\w.+*-]+\s*(?:;|,|$)/i.test(accept)
+}
+
+const requestWantsRasterPageImage = (request: Request) => (
+	request.method === 'GET'
+	&& (
+		request.headers.get('sec-fetch-dest') === 'image'
+		|| acceptHeaderWantsRasterImage(request.headers.get('accept') ?? '')
+	)
+)
+
+
 // Hooks
 export const handle: Handle = async ({
 	event,
@@ -81,6 +98,7 @@ export const handle: Handle = async ({
 			[
 				...(headers.get('vary')?.split(',').map((value) => value.trim()).filter(Boolean) ?? []),
 				'Accept',
+				'Sec-Fetch-Dest',
 			]
 				.filter((value, index, values) => values.indexOf(value) === index)
 				.join(', '),
@@ -89,20 +107,6 @@ export const handle: Handle = async ({
 			status: resolved.status,
 			statusText: resolved.statusText,
 			headers,
-		})
-	}
-
-	const contentTypes = event.request.headers.get('accept')
-
-	// Image redirect
-	if (event.url.searchParams.has('frameImage')) {
-		const url = new URL(event.url)
-		url.searchParams.delete('frameImage')
-		return event.fetch(url, {
-			method: 'GET',
-			headers: new Headers({
-				'accept': 'image/png',
-			}),
 		})
 	}
 
@@ -127,11 +131,8 @@ export const handle: Handle = async ({
 		return await snapGetResponse(event, resolve)
 	}
 
-	// Svelte → HTML → Image
-	if (
-		event.request.method === 'GET'
-		&& (contentTypes && contentTypes.includes('image/') && !contentTypes.includes('text/html') && !contentTypes.includes('*/*'))
-	) {
+	// Svelte → HTML → Image (`Accept` / `Sec-Fetch-Dest`)
+	if (requestWantsRasterPageImage(event.request)) {
 		const response = await resolve(event)
 
 		if (response.status !== 200) {
@@ -261,6 +262,7 @@ export const handle: Handle = async ({
 			{
 				headers: {
 					'content-type': 'image/png',
+					'vary': 'Accept, Sec-Fetch-Dest',
 				},
 			},
 		)
@@ -294,9 +296,7 @@ export const handle: Handle = async ({
 				const { data } = deserialize(await response.text()) as { data: { frame: FrameMeta } }
 
 				if (!data.frame.image.url) {
-					const frameImageUrl = new URL(event.url)
-					frameImageUrl.searchParams.set('frameImage', '')
-					data.frame.image.url = frameImageUrl.href
+					data.frame.image.url = event.url.href
 				}
 
 				return createFrameResponse(data.frame, event.request.url)
