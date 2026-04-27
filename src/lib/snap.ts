@@ -462,7 +462,7 @@ export const framePageToSnap = (
 	const footerChildren = (
 		isGoMenuOpen
 			? ['page-go-input', 'page-go-actions']
-			: ['page-url', 'page-actions', 'page-follow-separator', 'page-follow-tip-row']
+			: ['page-url', 'page-actions', 'page-follow-separator', 'page-byline', 'page-follow-tip-row']
 	)
 
 	const pageChildren = (
@@ -685,12 +685,20 @@ export const framePageToSnap = (
 				gap: SnapGaps.Sm,
 				justify: SnapJustifyValues.Center,
 			},
-			children: ['page-follow', 'page-tip'],
+			children: ['page-follow', 'page-follow-on-x', 'page-tip'],
+		},
+		'page-byline': {
+			type: SnapElementTypes.Text,
+			props: {
+				content: 'a snapsite by @darrylyeo • updated 2026-04-27',
+				size: SnapTextSizes.Sm,
+				align: SnapAlignments.Center,
+			},
 		},
 		'page-follow': {
 			type: SnapElementTypes.Button,
 			props: {
-				label: 'Follow @darrylyeo',
+				label: 'Follow',
 				variant: SnapButtonVariants.Secondary,
 				icon: SnapIcons.User,
 			},
@@ -703,10 +711,26 @@ export const framePageToSnap = (
 				},
 			},
 		},
+		'page-follow-on-x': {
+			type: SnapElementTypes.Button,
+			props: {
+				label: 'Follow on 𝕏',
+				variant: SnapButtonVariants.Secondary,
+				icon: SnapIcons.ExternalLink,
+			},
+			on: {
+				[SnapEvents.Press]: {
+					action: SnapActions.OpenUrl,
+					params: {
+						target: 'https://twitter.com/intent/follow?screen_name=darryl__yeo',
+					},
+				},
+			},
+		},
 		'page-tip': {
 			type: SnapElementTypes.Button,
 			props: {
-				label: 'Tip @darrylyeo',
+				label: 'Tip',
 				variant: SnapButtonVariants.Secondary,
 				icon: SnapIcons.Coins,
 			},
