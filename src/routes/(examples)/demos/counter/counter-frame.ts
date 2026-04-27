@@ -2,6 +2,7 @@
 import { AppSnapButtonRoles } from '$/lib/app-snap-tokens'
 import type { AppSnapPage } from '$/lib/snap-components'
 import type { FrameMeta } from '$/lib/frame'
+import { demosBackUrl } from '$/routes/(examples)/demos'
 
 // Functions
 import { snapButtonGroup, snapTargetButton } from '$/lib/snap-components'
@@ -72,7 +73,7 @@ export const counterFrameMeta = (count: number): FrameMeta => {
 			{
 				label: '‹ Demos',
 				action: 'post',
-				targetUrl: '/?/demos',
+				targetUrl: demosBackUrl('counter'),
 			},
 			...counterActionDeltas(c).map((delta) => ({
 				label: `+${delta}`,
@@ -103,7 +104,7 @@ export const counterSnap = (count: number): AppSnapPage => {
 						label: '‹ Demos',
 						role: AppSnapButtonRoles.Back,
 						action: 'post',
-						targetUrl: '/?/demos',
+						targetUrl: demosBackUrl('counter'),
 					}),
 					...counterActionDeltas(c)
 						.map((delta) => (

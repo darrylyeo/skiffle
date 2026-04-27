@@ -1,5 +1,6 @@
 // Types
 import type { FrameMeta } from '$/lib/frame'
+import { demosBackUrl } from '$/routes/(examples)/demos'
 import type { AppSnapPage } from '$/lib/snap-components'
 
 // Functions
@@ -235,7 +236,7 @@ export const buildCoinFlipFrame = (state: CoinFlipState): FrameMeta => ({
 		{
 			label: '‹ Demos',
 			action: 'post',
-			targetUrl: '/?/demos',
+			targetUrl: demosBackUrl('coin-flip'),
 		},
 		{
 			label: 'Flip',
@@ -276,7 +277,7 @@ export const buildCoinFlipSnap = (state: CoinFlipState): AppSnapPage => ({
 					label: '‹ Demos',
 					role: AppSnapButtonRoles.Back,
 					action: 'post',
-					targetUrl: '/?/demos',
+					targetUrl: demosBackUrl('coin-flip'),
 				}),
 				snapTargetButton({
 					label: 'Flip',

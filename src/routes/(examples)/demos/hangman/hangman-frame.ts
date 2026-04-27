@@ -2,6 +2,7 @@
 import { AppSnapButtonRoles } from '$/lib/app-snap-tokens'
 import type { AppSnapPage } from '$/lib/snap-components'
 import type { FrameMeta } from '$/lib/frame'
+import { demosBackUrl } from '$/routes/(examples)/demos'
 
 // Functions
 import { isTruthy } from '$/lib/isTruthy'
@@ -177,7 +178,7 @@ export const buildHangmanFrame = ({
 		{
 			label: '‹ Demos',
 			action: 'post',
-			targetUrl: '/?/demos',
+			targetUrl: demosBackUrl('hangman'),
 		},
 		hangmanCanGuess(status) && {
 			label: status === 'invalid' || status === 'repeat' ? 'Try Again' : 'Guess',
@@ -221,7 +222,7 @@ export const buildHangmanSnap = ({
 					label: '‹ Demos',
 					role: AppSnapButtonRoles.Back,
 					action: 'post',
-					targetUrl: '/?/demos',
+					targetUrl: demosBackUrl('hangman'),
 				}),
 				hangmanCanGuess(status) && snapTargetButton({
 					label: status === 'invalid' || status === 'repeat' ? 'Try Again' : 'Guess',

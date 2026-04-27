@@ -1,5 +1,6 @@
 // Types
 import type { FrameMeta } from '$/lib/frame'
+import { demosBackUrl } from '$/routes/(examples)/demos'
 import type { AppSnapPage } from '$/lib/snap-components'
 
 // Functions
@@ -320,7 +321,7 @@ export const buildAbstractArtFrame = (state: AbstractArtState): FrameMeta => ({
 		{
 			label: '‹ Demos',
 			action: 'post',
-			targetUrl: '/?/demos',
+			targetUrl: demosBackUrl('art'),
 		},
 		{
 			label: 'Generate',
@@ -352,7 +353,7 @@ export const buildAbstractArtSnap = (state: AbstractArtState): AppSnapPage => ({
 					label: '‹ Demos',
 					role: AppSnapButtonRoles.Back,
 					action: 'post',
-					targetUrl: '/?/demos',
+					targetUrl: demosBackUrl('art'),
 				}),
 				snapTargetButton({
 					label: 'Generate',

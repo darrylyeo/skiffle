@@ -1,5 +1,6 @@
 // Types
 import type { FrameMeta } from '$/lib/frame'
+import { demosBackUrl } from '$/routes/(examples)/demos'
 
 // Functions
 import { isTruthy } from '$/lib/isTruthy'
@@ -128,7 +129,7 @@ export const buildRockPaperScissorsFrame = ({
 		: {
 			label: '‹ Demos',
 			action: 'post',
-			targetUrl: '/?/demos',
+			targetUrl: demosBackUrl('rock-paper-scissors'),
 		},
 		{
 			label: 'Rock',

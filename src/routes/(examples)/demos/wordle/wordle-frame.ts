@@ -2,6 +2,7 @@
 import { AppSnapButtonRoles } from '$/lib/app-snap-tokens'
 import type { AppSnapPage } from '$/lib/snap-components'
 import type { FrameMeta } from '$/lib/frame'
+import { demosBackUrl } from '$/routes/(examples)/demos'
 
 // Functions
 import { isTruthy } from '$/lib/isTruthy'
@@ -224,7 +225,7 @@ export const buildWordleFrame = ({
 		{
 			label: '‹ Demos',
 			action: 'post',
-			targetUrl: '/?/demos',
+			targetUrl: demosBackUrl('wordle'),
 		},
 		canGuess(status) && {
 			label: status === 'invalid' || status === 'repeat' ? 'Try Again' : 'Guess',
@@ -286,7 +287,7 @@ export const buildWordleSnap = ({
 					label: '‹ Demos',
 					role: AppSnapButtonRoles.Back,
 					action: 'post',
-					targetUrl: '/?/demos',
+					targetUrl: demosBackUrl('wordle'),
 				}),
 				(guesses.length > 0 || !canGuess(status)) && snapTargetButton({
 					label: status === 'win' || status === 'loss' ? 'Play Again' : 'Reset',

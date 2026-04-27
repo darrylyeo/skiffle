@@ -2,6 +2,7 @@
 import { AppSnapButtonRoles } from '$/lib/app-snap-tokens'
 import type { AppSnapPage } from '$/lib/snap-components'
 import type { FrameMeta } from '$/lib/frame'
+import { demosBackUrl } from '$/routes/(examples)/demos'
 
 // Functions
 import { isTruthy } from '$/lib/isTruthy'
@@ -50,7 +51,7 @@ const frameMetaFromPaginationState = ({
 				{
 					label: '‹ Demos',
 					action: 'post',
-					targetUrl: '/?/demos',
+					targetUrl: demosBackUrl('tips'),
 				},
 				currentPage < totalPages - 1
 					? {
@@ -94,7 +95,7 @@ const snapFromPaginationState = ({
 						label: '‹ Demos',
 						role: AppSnapButtonRoles.Back,
 						action: 'post',
-						targetUrl: '/?/demos',
+						targetUrl: demosBackUrl('tips'),
 					}),
 					currentPage < totalPages - 1
 						? snapTargetButton({

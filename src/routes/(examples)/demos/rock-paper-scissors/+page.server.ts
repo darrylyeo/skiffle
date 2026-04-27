@@ -2,6 +2,7 @@
 import { AppSnapButtonRoles } from '$/lib/app-snap-tokens'
 import type { AppSnapPage } from '$/lib/snap-components'
 import type { FrameMeta } from '$/lib/frame'
+import { demosBackUrl } from '$/routes/(examples)/demos'
 
 // Functions
 import { snapButtonGroup, snapTargetButton } from '$/lib/snap-components'
@@ -139,7 +140,7 @@ const buildRockPaperScissorsFrame = ({
 		{
 			label: '‹ Demos',
 			action: 'post',
-			targetUrl: '/?/demos',
+			targetUrl: demosBackUrl('rock-paper-scissors'),
 		},
 		{
 			label: pickButtonLabel('rock'),
@@ -222,7 +223,7 @@ const buildRockPaperScissorsSnap = ({
 					label: '‹ Demos',
 					role: AppSnapButtonRoles.Back,
 					action: 'post',
-					targetUrl: '/?/demos',
+					targetUrl: demosBackUrl('rock-paper-scissors'),
 				}),
 				snapTargetButton({
 					label: 'Reset',

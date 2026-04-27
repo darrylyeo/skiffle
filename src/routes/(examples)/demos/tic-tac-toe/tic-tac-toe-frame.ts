@@ -1,5 +1,6 @@
 // Types
 import type { FrameMeta } from '$/lib/frame'
+import { demosBackUrl } from '$/routes/(examples)/demos'
 
 // Functions
 import { isTruthy } from '$/lib/isTruthy'
@@ -176,7 +177,7 @@ export const buildTicTacToeFrame = ({ board, status }: TicTacToeState): FrameMet
 		{
 			label: '‹ Demos',
 			action: 'post',
-			targetUrl: '/?/demos',
+			targetUrl: demosBackUrl('tic-tac-toe'),
 		},
 		canPlay(status) && {
 			label: status === 'invalid' ? 'Try Again' : 'Play',
