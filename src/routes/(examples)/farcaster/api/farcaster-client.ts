@@ -48,9 +48,34 @@ export type DemoUser = {
 	username: string,
 	display_name: string,
 	pfp_url: string,
+	pfp_verified: boolean,
 	bio: string,
 	follower_count: number,
 	following_count: number,
+	profile_url_hostname: string,
+	account_level: string,
+	early_wallet_adopter: boolean,
+	connected_account_count: number,
+	eth_wallet_count: number,
+	solana_wallet_count: number,
+	custody_address_short: string,
+	collections_owned_count: number,
+}
+
+const shortHexAddress = (addr: string) => (
+	addr.length > 12
+		? `${addr.slice(0, 6)}…${addr.slice(-4)}`
+		: addr
+)
+
+const hostnameFromUrl = (raw: string | undefined) => {
+	if (!raw?.trim())
+		return ''
+	try {
+		return new URL(raw).hostname
+	} catch {
+		return ''
+	}
 }
 
 export const getDemoUserByFid = async ({
@@ -64,24 +89,46 @@ export const getDemoUserByFid = async ({
 				fid: number,
 				username: string,
 				displayName: string,
-				pfp: { url: string },
-				profile: { bio: { text: string } },
+				pfp: { url: string, verified?: boolean },
+				profile: {
+					bio?: { text?: string },
+					url?: string,
+					accountLevel?: string,
+					earlyWalletAdopter?: boolean,
+				},
 				followerCount: number,
 				followingCount: number,
+				connectedAccounts?: unknown[],
+				collectionsOwned?: unknown[],
+				extras?: {
+					custodyAddress?: string,
+					ethWallets?: unknown[],
+					solanaWallets?: unknown[],
+				},
 			},
 		},
 	}>(`/v2/user?fid=${fid}`)
-		.then(({ result: { user } }) => (
-			{
+		.then(({ result: { user } }) => {
+			const custody = user.extras?.custodyAddress ?? ''
+			return {
 				fid: user.fid,
 				username: user.username,
 				display_name: user.displayName,
 				pfp_url: user.pfp.url,
+				pfp_verified: user.pfp.verified ?? false,
 				bio: user.profile.bio?.text ?? '',
 				follower_count: user.followerCount,
 				following_count: user.followingCount,
+				profile_url_hostname: hostnameFromUrl(user.profile.url),
+				account_level: user.profile.accountLevel ?? '',
+				early_wallet_adopter: user.profile.earlyWalletAdopter ?? false,
+				connected_account_count: user.connectedAccounts?.length ?? 0,
+				eth_wallet_count: user.extras?.ethWallets?.length ?? 0,
+				solana_wallet_count: user.extras?.solanaWallets?.length ?? 0,
+				custody_address_short: custody ? shortHexAddress(custody) : '',
+				collections_owned_count: user.collectionsOwned?.length ?? 0,
 			} satisfies DemoUser
-		))
+		})
 )
 
 export const getDemoCastsByFid = async ({

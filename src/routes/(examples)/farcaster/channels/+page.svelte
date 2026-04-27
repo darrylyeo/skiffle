@@ -2,6 +2,8 @@
 	// Types/constants
 	import type { PageData } from './$types'
 
+	import { CHANNELS_PAGE_SIZE } from './channels-frame'
+
 	const channelHostname = (href: string) => {
 		try {
 			return new URL(href).hostname
@@ -32,6 +34,10 @@
 		`/farcaster/channels/channel/${encodeURIComponent(channelId)}`
 	)
 
+	const channelImageSrc = (url: string) => (
+		url.trim() ? url.trim() : ''
+	)
+
 	// Props
 	let { data }: { data: PageData } = $props()
 </script>
@@ -51,29 +57,53 @@
 		{#each data.displayChannels as channel (channel.id)}
 			{@const hostname = channelHostname(channel.url)}
 			{@const description = channelDescription(channel.description)}
+			{@const iconSrc = channelImageSrc(channel.imageUrl)}
+			{@const coverSrc = channelImageSrc(channel.headerImageUrl)}
 
 			<a class="card column" href={channelDetailHref(channel.id)}>
-				<div class="badge">{channelInitials(channel.name)}</div>
+				{#if coverSrc}
+					<img
+						class="card-cover"
+						src={coverSrc}
+						alt=""
+						width="720"
+						height="120"
+					/>
+				{/if}
 
-				<div class="body column">
-					<p class="url row inline">
-						<strong>{channel.name}</strong>
-						<span>{hostname}</span>
-					</p>
+				<div class="card-main">
+					{#if iconSrc}
+						<img
+							class="channel-icon"
+							src={iconSrc}
+							alt=""
+							width="96"
+							height="96"
+						/>
+					{:else}
+						<div class="badge">{channelInitials(channel.name)}</div>
+					{/if}
 
-					<p class="annotation row inline wrap">
-						<span><strong>{channel.followerCount.toLocaleString()}</strong> followers</span>
-						<span>·</span>
-						<span><strong>{channel.memberCount.toLocaleString()}</strong> members</span>
-						{#if channel.castingMode}
+					<div class="body column">
+						<p class="url row inline">
+							<strong>{channel.name}</strong>
+							<span>{hostname}</span>
+						</p>
+
+						<p class="annotation row inline wrap">
+							<span><strong>{channel.followerCount.toLocaleString()}</strong> followers</span>
 							<span>·</span>
-							<span>{channel.castingMode}</span>
-						{/if}
-					</p>
+							<span><strong>{channel.memberCount.toLocaleString()}</strong> members</span>
+							{#if channel.castingMode}
+								<span>·</span>
+								<span>{channel.castingMode}</span>
+							{/if}
+						</p>
 
-					<p class="description">
-						{description}{description.length < channel.description.trim().length ? '...' : ''}
-					</p>
+						<p class="description">
+							{description}{description.length < channel.description.trim().length ? '...' : ''}
+						</p>
+					</div>
 				</div>
 			</a>
 		{/each}
@@ -81,7 +111,7 @@
 
 	{#if data.hasMoreChannels}
 		<p class="more row">
-			<a href={`?page=${data.currentPage}&count=${data.visibleCount + 8}`}>Load more channels</a>
+			<a href={`?page=${data.currentPage}&count=${data.visibleCount + CHANNELS_PAGE_SIZE}`}>Load more channels</a>
 		</p>
 	{/if}
 </article>
@@ -102,8 +132,11 @@
 
 	.card {
 		display: flex;
+		flex-direction: column;
+		align-items: stretch;
 		justify-content: flex-start;
-		padding: 1.1em;
+		overflow: hidden;
+		padding: 0;
 		border-radius: 1em;
 		background:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03)),
@@ -111,6 +144,36 @@
 		border: 1px solid rgba(255, 255, 255, 0.08);
 		color: inherit;
 		text-decoration: none;
+	}
+
+	.card-cover {
+		display: block;
+		width: 100%;
+		height: 3.75rem;
+		object-fit: cover;
+		object-position: center;
+		flex-shrink: 0;
+	}
+
+	.card-main {
+		display: flex;
+		flex-direction: row;
+		align-items: flex-start;
+		justify-content: flex-start;
+		gap: 0.85em;
+		padding: 1.1em;
+		flex: 1;
+	}
+
+	.channel-icon {
+		display: block;
+		width: 3rem;
+		height: 3rem;
+		border-radius: 0.8rem;
+		object-fit: cover;
+		object-position: center;
+		flex-shrink: 0;
+		border: 1px solid rgba(255, 255, 255, 0.12);
 	}
 
 	.badge {
@@ -127,10 +190,13 @@
 		font-family: 'Fira Code', monospace;
 		font-size: 1rem;
 		font-weight: 700;
+		flex-shrink: 0;
 	}
 
-	.card > .body {
+	.card-main > .body {
 		gap: 0.65em;
+		flex: 1;
+		min-width: 0;
 	}
 
 	p {
