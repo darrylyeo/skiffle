@@ -13,6 +13,8 @@
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"test:integration": "playwright test",
+		"test:integration:snap": "playwright test -c playwright-snap-e2e.config.ts",
+		"test:integration:snap:headed": "playwright test -c playwright-snap-e2e.config.ts --headed",
 		"test:unit": "vitest"
 	},
 	"devDependencies": {

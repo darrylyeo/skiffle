@@ -1,5 +1,6 @@
 .DS_Store
 node_modules
+.cache/farcaster-snap
 /build
 /.svelte-kit
 /package
@@ -11,3 +12,4 @@ vite.config.ts.timestamp-*
 
 .netlify
 .vercel
+/test-results
