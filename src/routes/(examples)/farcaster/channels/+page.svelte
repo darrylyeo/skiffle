@@ -44,7 +44,7 @@
 
 
 
-<article class="column">
+<article class="column channels-page">
 	<header class="row">
 		<h2>Popular Farcaster channels</h2>
 
@@ -57,24 +57,35 @@
 		{#each data.displayChannels as channel (channel.id)}
 			{@const hostname = channelHostname(channel.url)}
 			{@const description = channelDescription(channel.description)}
-			{@const artSrc = channelImageSrc(channel.imageUrl) || channelImageSrc(channel.headerImageUrl)}
+			{@const iconSrc = channelImageSrc(channel.imageUrl)}
+			{@const coverSrc = channelImageSrc(channel.headerImageUrl)}
 
-			<a class="card" href={channelDetailHref(channel.id)}>
-				<div class="card-art">
-					{#if artSrc}
+			<a class="card column" href={channelDetailHref(channel.id)}>
+				<div class="card-cover-slot" aria-hidden={!coverSrc}>
+					{#if coverSrc}
 						<img
-							class="card-art-img"
-							src={artSrc}
+							class="card-cover"
+							src={coverSrc}
 							alt=""
-							width="120"
+							width="720"
 							height="120"
 						/>
-					{:else}
-						<div class="badge">{channelInitials(channel.name)}</div>
 					{/if}
 				</div>
 
 				<div class="card-main">
+					{#if iconSrc}
+						<img
+							class="channel-icon"
+							src={iconSrc}
+							alt=""
+							width="96"
+							height="96"
+						/>
+					{:else}
+						<div class="badge">{channelInitials(channel.name)}</div>
+					{/if}
+
 					<div class="body column">
 						<p class="url row inline">
 							<strong>{channel.name}</strong>
@@ -109,25 +120,38 @@
 
 
 <style>
-	article {
-		gap: 2em;
+	article.channels-page {
+		flex: 1;
+		min-height: 0;
+		width: 100%;
+		gap: 1.35em;
+	}
+
+	#channels.row.wrap {
+		align-items: stretch;
+		align-content: space-between;
+		flex: 1;
+		min-height: 0;
 	}
 
 	#channels {
 		gap: 1em;
-		align-items: stretch;
 	}
+
 	#channels > * {
 		flex: 1 0 40%;
+		align-self: stretch;
+		min-height: 0;
 	}
 
 	.card {
 		display: flex;
-		flex-direction: row;
+		flex-direction: column;
 		align-items: stretch;
 		justify-content: flex-start;
+		height: 100%;
 		overflow: hidden;
-		min-height: 7.5rem;
+		padding: 0;
 		border-radius: 1em;
 		background:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03)),
@@ -137,62 +161,70 @@
 		text-decoration: none;
 	}
 
-	.card-art {
+	.card-cover-slot {
 		display: flex;
-		flex-direction: row;
-		align-items: flex-start;
-		justify-content: flex-start;
-		flex: 0 0 7.5rem;
-		width: 7.5rem;
-		align-self: stretch;
-		min-height: 7.5rem;
+		width: 100%;
+		height: 4.25rem;
+		flex-shrink: 0;
+		overflow: hidden;
 	}
 
-	.card-art-img {
+	.card-cover {
 		display: block;
-		width: 7.5rem;
-		height: 7.5rem;
+		width: 100%;
+		height: 100%;
 		object-fit: cover;
 		object-position: center;
-		border-radius: 1em 0 0 1em;
-		border-right: 1px solid rgba(255, 255, 255, 0.1);
 	}
 
-	.card-art .badge {
-		border-radius: 1em 0 0 1em;
-		border-right: 1px solid rgba(255, 255, 255, 0.1);
-	}
-
-	.card > .card-main {
+	.card-main {
 		display: flex;
-		flex-direction: column;
+		flex-direction: row;
 		align-items: stretch;
 		justify-content: flex-start;
+		gap: 0.85em;
+		padding: 1.1em;
 		flex: 1;
-		min-width: 0;
-		padding: 1em 1.1em 1em 1em;
-		gap: 0;
+		min-height: 0;
+	}
+
+	.channel-icon {
+		display: block;
+		width: 3rem;
+		height: 3rem;
+		border-radius: 0.8rem;
+		object-fit: cover;
+		object-position: center;
+		flex-shrink: 0;
+		border: 1px solid rgba(255, 255, 255, 0.12);
 	}
 
 	.badge {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 7.5rem;
-		height: 7.5rem;
+		width: 3rem;
+		height: 3rem;
+		border-radius: 0.8rem;
 		background:
 			linear-gradient(135deg, rgba(255, 173, 113, 0.34), rgba(138, 99, 210, 0.2)),
 			rgba(255, 255, 255, 0.06);
 		color: rgba(255, 255, 255, 0.96);
 		font-family: 'Fira Code', monospace;
-		font-size: 1.35rem;
+		font-size: 1rem;
 		font-weight: 700;
+		flex-shrink: 0;
 	}
 
-	.card > .card-main > .body {
+	.card-main > .body {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		justify-content: flex-start;
 		gap: 0.65em;
-		flex: 0 1 auto;
+		flex: 1;
 		min-width: 0;
+		min-height: 0;
 	}
 
 	p {

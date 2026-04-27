@@ -1,7 +1,7 @@
 // Data
 import type { PageLoad } from './$types'
 
-import { channelsPageView } from './channels-frame'
+import { CHANNELS_FRAME_RASTER_WIDTH, channelsPageView } from './channels-frame'
 
 export const load: PageLoad = async ({
 	data,
@@ -18,5 +18,6 @@ export const load: PageLoad = async ({
 		hasMoreChannels,
 		snap,
 		visibleCount,
+		width: CHANNELS_FRAME_RASTER_WIDTH,
 	}
 }

@@ -2,7 +2,6 @@
 import { AppSnapButtonRoles } from '$/lib/app-snap-tokens'
 import type { AppSnapPage } from '$/lib/snap-components'
 import type { FrameMeta } from '$/lib/frame'
-import { demosBackUrl } from '$/routes/(examples)/demos'
 
 // Functions
 import { isTruthy } from '$/lib/isTruthy'
@@ -16,6 +15,9 @@ export const CHANNELS_PAGE_SIZE = 6
 
 /** Link buttons per frame page, limited by frame button constraints. */
 export const CHANNELS_FRAME_PAGE_SIZE = 2
+
+/** `#root` width in `+layout.svelte` for PNG / frame preview (`16:9` height = width * 9 / 16). */
+export const CHANNELS_FRAME_RASTER_WIDTH = 1200
 
 const normalizedPage = (
 	page: number,
@@ -92,14 +94,14 @@ const frameMetaFromPaginationState = ({
 				page: String(currentPage),
 				image: '',
 			})}`,
-			aspectRatio: '1:1',
+			aspectRatio: '16:9',
 		},
 		buttons: (
 			[
 				{
 					label: '‹ Back',
 					action: 'post',
-					targetUrl: demosBackUrl('channels'),
+					targetUrl: '/?/demos',
 				},
 				...shownForFrame.map((channel) => ({
 					label: channel.name.slice(0, 32),
@@ -145,7 +147,7 @@ const snapFromPaginationState = ({
 					label: '‹ Back',
 					role: AppSnapButtonRoles.Back,
 					action: 'post',
-					targetUrl: demosBackUrl('channels'),
+					targetUrl: '/?/demos',
 				}),
 				currentPage < totalPages - 1
 					? snapTargetButton({
