@@ -450,9 +450,26 @@ export const framePageToSnap = (
 		pageEmbeds: snap?.castIntent?.embeds,
 		currentPageUrl,
 	})
-	const extraElements = snapExtraElementProviders
+	const providerExtra = snapExtraElementProviders
 		.map((provider) => provider(frame, baseUrl))
 		.find((value) => value !== undefined)
+	const snapPageExtra = snap?.extraElements
+	const extraElements = (
+		providerExtra && snapPageExtra
+			? {
+				children: [
+					...(snapPageExtra.children ?? []),
+					...(providerExtra.children ?? []),
+				],
+				elements: {
+					...providerExtra.elements,
+					...snapPageExtra.elements,
+				},
+				hideInput: snapPageExtra.hideInput ?? providerExtra.hideInput,
+			}
+		:
+			snapPageExtra ?? providerExtra
+	)
 	const actionElements = snap?.buttons?.length
 		? snapActionElements(snap.buttons, baseUrl)
 		: undefined

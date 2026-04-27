@@ -14,6 +14,7 @@ import {
 	type SnapJustify,
 	type SnapPaletteColor,
 } from './snap-spec'
+import type { SnapExtraElements } from './snap-page-extra'
 
 export type AppSnapButtonPress = (
 	| {
@@ -86,6 +87,8 @@ export type AppSnapPage = {
 	effects?: SnapEffect[]
 	castIntent?: AppSnapCastIntent
 	buttons?: AppSnapButtonNode[]
+	/** Merged into snap `ui.elements` (with demo-game extras). Max 64 elements total. */
+	extraElements?: SnapExtraElements
 }
 
 type AppSnapTargetButton = {
