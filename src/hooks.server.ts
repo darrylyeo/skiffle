@@ -41,25 +41,6 @@ import { SnapMediaType } from './lib/snap-spec'
 import { publicRequestUrl } from './lib/public-request-url'
 
 
-// True when `Accept` alone should select PNG (no `Sec-Fetch-Dest`).
-// If `Accept` includes `*/*`, require `Sec-Fetch-Dest: image` at the request level (see `requestWantsRasterPageImage`) so embed crawlers that send browser-like `Accept` without `Sec-Fetch-Dest` still get HTML and classify the URL as a Snap, not a bare image.
-const acceptHeaderWantsRasterImageWithoutWildcard = (accept: string) => {
-	const lower = accept.toLowerCase()
-	if (!lower.includes('image/')) return false
-	if (lower.includes('text/html')) return false
-	if (lower.includes('*/*')) return false
-	return /\bimage\/[\w.+*-]+\s*(?:;|,|$)/i.test(accept)
-}
-
-const requestWantsRasterPageImage = (request: Request) => (
-	request.method === 'GET'
-	&& (
-		request.headers.get('sec-fetch-dest') === 'image'
-		|| acceptHeaderWantsRasterImageWithoutWildcard(request.headers.get('accept') ?? '')
-	)
-)
-
-
 // Hooks
 export const handle: Handle = async ({
 	event,
@@ -134,7 +115,22 @@ export const handle: Handle = async ({
 	}
 
 	// Svelte → HTML → Image (`Accept` / `Sec-Fetch-Dest`)
-	if (requestWantsRasterPageImage(event.request)) {
+	// True when `Accept` alone should select PNG (no `Sec-Fetch-Dest`).
+	// If `Accept` includes `*/*`, require `Sec-Fetch-Dest: image` at the request level so embed crawlers that send browser-like `Accept` without `Sec-Fetch-Dest` still get HTML and classify the URL as a Snap, not a bare image.
+	const acceptRaster = event.request.headers.get('accept') ?? ''
+	const acceptRasterLower = acceptRaster.toLowerCase()
+	if (
+		event.request.method === 'GET'
+		&& (
+			event.request.headers.get('sec-fetch-dest') === 'image'
+			|| (
+				acceptRasterLower.includes('image/')
+				&& !acceptRasterLower.includes('text/html')
+				&& !acceptRasterLower.includes('*/*')
+				&& /\bimage\/[\w.+*-]+\s*(?:;|,|$)/i.test(acceptRaster)
+			)
+		)
+	) {
 		const response = await resolve(event)
 
 		if (response.status !== 200) {
