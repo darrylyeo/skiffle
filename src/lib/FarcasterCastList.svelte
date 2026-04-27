@@ -9,11 +9,9 @@
 	let {
 		casts,
 		emptyLabel = 'No casts available yet.',
-		isFrameImage = false,
 	}: {
 		casts: DemoFarcasterCast[]
 		emptyLabel?: string
-		isFrameImage?: boolean
 	} = $props()
 </script>
 
@@ -26,7 +24,7 @@
 			<article class="cast column">
 				<header class="row cast-top">
 					<div class="row inline identity">
-						{#if !isFrameImage}
+						{#if cast.authorPfpUrl}
 							<img class="avatar" src={cast.authorPfpUrl} alt={`${cast.authorDisplayName} avatar`} />
 						{:else}
 							<div class="avatar avatar-placeholder" aria-hidden="true">

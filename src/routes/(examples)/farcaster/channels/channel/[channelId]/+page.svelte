@@ -12,18 +12,18 @@
 
 <article class="column">
 	<section class="hero column">
-		{#if !data.isFrameImage && data.channel.headerImageUrl}
+		{#if data.channel.headerImageUrl}
 			<img class="banner" src={data.channel.headerImageUrl} alt="" />
-		{:else if data.isFrameImage}
+		{:else}
 			<div class="banner banner-placeholder" role="presentation"></div>
 		{/if}
 
 		<div class="hero-body column">
 			<div class="row hero-top">
 				<div class="row inline identity">
-					{#if !data.isFrameImage && data.channel.imageUrl}
+					{#if data.channel.imageUrl}
 						<img class="icon" src={data.channel.imageUrl} alt={`${data.channel.name} icon`} />
-					{:else if data.isFrameImage}
+					{:else}
 						<div class="icon icon-placeholder" aria-hidden="true">
 							<span class="initials">{farcasterInitials(data.channel.name, data.channel.key)}</span>
 						</div>
@@ -46,9 +46,9 @@
 
 			{#if data.channel.lead}
 				<div class="lead row inline">
-					{#if !data.isFrameImage && data.channel.lead.pfpUrl}
+					{#if data.channel.lead.pfpUrl}
 						<img class="lead-avatar" src={data.channel.lead.pfpUrl} alt={`${data.channel.lead.displayName} avatar`} />
-					{:else if data.isFrameImage}
+					{:else}
 						<div class="lead-avatar avatar-placeholder" aria-hidden="true">
 							<span class="initials">{farcasterInitials(data.channel.lead.displayName, data.channel.lead.username)}</span>
 						</div>
@@ -68,7 +68,7 @@
 			<p class="annotation">{data.displayCasts.length} shown</p>
 		</header>
 
-		<FarcasterCastList casts={data.displayCasts} isFrameImage={data.isFrameImage} />
+		<FarcasterCastList casts={data.displayCasts} />
 
 		{#if data.hasMoreCasts}
 			<form class="more row" method="GET" action={resolve('/(examples)/farcaster/channels/channel/[channelId]', {
