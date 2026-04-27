@@ -318,6 +318,7 @@ export const handle: Handle = async ({
 			try {
 				const payload = await readSnapJfsPayload(bodyText.trim(), event.request.url)
 				event.locals.farcasterViewerFid = payload.fid
+				event.locals.snapJfsInputs = payload.inputs
 				const snapRes = await snapPostResponse(event, resolve, payload)
 				if (snapRes) {
 					return snapRes

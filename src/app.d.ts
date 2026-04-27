@@ -18,6 +18,9 @@ declare global {
 			 * FID of the user who triggered this request (frame `untrustedData.fid` or Snap JFS payload `fid`).
 			 */
 			farcasterViewerFid?: number,
+
+			/** Last Snap JFS POST `inputs` (cell_grid, fields, etc.) when body was JFS compact. */
+			snapJfsInputs?: Record<string, unknown>,
 		}
 
 		interface PageData {

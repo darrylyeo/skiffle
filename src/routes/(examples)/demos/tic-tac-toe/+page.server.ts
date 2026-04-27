@@ -319,42 +319,54 @@ export const load: PageServerLoad = async ({ url }) => {
 	}
 }
 
+const ticTacToeCellFromRaw = (raw: unknown): string => {
+	const selection = snapGridSelection(raw)
+
+	if (selection) {
+		return String(selection.row * 3 + selection.col + 1)
+	}
+
+	if (typeof raw === 'number' && Number.isFinite(raw)) {
+		const d = Math.trunc(raw)
+
+		return d >= 1 && d <= 9 ? String(d) : ''
+	}
+
+	if (typeof raw === 'string') {
+		const t = raw.trim()
+
+		if (/^[1-9]$/.test(t)) {
+			return t
+		}
+	}
+
+	return ''
+}
+
 const actionInputText = async ({
 	locals,
 	request,
 }: {
-	locals: { frameSignaturePacket?: { untrustedData?: { inputText?: string, ticTacToeCell?: string } } },
+	locals: {
+		snapJfsInputs?: Record<string, unknown>
+		frameSignaturePacket?: { untrustedData?: { inputText?: string, ticTacToeCell?: unknown } }
+	}
 	request: Request,
 }) => (
-	(() => {
-		const rawValue = (
-			locals.frameSignaturePacket?.untrustedData?.ticTacToeCell
-			?? locals.frameSignaturePacket?.untrustedData?.inputText
-		)
-		const selection = snapGridSelection(rawValue)
-
-		return (
-			selection
-				? String(selection.row * 3 + selection.col + 1)
-			: rawValue?.trim()
-		)
-	})()
-		?? await request
-			.formData()
-			.then((formData) => (
-				(() => {
-					const rawValue = formData.get('ticTacToeCell') ?? formData.get('inputText')
-					const selection = snapGridSelection(rawValue)
-
-					return (
-						selection
-							? String(selection.row * 3 + selection.col + 1)
-						:
-							`${rawValue ?? ''}`.trim()
-					)
-				})()
-			))
-			.catch(() => '')
+	ticTacToeCellFromRaw(
+		locals.snapJfsInputs?.ticTacToeCell
+		?? locals.frameSignaturePacket?.untrustedData?.ticTacToeCell
+		?? locals.frameSignaturePacket?.untrustedData?.inputText,
+	)
+	|| await request
+		.formData()
+		.then((formData) => (
+			ticTacToeCellFromRaw(
+				formData.get('ticTacToeCell')
+				?? formData.get('inputText'),
+			)
+		))
+		.catch(() => '')
 )
 
 export const actions: Actions = {

@@ -31,11 +31,13 @@ const hangmanLetterFromGridSelection = (value: unknown): string => {
 			return trimmed.toLowerCase()
 		}
 
-		try {
-			return hangmanLetterFromGridSelection(JSON.parse(trimmed))
-		} catch {
-			return ''
+		const fromString = snapGridSelection(trimmed)
+
+		if (fromString) {
+			return HANGMAN_ALPHABET[fromString.row * HANGMAN_GRID_COLUMNS + fromString.col] ?? ''
 		}
+
+		return ''
 	}
 
 	if (Array.isArray(value)) {
@@ -56,6 +58,7 @@ const actionGuess = async ({
 	request,
 }: {
 	locals: {
+		snapJfsInputs?: Record<string, unknown>
 		frameSignaturePacket?: {
 			untrustedData?: {
 				inputText?: string
@@ -66,7 +69,8 @@ const actionGuess = async ({
 	request: Request
 }) => (
 	hangmanLetterFromGridSelection(
-		locals.frameSignaturePacket?.untrustedData?.hangmanLetter
+		locals.snapJfsInputs?.hangmanLetter
+		?? locals.frameSignaturePacket?.untrustedData?.hangmanLetter
 		?? locals.frameSignaturePacket?.untrustedData?.inputText,
 	)
 	|| await request
