@@ -33,19 +33,7 @@
 		}
 		return out
 	})())
-	const pathTail = $derived((
-		u.pathname
-		&& u.pathname !== '/'
-			? (() => {
-				try {
-					return decodeURI(u.pathname.replace(/\/$/, ''))
-				} catch {
-					return u.pathname.replace(/\/$/, '')
-				}
-			})()
-		: ''
-	))
-	const searchAndHashRaw = $derived(`${u.search}${u.hash}`)
+	const displayUrl = $derived(u.href)
 </script>
 
 
@@ -62,11 +50,7 @@
 		<footer class="footer row">
 			<p>
 				<output class="url-badge">
-					<span>{`${u.host}${pathTail}`.replace(/%2f/gi, '/')}</span>
-
-					{#if searchAndHashRaw}
-						<span class="query-line">{searchAndHashRaw.length > 60 ? `${searchAndHashRaw.slice(0, 57)}...` : searchAndHashRaw}</span>
-					{/if}
+					<span class="url-line">{displayUrl.replace(/%2f/gi, '/')}</span>
 				</output>
 			</p>
 
@@ -129,13 +113,10 @@
 		display: block;
 	}
 
-	.query-line {
-		max-width: 24em;
+	.url-line {
 		font-size: 0.82em;
-		opacity: 0.82;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
+		opacity: 0.9;
+		word-break: break-all;
 	}
 
 	.annotation {
