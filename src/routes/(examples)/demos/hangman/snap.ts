@@ -4,7 +4,13 @@ import type { SnapExtraElements } from '$/lib/snap-page-extra'
 
 // Functions
 import { frameStateUrlFromFrame } from '$/lib/snap-page-extra'
-import { SnapAlignments, SnapPaletteColors, SnapTextSizes } from '$/lib/snap-spec'
+import {
+	SnapAlignments,
+	SnapDirections,
+	SnapGaps,
+	SnapPaletteColors,
+	SnapTextSizes,
+} from '$/lib/snap-spec'
 
 import { hangmanCanGuess, hangmanMisses, hangmanUsedLetters, parseHangmanState } from './hangman-frame'
 
@@ -29,17 +35,25 @@ export const hangmanSnapExtraElements = (
 
 		return {
 			hideInput: canGuess,
-			children: [
-				...(canGuess
-					? [
-						'hangman-picker-label',
-						'hangman-picker-grid',
-					]
-					: []),
-				'hangman-used',
-				...(misses.length ? ['hangman-misses'] : []),
-			],
+			children: ['hangman-extra'],
 			elements: {
+				'hangman-extra': {
+					type: 'stack',
+					props: {
+						direction: SnapDirections.Vertical,
+						gap: SnapGaps.Sm,
+					},
+					children: [
+						...(canGuess
+							? [
+								'hangman-picker-label',
+								'hangman-picker-grid',
+							]
+							: []),
+						'hangman-used',
+						...(misses.length ? ['hangman-misses'] : []),
+					],
+				},
 				...(canGuess
 					? {
 						'hangman-picker-label': {

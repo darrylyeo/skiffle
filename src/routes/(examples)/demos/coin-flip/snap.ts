@@ -54,12 +54,20 @@ export const coinFlipSnapExtraElements = (
 		}, [])
 
 		return {
-			children: [
-				'coin-history-separator',
-				'coin-history-label',
-				...rows.map((_, index) => `coin-history-row-${index}`),
-			],
+			children: ['coin-history-extra'],
 			elements: {
+				'coin-history-extra': {
+					type: SnapElementTypes.Stack,
+					props: {
+						direction: SnapDirections.Vertical,
+						gap: SnapGaps.Sm,
+					},
+					children: [
+						'coin-history-separator',
+						'coin-history-label',
+						...rows.map((_, index) => `coin-history-row-${index}`),
+					],
+				},
 				'coin-history-separator': {
 					type: SnapElementTypes.Separator,
 					props: {},
