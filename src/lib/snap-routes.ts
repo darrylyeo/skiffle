@@ -47,12 +47,6 @@ const htmlRequest = (request: Request) => {
 	)
 }
 
-const frameImageUrlForRequest = (url: URL | string) => {
-	const frameImageUrl = new URL(String(url))
-	frameImageUrl.searchParams.set('frameImage', '')
-	return frameImageUrl.href
-}
-
 type SnapRouteData = {
 	title?: string
 	frame?: FrameMeta
@@ -317,7 +311,7 @@ const mergeRouteDataIntoPage = (
 				...data.frame.image,
 				url: snapResolvedUrl(
 					resolveUrl(
-						data.frame.image.url || framePage?.frame.image.url || frameImageUrlForRequest(baseUrl),
+						data.frame.image.url || framePage?.frame.image.url || String(baseUrl),
 						baseUrl,
 					),
 					baseUrl,

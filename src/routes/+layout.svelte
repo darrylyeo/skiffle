@@ -30,12 +30,8 @@
 	let height = $derived(
 		width * aspectRatio[1] / aspectRatio[0]
 	)
-	
-	let pageImageUrl = $derived.by(() => {
-		const _url = new URL(url)
-		_url.searchParams.set('frameImage', '')
-		return _url.href
-	})
+
+	let pageImageUrl = $derived(url.href)
 
 	let snapJson = $derived(
 		snap

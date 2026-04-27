@@ -84,7 +84,6 @@ const frameMetaFromPaginationState = ({
 		image: {
 			url: `/farcaster/channels?${new URLSearchParams({
 				page: String(currentPage),
-				frameImage: '',
 			})}`,
 			aspectRatio: '1:1',
 		},

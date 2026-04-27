@@ -98,11 +98,6 @@ const SNAP_FOOTER_CONTEXT_PARAM = 'snapFooter'
 
 const skiffleAuthorFarcasterFid = 3854
 
-const frameImageUrlForCurrentPage = (url: URL | string) => {
-	const frameImageUrl = new URL(String(url))
-	frameImageUrl.searchParams.set('frameImage', '')
-	return frameImageUrl.href
-}
 
 const snapPublicBase = () => (
 	process.env.SNAP_PUBLIC_BASE_URL?.trim().replace(/\/$/, '')
@@ -492,11 +487,9 @@ export const framePageToSnap = (
 			type: SnapElementTypes.Image,
 			props: {
 				url: snapResolvedUrl(
-					frameImageUrlForCurrentPage(
-						resolveUrl(
-							frame.image.url || String(baseUrl),
-							baseUrl,
-						),
+					resolveUrl(
+						frame.image.url || String(baseUrl),
+						baseUrl,
 					),
 					baseUrl,
 				),

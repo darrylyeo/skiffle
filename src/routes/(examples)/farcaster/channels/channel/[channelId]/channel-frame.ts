@@ -58,7 +58,6 @@ const frameMetaFromPaginationState = (
 	image: {
 		url: `${channelRoute(channel.id)}?${new URLSearchParams({
 			page: String(frameVisibleCount || CHANNEL_CASTS_FRAME_STEP),
-			frameImage: '',
 		})}`,
 		aspectRatio: '1:1',
 	},
