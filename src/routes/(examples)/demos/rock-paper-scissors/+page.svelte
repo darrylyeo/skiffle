@@ -186,7 +186,7 @@
 
 	h2 {
 		margin: 0;
-		font-size: clamp(1.65rem, 5.2vw, 2.65rem);
+		font-size: 2.05rem;
 		font-weight: 900;
 		line-height: 1.05;
 		letter-spacing: -0.02em;
@@ -272,7 +272,7 @@
 
 	.glyph {
 		display: block;
-		font-size: clamp(4.1rem, 19vw, 6.7rem);
+		font-size: 5.4rem;
 		line-height: 1;
 		filter:
 			drop-shadow(0 0.12em 0.08em rgba(0, 0, 0, 0.45))
@@ -281,7 +281,7 @@
 
 	.move,
 	.metric > strong {
-		font-size: clamp(1.35rem, 4.5vw, 1.85rem);
+		font-size: 1.6rem;
 		font-weight: 800;
 		line-height: 1.1;
 		color: rgba(255, 255, 255, 0.98);
@@ -290,7 +290,7 @@
 	}
 
 	.metric > strong {
-		font-size: clamp(1.5rem, 5vw, 2.1rem);
+		font-size: 1.8rem;
 		font-variant-numeric: tabular-nums;
 		font-family: ui-monospace, 'Cascadia Code', monospace;
 		color: rgba(255, 248, 120, 0.98);
@@ -356,7 +356,7 @@
 		padding: 0.4em 0.55em;
 		border-radius: 0.35em;
 		transform: rotate(-8deg) skewX(-4deg);
-		font-size: clamp(1.05rem, 3.5vw, 1.35rem);
+		font-size: 1.2rem;
 		font-weight: 900;
 		font-style: italic;
 		letter-spacing: 0.06em;
