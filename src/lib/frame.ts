@@ -39,7 +39,7 @@ export type FrameMeta = {
 	version?: `${number}-${number}-${number}` | 'vNext',
 	image: {
 		url: string,
-		aspectRatio?: `${1 | 1.91}:${1}`,
+		aspectRatio?: '1:1' | '1.91:1' | '16:9',
 	},
 	postUrl?: string,
 	textInput?: string,

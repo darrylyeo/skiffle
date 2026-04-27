@@ -118,7 +118,7 @@ const parseFrameVersion = (value: string | undefined): FrameMeta['version'] | un
 )
 
 const parseFrameAspectRatio = (value: string | undefined): FrameMeta['image']['aspectRatio'] | undefined => (
-	value === '1:1' || value === '1.91:1'
+	value === '1:1' || value === '1.91:1' || value === '16:9'
 		? value
 		: undefined
 )

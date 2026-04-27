@@ -67,7 +67,7 @@ export const counterFrameMeta = (count: number): FrameMeta => {
 	return {
 		image: {
 			url: `/demos/counter?count=${c}`,
-			aspectRatio: '1.91:1',
+			aspectRatio: '16:9',
 		},
 		buttons: [
 			{

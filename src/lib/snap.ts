@@ -149,7 +149,7 @@ const SNAP_IMAGE_ASPECT_WIDTH_PER_HEIGHT: Record<SnapImageAspect, number> = {
 }
 
 /** Default wide frame ratio when meta omits `fc:frame:image:aspect_ratio` (see `+layout.svelte`). */
-const FRAME_IMAGE_ASPECT_RATIO_DEFAULT = '1.91:1' as const
+const FRAME_IMAGE_ASPECT_RATIO_DEFAULT = '16:9' as const
 
 const frameAspectWidthPerHeight = (
 	aspectRatio?: FrameMeta['image']['aspectRatio'],

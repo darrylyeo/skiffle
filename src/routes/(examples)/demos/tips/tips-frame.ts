@@ -44,7 +44,7 @@ const frameMetaFromPaginationState = ({
 	return {
 		image: {
 			url: `/demos/tips?page=${currentPage}`,
-			aspectRatio: '1.91:1',
+			aspectRatio: '16:9',
 		},
 		buttons: (
 			[

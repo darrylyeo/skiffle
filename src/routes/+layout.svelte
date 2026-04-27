@@ -24,7 +24,7 @@
 	} = $derived(page)
 
 	let aspectRatio = $derived(
-		(frame?.image?.aspectRatio ?? '1.91:1')?.split(':').map(Number)
+	(frame?.image?.aspectRatio ?? '16:9')?.split(':').map(Number)
 	)
 
 	let height = $derived(

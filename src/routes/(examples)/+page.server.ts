@@ -89,7 +89,7 @@ export const actions: Actions = {
 			frame: {
 				image: {
 					url: '.',
-					aspectRatio: '1.91:1',
+					aspectRatio: '16:9',
 				},
 				buttons: [
 					{
