@@ -24,6 +24,8 @@ import {
 /** `item_group` allows at most 6 children (@see https://docs.farcaster.xyz/snap/constraints). */
 export const CASTS_SNAP_PAGE_SIZE = 6
 
+const CASTS_SNAP_ITEM_TITLE_MAX = 30
+
 export const castsSnapExtraElements = (
 	casts: DemoFarcasterCast[],
 ): SnapExtraElements | undefined => {
@@ -41,7 +43,16 @@ export const castsSnapExtraElements = (
 		const btnId = `casts-open-${safeHash}`
 		itemIds.push(itemId)
 
-		const title = farcasterCastContent(cast.content, 100) || 'Cast'
+		const castText = farcasterCastContent(cast.content)
+		const title = (
+			castText
+				? (
+					castText.length > CASTS_SNAP_ITEM_TITLE_MAX
+						? `${castText.slice(0, CASTS_SNAP_ITEM_TITLE_MAX)}…`
+						: castText
+				)
+				: 'Cast'
+		)
 		const description = farcasterCastContent(
 			`${cast.reactionCount} reactions · ${cast.recastCount} recasts · ${cast.replyCount} replies`,
 			160,
