@@ -31,7 +31,11 @@
 		width * aspectRatio[1] / aspectRatio[0]
 	)
 
-	let pageImageUrl = $derived(url.href)
+	let pageImageUrl = $derived.by(() => {
+		const u = new URL(url)
+		u.searchParams.set('image', '')
+		return u.href
+	})
 
 	let snapJson = $derived(
 		snap

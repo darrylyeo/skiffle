@@ -36,6 +36,7 @@ import {
 	parseFrameSignatureJson,
 	readSnapJfsPayload,
 } from './lib/snap-jfs'
+import { pageRasterPreviewUrl } from './lib/snap'
 import { snapCorsHeaders, snapGetResponse, snapOptionsResponse, snapPostResponse } from './lib/snap-routes'
 import { SnapMediaType } from './lib/snap-spec'
 import { publicRequestUrl } from './lib/public-request-url'
@@ -81,8 +82,6 @@ export const handle: Handle = async ({
 			[
 				...(headers.get('vary')?.split(',').map((value) => value.trim()).filter(Boolean) ?? []),
 				'Accept',
-				'Sec-Fetch-Dest',
-				'Sec-Fetch-Mode',
 			]
 				.filter((value, index, values) => values.indexOf(value) === index)
 				.join(', '),
@@ -115,19 +114,28 @@ export const handle: Handle = async ({
 		return await snapGetResponse(event, resolve)
 	}
 
-	// Svelte → HTML → PNG only for classic `<img>` subresource loads (Fetch Metadata).
-	// `Sec-Fetch-Dest: image` alone can still match `fetch(..., { mode: "cors" })` image probes; those must get HTML so clients do not treat the Snap URL as a bare image host.
-	// Default `<img>` (no `crossorigin`) uses `Sec-Fetch-Mode: no-cors` and an `Accept` list that includes `image/`.
-	const secFetchDestRaster = event.request.headers.get('sec-fetch-dest')
-	const secFetchModeRaster = event.request.headers.get('sec-fetch-mode')
-	const acceptRaster = event.request.headers.get('accept') ?? ''
+	// Svelte → HTML → PNG when `?image` is set (Farcaster clients mishandle pure `Accept` / Fetch Metadata overload on the canonical URL).
 	if (
 		event.request.method === 'GET'
-		&& secFetchDestRaster === 'image'
-		&& secFetchModeRaster === 'no-cors'
-		&& acceptRaster.toLowerCase().includes('image/')
+		&& event.url.searchParams.has('image')
 	) {
+		const savedUrl = new URL(event.url.href)
+		const savedRequest = event.request
+		const urlNoImage = new URL(event.url.href)
+		urlNoImage.searchParams.delete('image')
+		;(event as { url: URL }).url = urlNoImage
+		event.request = new Request(
+			urlNoImage,
+			savedRequest,
+		)
+
 		const response = await resolve(event)
+
+		;(event as { url: URL }).url = savedUrl
+		event.request = new Request(
+			savedUrl,
+			savedRequest,
+		)
 
 		if (response.status !== 200) {
 			const result = await response.clone().text()
@@ -256,7 +264,6 @@ export const handle: Handle = async ({
 			{
 				headers: {
 					'content-type': 'image/png',
-					'vary': 'Sec-Fetch-Dest, Sec-Fetch-Mode',
 				},
 			},
 		)
@@ -290,7 +297,7 @@ export const handle: Handle = async ({
 				const { data } = deserialize(await response.text()) as { data: { frame: FrameMeta } }
 
 				if (!data.frame.image.url) {
-					data.frame.image.url = event.url.href
+					data.frame.image.url = pageRasterPreviewUrl(event.url)
 				}
 
 				return createFrameResponse(data.frame, event.request.url)

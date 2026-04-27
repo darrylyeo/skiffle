@@ -10,13 +10,11 @@ import { SnapButtonVariants, SnapDirections, SnapGaps, SnapJustifyValues, SnapPa
 
 import type { DemoChannel } from '../api/farcaster-client'
 
-/** Channels paged together for HTML/Snap state. */
-export const CHANNELS_PAGE_SIZE = 4
+/** Channels paged together for HTML/Snap state and default web visible count. */
+export const CHANNELS_PAGE_SIZE = 6
 
 /** Link buttons per frame page, limited by frame button constraints. */
 export const CHANNELS_FRAME_PAGE_SIZE = 2
-
-export const CHANNELS_WEB_STEP = 8
 
 const normalizedPage = (
 	page: number,
@@ -36,9 +34,9 @@ const normalizedVisibleCount = (
 		: Number.isFinite(count)
 			? Math.min(
 				totalCount,
-				Math.max(CHANNELS_WEB_STEP, Math.trunc(count)),
+				Math.max(CHANNELS_PAGE_SIZE, Math.trunc(count)),
 			)
-			: Math.min(CHANNELS_WEB_STEP, totalCount)
+			: Math.min(CHANNELS_PAGE_SIZE, totalCount)
 )
 
 const channelDetailUrl = (channelId: string) => (
@@ -58,7 +56,7 @@ export const channelsPagination = (
 	)
 
 	const shownForFrame = shownForPage.slice(0, CHANNELS_FRAME_PAGE_SIZE)
-	const visibleCount = normalizedVisibleCount(Number(url.searchParams.get('count') ?? CHANNELS_WEB_STEP), channels.length - offset)
+	const visibleCount = normalizedVisibleCount(Number(url.searchParams.get('count') ?? CHANNELS_PAGE_SIZE), channels.length - offset)
 	const displayChannels = channels.slice(
 		offset,
 		offset + visibleCount,
@@ -75,6 +73,13 @@ export const channelsPagination = (
 	}
 }
 
+const channelPairsForSnap = (channels: DemoChannel[]) => (
+	Array.from(
+		{ length: Math.ceil(channels.length / 2) },
+		(_, rowIndex) => channels.slice(rowIndex * 2, rowIndex * 2 + 2),
+	)
+)
+
 const frameMetaFromPaginationState = ({
 	currentPage,
 	totalPages,
@@ -84,6 +89,7 @@ const frameMetaFromPaginationState = ({
 		image: {
 			url: `/farcaster/channels?${new URLSearchParams({
 				page: String(currentPage),
+				image: '',
 			})}`,
 			aspectRatio: '1:1',
 		},
@@ -155,34 +161,18 @@ const snapFromPaginationState = ({
 					}),
 			],
 		}),
-		snapButtonGroup({
+		...channelPairsForSnap(shownForPage).map((pair) => snapButtonGroup({
 			direction: SnapDirections.Horizontal,
 			gap: SnapGaps.Sm,
 			justify: SnapJustifyValues.Center,
-			children: shownForPage.slice(0, 2).map((channel) => snapTargetButton({
+			children: pair.map((channel) => snapTargetButton({
 				label: channel.name.slice(0, 32),
 				role: AppSnapButtonRoles.Cta,
 				variant: SnapButtonVariants.Primary,
 				action: 'post',
 				targetUrl: `${channelDetailUrl(channel.id)}?/open`,
 			})),
-		}),
-		...(shownForPage.length > 2
-			? [
-				snapButtonGroup({
-					direction: SnapDirections.Horizontal,
-					gap: SnapGaps.Sm,
-					justify: SnapJustifyValues.Center,
-					children: shownForPage.slice(2).map((channel) => snapTargetButton({
-						label: channel.name.slice(0, 32),
-						role: AppSnapButtonRoles.Cta,
-						variant: SnapButtonVariants.Primary,
-						action: 'post',
-						targetUrl: `${channelDetailUrl(channel.id)}?/open`,
-					})),
-				}),
-			]
-			: []),
+		})),
 	],
 })
 

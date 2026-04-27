@@ -10,6 +10,7 @@ import { parseAppSnapFromHtml } from '$/lib/snap-components'
 import type { SnapJfsPayload } from '$/lib/snap-jfs'
 import {
 	framePageToSnap,
+	pageRasterPreviewUrl,
 	snapResolvedUrl,
 	type FramePage,
 	type SnapResponse,
@@ -311,7 +312,7 @@ const mergeRouteDataIntoPage = (
 				...data.frame.image,
 				url: snapResolvedUrl(
 					resolveUrl(
-						data.frame.image.url || framePage?.frame.image.url || String(baseUrl),
+						data.frame.image.url || framePage?.frame.image.url || pageRasterPreviewUrl(baseUrl),
 						baseUrl,
 					),
 					baseUrl,

@@ -103,6 +103,13 @@ const snapPublicBase = () => (
 	process.env.SNAP_PUBLIC_BASE_URL?.trim().replace(/\/$/, '')
 )
 
+/** `?image` selects Svelte → PNG in `hooks.server.ts` (Farcaster clients are unreliable with pure `Accept` overload). */
+export const pageRasterPreviewUrl = (url: URL | string) => {
+	const next = new URL(String(url))
+	next.searchParams.set('image', '')
+	return next.href
+}
+
 /**
  * When testing through an HTTPS reverse proxy, HTML may still reference the dev origin.
  * Set SNAP_PUBLIC_BASE_URL to the public https origin so snap image + submit targets match the tunnel.
@@ -487,9 +494,11 @@ export const framePageToSnap = (
 			type: SnapElementTypes.Image,
 			props: {
 				url: snapResolvedUrl(
-					resolveUrl(
-						frame.image.url || String(baseUrl),
-						baseUrl,
+					pageRasterPreviewUrl(
+						resolveUrl(
+							frame.image.url || String(baseUrl),
+							baseUrl,
+						),
 					),
 					baseUrl,
 				),
