@@ -58,7 +58,23 @@ export const publicRequestUrl = (
 	requestUrl: URL | string,
 	headers: Headers,
 ) => {
-	const current = new URL(String(requestUrl))
+	const current = (() => {
+		const out = new URL(String(requestUrl))
+		for (let i = 0; i < 10; i++) {
+			const s = out.search
+			const h = out.hash
+			if (!s.includes('&amp;') && !h.includes('&amp;')) {
+				break
+			}
+			if (s.includes('&amp;')) {
+				out.search = s.replaceAll('&amp;', '&')
+			}
+			if (h.includes('&amp;')) {
+				out.hash = h.replaceAll('&amp;', '&')
+			}
+		}
+		return out
+	})()
 	const configuredBase = process.env.SNAP_PUBLIC_BASE_URL?.trim()
 
 	if (configuredBase) {
