@@ -8,10 +8,11 @@ import twemoji from 'twemoji'
 
 import { fetchBundledAssetBuffer } from '$/lib/satori-fonts.server'
 
-const twemojiSvgUrls = import.meta.glob(
+/** Lazy `?raw` imports keep Twemoji out of the main server chunk (eager `?url` was ~8MB). */
+const twemojiSvgLoaders = import.meta.glob(
 	'/node_modules/@datawrapper/twemoji-svg/svg/*.svg',
-	{ eager: true, import: 'default', query: '?url' },
-) as Record<string, string>
+	{ import: 'default', query: '?raw' },
+) as Record<string, () => Promise<string | { default: string }>>
 
 const dataUrlFromSvg = (svg: string) => (
 	`data:image/svg+xml;base64,${Buffer.from(svg, 'utf8').toString('base64')}`
@@ -27,12 +28,24 @@ const fontCache = new Map<string, {
 	lang?: string,
 }[]>()
 
-const twemojiUrlForCode = (code: string) => (
-	Object.entries(twemojiSvgUrls).find(([path]) => (
+const twemojiLoaderForCode = (code: string) => (
+	Object.entries(twemojiSvgLoaders).find(([path]) => (
 		path.endsWith(`/${code}.svg`)
 		|| path.endsWith(`${code}.svg`)
 	))?.[1]
 )
+
+const svgStringFromTwemojiLoad = async (
+	load: () => Promise<string | { default: string }>,
+) => {
+	const mod = await load()
+	return (
+		typeof mod === 'string' ?
+			mod
+		:
+			mod.default
+	)
+}
 
 const cacheFonts = (
 	key: string,
@@ -101,13 +114,6 @@ const isEmojiSegment = (
 	|| emojiLikeSegmentPattern.test(segment)
 )
 
-const twemojiSvgText = async (url: string) => (
-	url.startsWith('data:') ?
-		fetch(url).then((response) => response.text())
-	:
-		new TextDecoder().decode(await fetchBundledAssetBuffer(url))
-)
-
 const emojiDataUrlForSegment = async (segment: string) => {
 	if (missingEmojiCache.has(segment)) {
 		return undefined
@@ -124,13 +130,13 @@ const emojiDataUrlForSegment = async (segment: string) => {
 		return undefined
 	}
 
-	const url = twemojiUrlForCode(code)
-	if (!url) {
+	const load = twemojiLoaderForCode(code)
+	if (!load) {
 		missingEmojiCache.add(segment)
 		return undefined
 	}
 
-	const svg = await twemojiSvgText(url)
+	const svg = await svgStringFromTwemojiLoad(load)
 	const dataUrl = dataUrlFromSvg(svg)
 	emojiCache.set(segment, dataUrl)
 	return dataUrl
