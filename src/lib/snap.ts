@@ -286,8 +286,6 @@ const snapButtonIcon = (
 		?? (
 			button.role === AppSnapButtonRoles.Share ?
 				SnapIcons.Share
-			: button.role === AppSnapButtonRoles.External ?
-				SnapIcons.ExternalLink
 			: press.action === SnapActions.ViewToken ?
 				SnapIcons.Wallet
 			:
@@ -619,7 +617,6 @@ export const framePageToSnap = (
 			props: {
 				label: 'Visit',
 				variant: SnapButtonVariants.Secondary,
-				icon: SnapIcons.ExternalLink,
 			},
 			on: {
 				[SnapEvents.Press]: {
@@ -707,7 +704,7 @@ export const framePageToSnap = (
 		'page-byline': {
 			type: SnapElementTypes.Text,
 			props: {
-				content: 'a snapsite by @darrylyeo • updated 2026-04-27',
+				content: 'ᴀ sɴᴀᴘsɪᴛᴇ ʙʏ @darrylyeo',
 				size: SnapTextSizes.Sm,
 				align: SnapAlignments.Center,
 			},
@@ -733,7 +730,7 @@ export const framePageToSnap = (
 			props: {
 				label: 'Follow on 𝕏',
 				variant: SnapButtonVariants.Secondary,
-				icon: SnapIcons.ExternalLink,
+				icon: SnapIcons.Users,
 			},
 			on: {
 				[SnapEvents.Press]: {
