@@ -144,15 +144,15 @@
 
 			<div class="stat-tile column">
 				<span class="stat-label">
-					Elsewhere
+					Linked accounts
 				</span>
 
 				<span class="stat-value">
-					{data.user.connected_account_count}
+					{formatCount(data.user.connected_account_count)}
 				</span>
 
 				<span class="stat-hint">
-					tied logins & apps
+					{String(data.user.connected_account_count)}
 				</span>
 			</div>
 
@@ -214,15 +214,14 @@
 		padding: 1.35em 1.5em;
 		border-radius: 22px;
 		border: 1px solid rgba(200, 175, 255, 0.18);
-		background-image:
-			linear-gradient(168deg, rgba(108, 68, 168, 0.32) 0%, transparent 48%),
-			linear-gradient(310deg, rgba(0, 0, 0, 0.38) 0%, transparent 52%),
-			linear-gradient(
-				178deg,
-				rgba(28, 14, 48, 0.55) 0%,
-				rgba(6, 2, 14, 0.72) 48%,
-				rgba(52, 28, 88, 0.42) 100%
-			);
+		/* Single `background-image` only — Satori rejects comma-separated layers for `?image=` PNGs */
+		background-color: rgb(10, 4, 22);
+		background-image: linear-gradient(
+			178deg,
+			rgba(108, 68, 168, 0.38) 0%,
+			rgba(28, 14, 48, 0.78) 45%,
+			rgba(6, 2, 14, 0.92) 100%
+		);
 		box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
 		row-gap: 1.1em;
 		justify-content: space-between;
@@ -359,10 +358,13 @@
 		flex-shrink: 1;
 		padding: 0.65em 0.75em;
 		border-radius: 14px;
-		background-image:
-			linear-gradient(158deg, rgba(110, 70, 170, 0.22) 0%, transparent 55%),
-			linear-gradient(210deg, rgba(0, 0, 0, 0.4) 0%, rgba(36, 18, 58, 0.35) 100%),
-			linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+		background-color: rgba(24, 10, 44, 0.72);
+		background-image: linear-gradient(
+			165deg,
+			rgba(110, 70, 170, 0.28) 0%,
+			rgba(0, 0, 0, 0.35) 55%,
+			rgba(255, 255, 255, 0.04) 100%
+		);
 		border: 1px solid rgba(190, 165, 255, 0.12);
 		row-gap: 0.2em;
 		align-items: flex-start;
