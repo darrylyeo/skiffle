@@ -1,6 +1,12 @@
 import { AppSnapButtonRoles } from '$/lib/app-snap-tokens'
 import { snapButtonGroup, snapTargetButton } from '$/lib/snap-components'
-import { SnapButtonVariants, SnapDirections, SnapGaps, SnapJustifyValues } from '$/lib/snap-spec'
+import {
+	SnapButtonVariants,
+	SnapDirections,
+	SnapGaps,
+	SnapIcons,
+	SnapJustifyValues,
+} from '$/lib/snap-spec'
 import type { PageLoad } from './$types'
 
 const githubBranchUrl = 'https://github.com/darrylyeo/skiffle/tree/snap'
@@ -21,6 +27,7 @@ export const load: PageLoad = async () => {
 						snapTargetButton({
 							label: 'About',
 							role: AppSnapButtonRoles.Cta,
+							icon: SnapIcons.Info,
 							action: 'post',
 							targetUrl: '/about',
 						}),
@@ -28,12 +35,14 @@ export const load: PageLoad = async () => {
 							label: 'Demos...',
 							role: AppSnapButtonRoles.Pager,
 							variant: SnapButtonVariants.Primary,
+							icon: SnapIcons.Play,
 							action: 'post',
 							targetUrl: '?/demos',
 						}),
 						snapTargetButton({
 							label: 'GitHub',
 							role: AppSnapButtonRoles.External,
+							icon: SnapIcons.Star,
 							action: 'link',
 							targetUrl: githubBranchUrl,
 						}),
@@ -44,12 +53,12 @@ export const load: PageLoad = async () => {
 		frame: {
 			buttons: [
 				{
-					label: 'About',
+					label: 'ℹ️ About',
 					action: 'post',
 					targetUrl: '/about',
 				},
 				{
-					label: 'Demos...',
+					label: '▶️ Demos...',
 					action: 'post',
 					targetUrl: '?/demos',
 				},
