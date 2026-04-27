@@ -20,18 +20,20 @@ const counterActionDeltas = (count: number) => (
 	]
 )
 
-export const counterPrimeFactorization = (count: number) => {
+export type CounterPrimePower = {
+	prime: number
+	exp: number
+}
+
+/** Prime powers in ascending prime order; empty for n ∈ {0, 1}. */
+export const counterPrimeFactorTuples = (count: number): CounterPrimePower[] => {
 	const c = clampCount(count)
 
-	if (c === 0) {
-		return 'prime factorization: undefined for 0'
+	if (c < 2) {
+		return []
 	}
 
-	if (c === 1) {
-		return 'prime factorization: 1'
-	}
-
-	const factors: string[] = []
+	const powers: CounterPrimePower[] = []
 	let remaining = c
 	let divisor = 2
 
@@ -44,21 +46,68 @@ export const counterPrimeFactorization = (count: number) => {
 		}
 
 		if (exponent > 0) {
-			factors.push(exponent > 1 ? `${divisor}^${exponent}` : `${divisor}`)
+			powers.push({ prime: divisor, exp: exponent })
 		}
 
 		divisor += divisor === 2 ? 1 : 2
 	}
 
 	if (remaining > 1) {
-		factors.push(`${remaining}`)
+		powers.push({ prime: remaining, exp: 1 })
 	}
 
-	return `prime factorization: ${factors.join(' * ')}`
+	return powers
+}
+
+const digitToSuperscript: Record<string, string> = {
+	'0': '⁰',
+	'1': '¹',
+	'2': '²',
+	'3': '³',
+	'4': '⁴',
+	'5': '⁵',
+	'6': '⁶',
+	'7': '⁷',
+	'8': '⁸',
+	'9': '⁹',
+}
+
+const exponentUnicode = (exp: number) => (
+	exp <= 1
+		? ''
+		: String(exp)
+			.split('')
+			.map((d) => digitToSuperscript[d] ?? d)
+			.join('')
+)
+
+/** Unicode factorization line, e.g. `n = 2² × 3`. */
+export const counterPrimeFactorization = (count: number) => {
+	const c = clampCount(count)
+
+	if (c === 0) {
+		return 'n = 0'
+	}
+
+	if (c === 1) {
+		return 'n = 1'
+	}
+
+	const powers = counterPrimeFactorTuples(count)
+
+	if (powers.length === 1 && powers[0].exp === 1) {
+		return 'Prime!'
+	}
+
+	const parts = powers.map(({ prime, exp }) => (
+		`${prime}${exponentUnicode(exp)}`
+	))
+
+	return `n = ${parts.join(' × ')}`
 }
 
 export const counterShareText = (count: number) => (
-	`Pushed the counter to ${clampCount(count)} on the SKIFFLE demo snapsite. How high can you go? 🔢`
+	`The counter is ${clampCount(count)} on the SKIFFLE demo snapsite 🔢`
 )
 
 export const counterFrameMeta = (count: number): FrameMeta => {
