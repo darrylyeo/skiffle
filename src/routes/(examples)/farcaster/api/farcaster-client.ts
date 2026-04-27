@@ -134,9 +134,11 @@ export const getDemoUserByFid = async ({
 export const getDemoCastsByFid = async ({
 	fid,
 	limit = 25,
+	cursor,
 }: {
 	fid: number,
 	limit?: number,
+	cursor?: string,
 }) => (
 	fcJson<{
 		result: {
@@ -160,10 +162,19 @@ export const getDemoCastsByFid = async ({
 				timestamp: number,
 			}[],
 		},
-	}>(`/v2/casts?fid=${fid}&limit=${limit}`)
-		.then(({ result: { casts } }) => (
+		next?: {
+			cursor?: string,
+		},
+	}>(
+		`/v2/casts?fid=${fid}&limit=${limit}${
+			cursor
+				? `&cursor=${encodeURIComponent(cursor)}`
+				: ''
+		}`,
+	)
+		.then((body) => (
 			{
-				casts: casts.map((cast) => (
+				casts: body.result.casts.map((cast) => (
 					{
 						hash: cast.hash,
 						url: farcasterCastUrl(cast.author.username, cast.hash),
@@ -177,6 +188,11 @@ export const getDemoCastsByFid = async ({
 						timestamp: cast.timestamp,
 					} satisfies DemoFarcasterCast
 				)),
+				nextCursor: (
+					typeof body.next?.cursor === 'string' && body.next.cursor.trim()
+						? body.next.cursor
+						: undefined
+				),
 			}
 		))
 )
