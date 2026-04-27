@@ -1,0 +1,10 @@
+# snap.skiffle.dev = branch deploy for git branch `snap` (not production).
+# Netlify: enable branch deploys for `snap`, then Domain management → Domains →
+# Branch subdomains → New subdomain (needs Netlify DNS on skiffle.dev).
+# https://docs.netlify.com/manage/domains/manage-domains/manage-domains-for-branch-deploys/
+#
+# Do not use `netlify deploy --alias snap`; aliases conflict with branch subdomains.
+
+[build]
+command = "pnpm run build"
+publish = "build"
