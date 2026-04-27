@@ -38,7 +38,7 @@
 		src={svelteLogoUrl}
 		alt=""
 		aria-hidden="true"
-		style="bottom: 22%; left: -1%; width: 7rem; height: 7rem; transform: rotate(-11deg)"
+		style="bottom: 26%; left: -1%; width: 7rem; height: 7rem; transform: rotate(-11deg)"
 	/>
 	<img
 		class="decal brand brand-farcaster"
