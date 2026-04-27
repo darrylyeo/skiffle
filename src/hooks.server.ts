@@ -179,11 +179,20 @@ export const handle: Handle = async ({
 			...[...html.matchAll(/<link\s+href="([^"]+)"[^>]*rel="stylesheet"/gi)].map((m) => m[1]),
 			...[...html.matchAll(/<link\s+rel="stylesheet"[^>]*href="([^"]+)"/gi)].map((m) => m[1]),
 		])]
+		/** Static `/_app/*` is served from the public origin, not the SSR handler — use `fetch` like a browser. */
+		const fetchFrameStylesheet = (href: string) => {
+			const resolved = new URL(href, event.request.url)
+			const origin = new URL(event.request.url).origin
+			if (resolved.origin === origin && resolved.pathname.startsWith('/_app/')) {
+				return fetch(resolved, { headers: { accept: 'text/css' } })
+			}
+			return event.fetch(resolved)
+		}
 		const styles = [
 			css,
 			...await Promise.all(
 				stylesheetHrefs.map(async (href) => {
-					const response = await event.fetch(new URL(href, event.request.url))
+					const response = await fetchFrameStylesheet(href)
 					if (!response.ok) {
 						throw new Error(
 							`frame stylesheet fetch failed ${response.status}: ${href}`,
@@ -194,7 +203,14 @@ export const handle: Handle = async ({
 			),
 		]
 
-		const reactNode = styledHtmlDocumentForSatori(styles.join('\n'), html)
+		const assetOrigin = new URL(event.request.url).origin
+		const htmlForSatori = (
+			html
+				.replaceAll('src="/_app/', `src="${assetOrigin}/_app/`)
+				.replaceAll('src="./_app/', `src="${assetOrigin}/_app/`)
+		)
+
+		const reactNode = styledHtmlDocumentForSatori(styles.join('\n'), htmlForSatori)
 
 		const extractRoot = vnodeTreeForFrameExtract(reactNode)
 		const htmlEl = findTag(extractRoot, 'html')
