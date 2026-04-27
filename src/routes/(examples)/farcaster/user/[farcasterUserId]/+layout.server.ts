@@ -1,4 +1,4 @@
-import { getDemoUserByFid } from '../../api/farcaster-client'
+import { getDemoUserByFid } from '$/routes/(examples)/farcaster/api/farcaster-client'
 import type { LayoutServerLoad } from './$types'
 
 export const load: LayoutServerLoad = async ({

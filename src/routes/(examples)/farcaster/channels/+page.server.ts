@@ -1,4 +1,4 @@
-import { getPopularChannels } from '../api/farcaster-client'
+import { getPopularChannels } from '$/routes/(examples)/farcaster/api/farcaster-client'
 import { buildChannelsFrame, buildChannelsSnap } from './channels-frame'
 import type { Actions, PageServerLoad } from './$types'
 

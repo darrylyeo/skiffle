@@ -9,7 +9,7 @@ import { isTruthy } from '$/lib/isTruthy'
 import { snapButtonGroup, snapTargetButton } from '$/lib/snap-components'
 import { SnapButtonVariants, SnapDirections, SnapGaps, SnapJustifyValues, SnapPaletteColors } from '$/lib/snap-spec'
 
-import type { DemoChannel } from '../../../api/farcaster-client'
+import type { DemoChannel } from '$/routes/(examples)/farcaster/api/farcaster-client'
 
 export const CHANNEL_CASTS_WEB_STEP = 5
 export const CHANNEL_CASTS_FRAME_STEP = 3

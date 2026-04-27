@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit'
 
-import { getDemoChannelById, getDemoChannelCasts } from '../../../api/farcaster-client'
+import { getDemoChannelById, getDemoChannelCasts } from '$/routes/(examples)/farcaster/api/farcaster-client'
 import { buildChannelFrame, buildChannelSnap } from './channel-frame'
 import type { Actions, PageServerLoad } from './$types'
 
