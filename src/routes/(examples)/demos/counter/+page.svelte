@@ -3,49 +3,56 @@
 	import type { PageData } from './$types'
 
 	// Functions
-	import { counterPrimeFactorization } from './counter-frame'
-
-	const counterAeaBars = (count: number) => (
-		Array.from(
-			{
-				length: 18,
-			},
-			(_, i) => ({
-				height: 18 + ((count * 7 + i * 19) % 62),
-				opacity: 0.16 + (((count + i * 13) % 5) * 0.08),
-			}),
-		)
-	)
+	import {
+		counterPrimeFactorization,
+		counterPrimeFactorTuples,
+	} from './counter-frame'
 
 	// Props
 	let { data }: { data: PageData } = $props()
+
+	const primeBars = $derived(counterPrimeFactorTuples(data.count))
+
+	const factorBarHeightPct = (exp: number) => (
+		Math.min(100, 26 + exp * 28)
+	)
+
+	/** Opacity pattern from the original decorative bar chart, keyed by bar index. */
+	const factorBarOpacity = (count: number, index: number) => (
+		0.16 + (((count + index * 13) % 5) * 0.08)
+	)
 </script>
 
 
 <article class="page column">
-	<div class="aea row" aria-hidden="true">
-		{#each counterAeaBars(data.count) as bar, i (`${i}:${bar.height}`)}
-			<span
-				class="aea-bar"
-				style={`height:${bar.height}%;opacity:${bar.opacity};`}
-			></span>
-		{/each}
+	{#if primeBars.length}
+		<div class="aea row" aria-hidden="true">
+			{#each primeBars as { prime, exp }, i (`${prime}:${exp}`)}
+				<span
+					class="aea-bar"
+					style={`height:${factorBarHeightPct(exp)}%;opacity:${factorBarOpacity(data.count, i)};`}
+					title={`${prime}${exp > 1 ? `^${exp}` : ''}`}
+				></span>
+			{/each}
+		</div>
+	{/if}
+
+	<div class="counter-body column">
+		<p class="lead">The counter is</p>
+
+		<p
+			class={[
+				'value',
+				String(data.count).length >= 4 && 'value--tight',
+				String(data.count).length >= 6 && 'value--compact',
+			]}
+			aria-live="polite"
+		>
+			{data.count}
+		</p>
+
+		<p class="factors">{counterPrimeFactorization(data.count)}</p>
 	</div>
-
-	<h2>How high can you go?</h2>
-
-	<p
-		class={[
-			'value',
-			String(data.count).length >= 4 && 'value--tight',
-			String(data.count).length >= 6 && 'value--compact',
-		]}
-		aria-live="polite"
-	>
-		{data.count}
-	</p>
-
-	<p class="factors">{counterPrimeFactorization(data.count)}</p>
 </article>
 
 
@@ -79,14 +86,16 @@
 		bottom: 0.8em;
 		left: 0.8em;
 		align-items: flex-end;
-		justify-content: center;
+		justify-content: flex-start;
 		gap: 0.38em;
 		overflow: hidden;
 	}
 
 	.aea-bar {
 		display: block;
-		width: 1.05em;
+		flex: 1 1 0;
+		min-width: 0;
+		width: auto;
 		border-radius: 999px 999px 0 0;
 		background:
 			linear-gradient(180deg, rgba(255, 241, 224, 0.9), rgba(255, 129, 82, 0.52)),
@@ -96,15 +105,23 @@
 			0 0 0.12em rgba(255, 255, 255, 0.3);
 	}
 
-	h2 {
-		font-size: 1.45em;
-		font-weight: 700;
-		color: rgba(255, 255, 255, 0.95);
+	.counter-body {
+		position: relative;
+		z-index: 1;
+		align-items: center;
+		gap: 1.3em;
+	}
+
+	.lead {
+		font-size: 1.5em;
+		font-weight: 600;
+		color: rgba(255, 240, 228, 0.82);
 	}
 
 	.value {
-		font-size: 7.8em;
+		font-size: 8.5em;
 		font-weight: 900;
+		font-variant-numeric: tabular-nums;
 		letter-spacing: -0.1em;
 		line-height: 1;
 		color: #fff7f0;
@@ -123,7 +140,8 @@
 	}
 
 	.factors {
-		font-size: 0.72em;
+		font-size: 2em;
+		font-variant-numeric: tabular-nums;
 		letter-spacing: 0.02em;
 		color: rgba(255, 232, 219, 0.74);
 	}

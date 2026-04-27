@@ -22,7 +22,7 @@ export const load: PageServerLoad = async ({ url }) => {
 
 	return {
 		count,
-		title: `How high can you go? · ${count}`,
+		title: `Counter · ${count}`,
 		frame: counterFrameMeta(count),
 		snap: counterSnap(count),
 	}
