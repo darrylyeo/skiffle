@@ -86,11 +86,11 @@ export const counterPrimeFactorization = (count: number) => {
 	const c = clampCount(count)
 
 	if (c === 0) {
-		return 'n = 0'
+		return '= 0'
 	}
 
 	if (c === 1) {
-		return 'n = 1'
+		return '= 1'
 	}
 
 	const powers = counterPrimeFactorTuples(count)
@@ -103,7 +103,7 @@ export const counterPrimeFactorization = (count: number) => {
 		`${prime}${exponentUnicode(exp)}`
 	))
 
-	return `n = ${parts.join(' × ')}`
+	return `= ${parts.join(' × ')}`
 }
 
 export const counterShareText = (count: number) => (
