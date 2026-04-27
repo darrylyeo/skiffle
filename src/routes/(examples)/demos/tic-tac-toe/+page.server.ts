@@ -137,11 +137,11 @@ const parseTicTacToeState = (url: URL): TicTacToeState => {
 
 const ticTacToeMessage = (status: TicTacToeStatus) => (
 	status === 'x-win'
-		? 'You win.'
+		? 'I win.'
 	: status === 'o-win'
 		? 'Computer wins.'
 	: status === 'draw'
-		? 'Draw.'
+		? "It's a draw."
 	: status === 'invalid'
 		? 'Pick an open square.'
 	:
@@ -199,7 +199,7 @@ const buildTicTacToeFrame = ({ board, status }: TicTacToeState): FrameMeta => ({
 const buildTicTacToeSnap = ({ board, status }: TicTacToeState): AppSnapPage => ({
 	effects: status === 'x-win' ? [SnapEffects.Confetti] : undefined,
 	castIntent: {
-		text: `Playing Tic-tac-toe. ${ticTacToeMessage(status)} on the SKIFFLE demo snapsite ⭕`,
+		text: `Playing Tic-tac-toe on the SKIFFLE demo snapsite. ${ticTacToeMessage(status)} ⭕`,
 	},
 	theme: {
 		accent: (

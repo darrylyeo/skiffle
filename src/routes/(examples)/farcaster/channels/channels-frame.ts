@@ -132,7 +132,7 @@ const snapFromPaginationState = ({
 	shownForPage,
 }: ReturnType<typeof channelsPagination>): AppSnapPage => ({
 	castIntent: {
-		text: 'Browsing the popular Farcaster channels list on the SKIFFLE demo snapsite 🛰️',
+		text: 'Browsing popular Farcaster channels on the SKIFFLE demo snapsite 🛰️',
 	},
 	theme: {
 		accent: SnapPaletteColors.Blue,

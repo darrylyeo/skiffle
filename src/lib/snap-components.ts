@@ -59,7 +59,9 @@ export type AppSnapCastIntent = {
 	embeds?: string[]
 }
 
-export const defaultCastIntentEmbeds: readonly string[] = []
+export const defaultCastIntentEmbeds: readonly string[] = [
+	'https://farcaster.xyz/darrylyeo',
+]
 
 export const castIntentEmbeds = ({
 	pageEmbeds,
@@ -69,9 +71,9 @@ export const castIntentEmbeds = ({
 	currentPageUrl?: string
 }) => (
 	[
-		...defaultCastIntentEmbeds,
 		...(pageEmbeds ?? []),
 		...(currentPageUrl ? [currentPageUrl] : []),
+		...defaultCastIntentEmbeds,
 	]
 		.map((url) => url.trim())
 		.filter((url) => url.length > 0)

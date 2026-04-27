@@ -109,13 +109,13 @@ export const hangmanMessage = ({
 	status,
 }: HangmanState) => (
 	status === 'win'
-		? 'You saved the word.'
+		? 'I solved the word.'
 	: status === 'loss'
 		? `Out of lives. The word was ${WORDS[word].toUpperCase()}.`
 	: status === 'invalid'
 		? 'Enter one unused letter from A to Z.'
 	: status === 'repeat'
-		? 'You already guessed that letter.'
+		? 'I already guessed that letter.'
 	:
 		`${MAX_MISSES - missesForState(word, guesses).length} lives left.`
 )
@@ -200,7 +200,7 @@ export const buildHangmanSnap = ({
 }: HangmanState): AppSnapPage => ({
 	effects: status === 'win' ? [SnapEffects.Confetti] : undefined,
 	castIntent: {
-		text: `Playing Hangman. ${hangmanMessage({ word, guesses, status })} on the SKIFFLE demo snapsite 🪢`,
+		text: `Playing Hangman on the SKIFFLE demo snapsite. ${hangmanMessage({ word, guesses, status })} 🪢`,
 	},
 	theme: {
 		accent: (
