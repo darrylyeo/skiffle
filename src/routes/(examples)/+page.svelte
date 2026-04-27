@@ -29,24 +29,6 @@
 		</h2>
 	</div>
 
-	<nav class="home-cta row" aria-label="Get started">
-		<a class="home-cta-btn row" href="/about">
-			<svg class="home-cta-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-				<circle cx="12" cy="12" r="10" />
-				<path d="M12 16v-4M12 8h.01" />
-			</svg>
-			About
-		</a>
-		<form class="home-cta-form" method="POST">
-			<button class="home-cta-btn row" type="submit" formaction="?/demos">
-				<svg class="home-cta-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-					<path d="M8 5v14l11-7z" />
-				</svg>
-				Demos
-			</button>
-		</form>
-	</nav>
-
 	<p class="callout callout-1">now in a snap!</p>
 	<p class="callout callout-2">wowow</p>
 	<p class="callout callout-3">needs a better acronym</p>
@@ -126,55 +108,6 @@
 		gap: 1.5em;
 
 		text-shadow: 2px 2px 2px rgba(255, 255, 255, 0.14), 0 0 10px rgba(255, 255, 255, 0.18);
-	}
-
-	.home-cta {
-		position: relative;
-		z-index: 3;
-		justify-content: center;
-		flex-wrap: wrap;
-		gap: 0.65em;
-		margin-top: 0.15em;
-	}
-
-	.home-cta-form {
-		display: flex;
-		margin: 0;
-		padding: 0;
-		border: none;
-		background: transparent;
-	}
-
-	.home-cta-btn {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 0.4em;
-		padding: 0.5em 0.85em 0.48em;
-		border: 1px solid rgba(255, 255, 255, 0.22);
-		border-radius: 999px;
-		background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(14, 11, 30, 0.12));
-		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
-		color: rgba(255, 255, 255, 0.92);
-		font-size: 0.95em;
-		font-weight: 700;
-		letter-spacing: 0.02em;
-		text-decoration: none;
-		text-shadow: 0 1px 1px rgba(0, 0, 0, 0.12);
-		cursor: pointer;
-		font-family: inherit;
-	}
-
-	.home-cta-btn:hover {
-		background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(14, 11, 30, 0.1));
-		border-color: rgba(255, 255, 255, 0.32);
-	}
-
-	.home-cta-icon {
-		flex-shrink: 0;
-		width: 1.1em;
-		height: 1.1em;
-		opacity: 0.92;
 	}
 
 	.hero-copy {
