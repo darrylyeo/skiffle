@@ -187,7 +187,7 @@ export const buildTicTacToeFrame = ({ board, status }: TicTacToeState): FrameMet
 		(!isFreshBoard(board) || !canPlay(status)) && {
 			label: canPlay(status) ? 'Reset' : 'Play Again',
 			action: 'post',
-			targetUrl: '/demos/tic-tac-toe?/open',
+			targetUrl: '/demos/tic-tac-toe?/start',
 		},
 	].filter(isTruthy),
 })

@@ -28,7 +28,7 @@ const normalizeGoToTarget = (
 }
 
 export const actions: Actions = {
-	open: async ({
+	default: async ({
 		request,
 		url,
 	}) => {
@@ -46,7 +46,7 @@ export const actions: Actions = {
 			return fail(
 				400,
 				{
-					error: 'Enter a relative URL like /about or /demos/wordle?/open',
+					error: 'Enter a relative URL like /about or /demos/wordle',
 				},
 			)
 		}

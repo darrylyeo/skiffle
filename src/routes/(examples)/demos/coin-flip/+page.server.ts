@@ -30,7 +30,7 @@ export const load: PageServerLoad = ({ url }) => {
 }
 
 export const actions: Actions = {
-	open: async ({ locals: { farcasterViewerFid } }) => {
+	default: async ({ locals: { farcasterViewerFid } }) => {
 		const state = freshCoinFlipState(farcasterViewerFid ?? Date.now())
 
 		return {

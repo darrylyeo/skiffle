@@ -575,7 +575,7 @@ export const framePageToSnap = (
 			props: {
 				name: 'gotoPath',
 				label: 'Go to Page',
-				placeholder: '/about or /demos/wordle?/open',
+				placeholder: '/about or /demos/wordle',
 				maxLength: 280,
 			},
 		},
@@ -669,7 +669,7 @@ export const framePageToSnap = (
 					params: {
 						target: (() => {
 							const target = new URL(snapResolvedUrl('/go', baseUrl))
-							target.search = `?/open&from=${encodeURIComponent(currentPageUrl)}`
+							target.search = `?from=${encodeURIComponent(currentPageUrl)}`
 							return target.href
 						})(),
 					},

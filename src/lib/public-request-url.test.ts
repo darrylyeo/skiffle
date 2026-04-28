@@ -5,7 +5,7 @@ import { publicRequestUrl } from './public-request-url'
 describe('publicRequestUrl', () => {
 	it('uses forwarded host and proto for proxied requests', () => {
 		const url = publicRequestUrl(
-			'http://127.0.0.1:5173/demos/coin-flip?/open',
+			'http://127.0.0.1:5173/demos/coin-flip',
 			new Headers({
 				host: '127.0.0.1:5173',
 				'x-forwarded-host': 'snap.skiffle.dev',
@@ -13,7 +13,7 @@ describe('publicRequestUrl', () => {
 			}),
 		)
 
-		expect(url.href).toBe('https://snap.skiffle.dev/demos/coin-flip?/open')
+		expect(url.href).toBe('https://snap.skiffle.dev/demos/coin-flip')
 	})
 
 	it('parses the standard Forwarded header', () => {
@@ -33,11 +33,11 @@ describe('publicRequestUrl', () => {
 
 		try {
 			const url = publicRequestUrl(
-				'http://localhost:5173/demos/tips?/open',
+				'http://localhost:5173/demos/tips',
 				new Headers(),
 			)
 
-			expect(url.href).toBe('https://snap.skiffle.dev/demos/tips?/open')
+			expect(url.href).toBe('https://snap.skiffle.dev/demos/tips')
 		} finally {
 			if (original === undefined) {
 				delete process.env.SNAP_PUBLIC_BASE_URL

@@ -246,7 +246,7 @@ export const buildCoinFlipFrame = (state: CoinFlipState): FrameMeta => ({
 		state.flips > 0 && {
 			label: 'Reset',
 			action: 'post',
-			targetUrl: '/demos/coin-flip?/open',
+			targetUrl: '/demos/coin-flip',
 		},
 	),
 })
@@ -298,7 +298,7 @@ export const buildCoinFlipSnap = (state: CoinFlipState): AppSnapPage => ({
 						snapTargetButton({
 							label: 'Reset',
 							action: 'post',
-							targetUrl: '/demos/coin-flip?/open',
+							targetUrl: '/demos/coin-flip',
 						}),
 					],
 				}),

@@ -124,7 +124,7 @@ export const buildRockPaperScissorsFrame = ({
 			{
 				label: 'Reset',
 				action: 'post',
-				targetUrl: '/demos/rock-paper-scissors?/open',
+				targetUrl: '/demos/rock-paper-scissors',
 			}
 		: {
 			label: '‹ Demos',

@@ -110,7 +110,7 @@ export const load: PageServerLoad = ({ url }) => {
 }
 
 export const actions: Actions = {
-	open: async ({ locals: { farcasterViewerFid } }) => {
+	start: async ({ locals: { farcasterViewerFid } }) => {
 		const state = freshHangmanState(farcasterViewerFid ?? Date.now())
 
 		return {

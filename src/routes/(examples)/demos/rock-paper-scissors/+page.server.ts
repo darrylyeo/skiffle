@@ -228,7 +228,7 @@ const buildRockPaperScissorsSnap = ({
 				snapTargetButton({
 					label: 'Reset',
 					action: 'post',
-					targetUrl: '/demos/rock-paper-scissors?/open',
+					targetUrl: '/demos/rock-paper-scissors',
 				}),
 			],
 		}),
@@ -301,7 +301,7 @@ export const load: PageServerLoad = async ({ url }) => {
 }
 
 export const actions: Actions = {
-	open: async () => ({
+	default: async () => ({
 		frame: buildRockPaperScissorsFrame(EMPTY_STATE),
 		snap: buildRockPaperScissorsSnap(EMPTY_STATE),
 	}),

@@ -38,7 +38,7 @@ export const load: PageServerLoad = ({ url }) => {
 }
 
 export const actions: Actions = {
-	open: async ({ locals: { farcasterViewerFid } }) => {
+	start: async ({ locals: { farcasterViewerFid } }) => {
 		const state = freshWordleState(farcasterViewerFid ?? Date.now())
 
 		return {

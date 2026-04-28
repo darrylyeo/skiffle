@@ -188,7 +188,7 @@ export const buildHangmanFrame = ({
 		(guesses.length > 0 || !hangmanCanGuess(status)) && {
 			label: status === 'win' || status === 'loss' ? 'Play Again' : 'Reset',
 			action: 'post',
-			targetUrl: '/demos/hangman?/open',
+			targetUrl: '/demos/hangman?/start',
 		},
 	),
 })
@@ -243,7 +243,7 @@ export const buildHangmanSnap = ({
 						snapTargetButton({
 							label: status === 'win' || status === 'loss' ? 'Play Again' : 'Reset',
 							action: 'post',
-							targetUrl: '/demos/hangman?/open',
+							targetUrl: '/demos/hangman?/start',
 						}),
 					],
 				}),

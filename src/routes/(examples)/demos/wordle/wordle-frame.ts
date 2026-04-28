@@ -234,7 +234,7 @@ export const buildWordleFrame = ({
 		(guesses.length > 0 || !canGuess(status)) && {
 			label: status === 'win' || status === 'loss' ? 'Play Again' : 'Reset',
 			action: 'post',
-			targetUrl: '/demos/wordle?/open',
+			targetUrl: '/demos/wordle?/start',
 		},
 	),
 })
@@ -287,7 +287,7 @@ export const buildWordleSnap = ({
 							snapTargetButton({
 								label: status === 'win' || status === 'loss' ? 'Play Again' : 'Reset',
 								action: 'post',
-								targetUrl: '/demos/wordle?/open',
+								targetUrl: '/demos/wordle?/start',
 							}),
 						]
 						: []),

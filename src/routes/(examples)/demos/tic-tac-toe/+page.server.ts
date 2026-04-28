@@ -191,7 +191,7 @@ const buildTicTacToeFrame = ({ board, status }: TicTacToeState): FrameMeta => ({
 		(!isFreshBoard(board) || !canPlay(status)) && {
 			label: canPlay(status) ? 'Reset' : 'Play Again',
 			action: 'post',
-			targetUrl: '/demos/tic-tac-toe?/open',
+			targetUrl: '/demos/tic-tac-toe?/start',
 		},
 	),
 })
@@ -244,7 +244,7 @@ const buildTicTacToeSnap = ({ board, status }: TicTacToeState): AppSnapPage => (
 						snapTargetButton({
 							label: canPlay(status) ? 'Reset' : 'Play Again',
 							action: 'post',
-							targetUrl: '/demos/tic-tac-toe?/open',
+							targetUrl: '/demos/tic-tac-toe?/start',
 						}),
 					],
 				}),
@@ -373,7 +373,7 @@ const actionInputText = async ({
 )
 
 export const actions: Actions = {
-	open: async () => ({
+	start: async () => ({
 		frame: buildTicTacToeFrame({
 			board: '---------',
 			status: 'turn',
