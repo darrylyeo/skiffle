@@ -9,16 +9,19 @@
 
 <section class="page" data-status={data.status}>
 	<header>
-		<h1>Hangman</h1>
-		<strong>{data.message}</strong>
+		<div class="lives" aria-label="Lives">
+			{#each data.lives as alive, index (`life:${index}`)}
+				<span data-alive={alive}>{alive ? '❤️' : '💔'}</span>
+			{/each}
+		</div>
+
+		<div class="title-block">
+			<h1>Hangman</h1>
+			<strong>{data.message}</strong>
+		</div>
 	</header>
 
 	<div class="stage">
-		<div class="lives" aria-label="Lives">
-			{#each data.lives as alive, index (`life:${index}`)}
-				<span data-alive={alive}></span>
-			{/each}
-		</div>
 
 		<div class="word" aria-label="Hidden word">
 			{#each data.letters as letter (letter.id)}
@@ -85,19 +88,26 @@
 
 	header {
 		display: flex;
-		flex-direction: column;
+		flex-direction: row-reverse;
+		justify-content: space-between;
+		align-items: flex-start;
 		gap: 6px;
-		align-items: center;
-		text-align: center;
 	}
 
-	header > h1 {
+	.title-block {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		text-align: left;
+	}
+
+	.title-block > h1 {
 		margin: 0;
 		font-size: 38px;
 		line-height: 1;
 	}
 
-	header > strong {
+	.title-block > strong {
 		font-size: 16px;
 		line-height: 1.3;
 		max-width: 18em;
@@ -125,20 +135,21 @@
 	.lives {
 		display: flex;
 		gap: 8px;
-		width: 100%;
+		justify-content: flex-end;
+		align-items: center;
 	}
 
 	.lives > span {
-		flex: 1;
-		height: 10px;
-		border-radius: 999px;
-		background: rgba(39, 17, 71, 0.3);
-		border: 1px solid rgba(255, 255, 255, 0.14);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 1.35em;
+		font-size: 30px;
+		line-height: 1;
 	}
 
 	.lives > span[data-alive="true"] {
-		background: linear-gradient(90deg, #ffb36b 0%, #ff6e2f 100%);
-		border-color: rgba(255, 193, 130, 0.56);
+		filter: drop-shadow(0 0 8px rgba(255, 109, 53, 0.35));
 	}
 
 	.word {

@@ -171,7 +171,7 @@ export const buildHangmanFrame = ({
 }: HangmanState): FrameMeta => ({
 	image: {
 		url: `/demos/hangman?word=${word}&guesses=${guesses}&status=${status}`,
-		aspectRatio: '1:1',
+		aspectRatio: '16:9',
 	},
 	textInput: hangmanCanGuess(status) ? 'Guess a letter' : undefined,
 	buttons: frameButtons(
