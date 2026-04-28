@@ -16,10 +16,10 @@ export const load: PageLoad = async ({
 
 	return {
 		...parentData,
-		title: `${parentData.user.display_name} (@${parentData.user.username})`,
+		title: `${parentData.user.display_name}'s profile (@${parentData.user.username})`,
 		snap: {
 			castIntent: {
-				text: `Check out ${parentData.user.display_name} (@${parentData.user.username})'s profile on the SKIFFLE demo snapsite 👤`,
+				text: `Check out ${parentData.user.display_name}'s profile (@${parentData.user.username}) on the SKIFFLE demo snapsite 👤`,
 			},
 			buttons: [
 				snapButtonGroup({

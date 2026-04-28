@@ -3,6 +3,9 @@
 	import type { Snippet } from 'svelte'
 	import type { PageData } from './$types'
 
+	// Context
+	import { page } from '$app/state'
+
 
 	// Props
 	const {
@@ -28,9 +31,19 @@
 		: String(n)
 	)
 
+	const isCastsSubroute = $derived(
+		(page.route.id ?? '').includes('(withBackButton)/casts')
+		|| /\/casts\/?$/.test(page.url.pathname),
+	)
+
 </script>
 
 
+{#if isCastsSubroute}
+	<div class="user-casts-root column">
+		{@render children()}
+	</div>
+{:else}
 <article class="profile column">
 	<div class="profile-hero column">
 		<div class="profile-top row wrap">
@@ -65,15 +78,20 @@
 
 						{#if data.user.early_wallet_adopter}
 							<span class="profile-chip is-early">
-								Early
+								Early wallet adopter
 							</span>
 						{/if}
 					</div>
 
-					{#if data.user.profile_url_hostname}
-						<p class="profile-site">
-							{data.user.profile_url_hostname}
-						</p>
+					{#if data.user.profile_url}
+						<a
+							class="profile-site"
+							href={data.user.profile_url}
+							rel="noopener noreferrer"
+							target="_blank"
+						>
+							{data.user.profile_url}
+						</a>
 					{/if}
 				</div>
 			</div>
@@ -95,104 +113,80 @@
 			</p>
 		{/if}
 
-		<div class="profile-stats row wrap">
-			<div class="stat-tile column">
-				<span class="stat-label">
-					Followers
-				</span>
-
-				<span class="stat-value">
-					{formatCount(data.user.follower_count)}
-				</span>
-
-				<span class="stat-hint">
-					{String(data.user.follower_count)}
-				</span>
-			</div>
-
-			<div class="stat-tile column">
-				<span class="stat-label">
-					Following
-				</span>
-
-				<span class="stat-value">
-					{formatCount(data.user.following_count)}
-				</span>
-
-				<span class="stat-hint">
-					{String(data.user.following_count)}
-				</span>
-			</div>
-
-			<div class="stat-tile column">
-				<span class="stat-label">
-					Follow ratio
-				</span>
-
-				<span class="stat-value">
-					{(
-						data.user.following_count > 0
-							? (data.user.follower_count / data.user.following_count).toFixed(1)
-							: '-'
-					)}
-				</span>
-
-				<span class="stat-hint">
-					followers / following
-				</span>
-			</div>
-
-			<div class="stat-tile column">
-				<span class="stat-label">
-					Linked accounts
-				</span>
-
-				<span class="stat-value">
-					{formatCount(data.user.connected_account_count)}
-				</span>
-
-				<span class="stat-hint">
-					{String(data.user.connected_account_count)}
-				</span>
-			</div>
-
-			{#if walletTotal > 0}
+		<div class="profile-stats column">
+			<div class="profile-stats-primary row">
 				<div class="stat-tile column">
 					<span class="stat-label">
-						Onchain wallets
+						Followers
 					</span>
 
 					<span class="stat-value">
-						{walletTotal}
-					</span>
-
-					<span class="stat-hint">
-						{data.user.eth_wallet_count} ETH / {data.user.solana_wallet_count} SOL
+						{formatCount(data.user.follower_count)}
 					</span>
 				</div>
-			{/if}
 
-			{#if data.user.custody_address_short}
 				<div class="stat-tile column">
 					<span class="stat-label">
-						Custody
-					</span>
-
-					<span class="stat-value stat-value--mono">
-						{data.user.custody_address_short}
-					</span>
-				</div>
-			{/if}
-
-			{#if data.user.collections_owned_count > 0}
-				<div class="stat-tile column">
-					<span class="stat-label">
-						Collections
+						Following
 					</span>
 
 					<span class="stat-value">
-						{data.user.collections_owned_count}
+						{formatCount(data.user.following_count)}
 					</span>
+				</div>
+
+				<div class="stat-tile column">
+					<span class="stat-label">
+						Follow ratio
+					</span>
+
+					<span class="stat-value">
+						{(
+							data.user.following_count > 0
+								? (data.user.follower_count / data.user.following_count).toFixed(1)
+								: '-'
+						)}
+					</span>
+				</div>
+			</div>
+
+			{#if walletTotal > 0 || data.user.custody_address_short || data.user.collections_owned_count > 0}
+				<div class="profile-stats-extra row wrap">
+					{#if walletTotal > 0}
+						<div class="stat-tile column">
+							<span class="stat-label">
+								Onchain wallets
+							</span>
+
+							<span class="stat-value">
+								{walletTotal}
+							</span>
+						</div>
+					{/if}
+
+					{#if data.user.custody_address_short}
+						<div class="stat-tile column">
+							<span class="stat-label">
+								Custody
+							</span>
+
+							<span class="stat-value stat-value--mono">
+								{data.user.custody_address_short}
+							</span>
+						</div>
+					{/if}
+
+					{#if data.user.collections_owned_count > 0}
+						<div class="stat-tile column">
+							<span class="stat-label">
+								Collections
+							</span>
+
+							<span class="stat-value">
+								{data.user.collections_owned_count}
+							</span>
+						</div>
+					{/if}
 				</div>
 			{/if}
 		</div>
@@ -200,9 +194,16 @@
 
 	{@render children()}
 </article>
+{/if}
 
 
 <style>
+	.user-casts-root {
+		flex: 1;
+		min-height: 0;
+		width: 100%;
+	}
+
 	.profile {
 		flex: 1;
 		row-gap: 1.25em;
@@ -214,14 +215,8 @@
 		padding: 1.35em 1.5em;
 		border-radius: 22px;
 		border: 1px solid rgba(200, 175, 255, 0.18);
-		/* Single `background-image` only — Satori rejects comma-separated layers for `?image=` PNGs */
-		background-color: rgb(10, 4, 22);
-		background-image: linear-gradient(
-			178deg,
-			rgba(108, 68, 168, 0.38) 0%,
-			rgba(28, 14, 48, 0.78) 45%,
-			rgba(6, 2, 14, 0.92) 100%
-		);
+		/* Solid only — Satori’s bundled css-gradient-parser throws on some linear-gradient() in dev SSR */
+		background-color: rgb(58, 38, 98);
 		box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
 		row-gap: 1.1em;
 		justify-content: space-between;
@@ -307,7 +302,10 @@
 	.profile-site {
 		font-size: 0.88em;
 		font-weight: 600;
-		color: rgba(255, 255, 255, 0.78);
+		color: rgba(200, 220, 255, 0.95);
+		text-decoration: underline;
+		text-underline-offset: 0.15em;
+		overflow-wrap: anywhere;
 	}
 
 	.profile-fid {
@@ -315,8 +313,7 @@
 		align-items: flex-end;
 		padding: 0.5em 0.85em;
 		border-radius: 14px;
-		background-image:
-			linear-gradient(145deg, rgba(88, 52, 140, 0.35), rgba(0, 0, 0, 0.45));
+		background-color: rgb(78, 54, 122);
 		border: 1px solid rgba(190, 165, 255, 0.16);
 		row-gap: 0.2em;
 	}
@@ -346,6 +343,22 @@
 	}
 
 	.profile-stats {
+		row-gap: 0.65em;
+		width: 100%;
+	}
+
+	.profile-stats-primary {
+		width: 100%;
+		column-gap: 0.65em;
+	}
+
+	.profile-stats-primary .stat-tile {
+		flex: 1 1 0;
+		min-width: 0;
+		max-width: none;
+	}
+
+	.profile-stats-extra {
 		justify-content: flex-start;
 		column-gap: 0.65em;
 		row-gap: 0.65em;
@@ -358,13 +371,7 @@
 		flex-shrink: 1;
 		padding: 0.65em 0.75em;
 		border-radius: 14px;
-		background-color: rgba(24, 10, 44, 0.72);
-		background-image: linear-gradient(
-			165deg,
-			rgba(110, 70, 170, 0.28) 0%,
-			rgba(0, 0, 0, 0.35) 55%,
-			rgba(255, 255, 255, 0.04) 100%
-		);
+		background-color: rgb(70, 48, 110);
 		border: 1px solid rgba(190, 165, 255, 0.12);
 		row-gap: 0.2em;
 		align-items: flex-start;
@@ -388,11 +395,5 @@
 	.stat-value--mono {
 		font-size: 0.95em;
 		letter-spacing: -0.02em;
-	}
-
-	.stat-hint {
-		font-size: 0.68em;
-		font-weight: 600;
-		color: rgba(255, 255, 255, 0.55);
 	}
 </style>
