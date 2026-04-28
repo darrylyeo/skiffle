@@ -72,8 +72,12 @@ export const castIntentEmbeds = ({
 }) => (
 	[
 		...new Set([
-			...(pageEmbeds ?? []).filter(isTruthy),
-			...[currentPageUrl].filter(isTruthy),
+			...((pageEmbeds ?? []).filter(isTruthy)),
+			...(
+				(pageEmbeds ?? []).filter(isTruthy).length > 0
+					? []
+					: [currentPageUrl].filter(isTruthy)
+			),
 			...(defaultEmbeds ?? []).filter(isTruthy),
 		]),
 	]
