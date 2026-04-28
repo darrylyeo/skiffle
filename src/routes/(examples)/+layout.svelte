@@ -24,7 +24,9 @@
 		:
 			u.pathname.replace(/\/$/, '').replace(/%2f/gi, '/')
 	))
-	const displayQueryAndHash = $derived(`${u.search}${u.hash}`)
+	const displayQueryAndHash = $derived(
+		`${u.search}${u.hash}`.replaceAll('&amp;', '&')
+	)
 </script>
 
 
