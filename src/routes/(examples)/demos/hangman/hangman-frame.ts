@@ -37,6 +37,17 @@ const WORDS = [
 	'frames',
 	'layout',
 	'snappy',
+	'farcaster',
+	'snapsite',
+	'channel',
+	'profile',
+	'composer',
+	'timeline',
+	'embed',
+	'actions',
+	'miniapp',
+	'token',
+	'recast',
 ] as const
 
 const MAX_MISSES = 6
@@ -109,13 +120,13 @@ export const hangmanMessage = ({
 	status,
 }: HangmanState) => (
 	status === 'win'
-		? 'I solved the word.'
+		? 'You solved the word!'
 	: status === 'loss'
-		? `Out of lives. The word was ${WORDS[word].toUpperCase()}.`
+		? `Out of lives. The word was: ${WORDS[word].toUpperCase()}.`
 	: status === 'invalid'
 		? 'Enter one unused letter from A to Z.'
 	: status === 'repeat'
-		? 'I already guessed that letter.'
+		? 'You already guessed that letter.'
 	:
 		`${MAX_MISSES - missesForState(word, guesses).length} lives left.`
 )

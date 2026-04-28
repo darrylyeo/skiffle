@@ -36,6 +36,16 @@ const WORDS = [
 	'align',
 	'pitch',
 	'sound',
+	'snaps',
+	'chain',
+	'token',
+	'share',
+	'route',
+	'proxy',
+	'reply',
+	'embed',
+	'focal',
+	'nodes',
 ] as const
 
 const MAX_GUESSES = 6
