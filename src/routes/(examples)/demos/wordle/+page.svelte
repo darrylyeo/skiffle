@@ -29,8 +29,9 @@
 	.page {
 		display: flex;
 		flex-direction: column;
+		flex: 1;
+		min-height: 0;
 		gap: 18px;
-		min-height: 100%;
 		padding: 22px;
 		border: 1px solid rgba(255, 233, 222, 0.12);
 		border-radius: 30px;
@@ -87,21 +88,25 @@
 
 	.row {
 		display: flex;
-		gap: 8px;
-		flex: 1;
+		flex-direction: row;
+		flex: 1 1 0;
 		min-height: 0;
+		min-width: 0;
+		align-items: stretch;
+		gap: 8px;
 	}
 
 	.cell {
 		display: flex;
+		flex: 1 1 0;
+		min-width: 0;
+		min-height: 0;
 		align-items: center;
 		justify-content: center;
-		flex: 1;
-		min-height: 52px;
 		border-radius: 14px;
 		border: 1px solid rgba(255, 232, 223, 0.12);
 		background: rgba(43, 16, 74, 0.34);
-		font-size: 22px;
+		font-size: 2rem;
 		font-weight: 800;
 		line-height: 1;
 		letter-spacing: 0.08em;
