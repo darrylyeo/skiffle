@@ -11,7 +11,6 @@
 	<header>
 		<div class="meta row inline">
 			<div class="title column">
-				<p class="eyebrow">Generative Art</p>
 				<h2>"{data.pieceTitle}"</h2>
 			</div>
 			<div class="badges row inline">
@@ -70,23 +69,14 @@
 	}
 
 	.title {
-		gap: 0.35em;
+		gap: 0;
 		flex: 1;
 		min-width: 0;
 	}
 
-	.eyebrow {
-		margin: 0;
-		font-size: 0.68em;
-		font-weight: 700;
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
-		color: rgba(255, 226, 204, 0.58);
-	}
-
 	h2 {
 		margin: 0;
-		font-size: 1.34em;
+		font-size: 1.5em;
 		font-weight: 800;
 		line-height: 1.04;
 		letter-spacing: -0.03em;
@@ -109,7 +99,7 @@
 		border-radius: 999px;
 		border: 1px solid rgba(255, 255, 255, 0.16);
 		background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
-		font-size: 0.68em;
+		font-size: 0.78em;
 		font-weight: 800;
 		letter-spacing: 0.12em;
 		text-transform: none;
