@@ -1,7 +1,19 @@
 import { getDemoCastsByFid } from '$/routes/(examples)/farcaster/api/farcaster-client'
 import type { Actions, PageServerLoad } from './$types'
 
-import { buildCastsSnapPage } from './casts-snap'
+import { buildCastsSnapPage, CASTS_SNAP_PAGE_SIZE } from './casts-snap'
+
+const getDemoCastsByFidOrEmpty = async (
+	opts: Parameters<typeof getDemoCastsByFid>[0],
+) => {
+	try {
+		return await getDemoCastsByFid(opts)
+	} catch (err) {
+		console.warn('getDemoCastsByFid failed', err)
+
+		return { casts: [], nextCursor: undefined }
+	}
+}
 
 export const load: PageServerLoad = async ({
 	parent,
@@ -9,9 +21,9 @@ export const load: PageServerLoad = async ({
 }) => {
 	const p = await parent()
 	const cursor = url.searchParams.get('cursor') ?? undefined
-	const { casts, nextCursor } = await getDemoCastsByFid({
+	const { casts, nextCursor } = await getDemoCastsByFidOrEmpty({
 		fid: p.user.fid,
-		limit: 6,
+		limit: CASTS_SNAP_PAGE_SIZE,
 		cursor,
 	})
 	const { snap, frame } = buildCastsSnapPage({
@@ -19,7 +31,6 @@ export const load: PageServerLoad = async ({
 		casts,
 		nextCursor,
 		parentSnap: p.snap,
-		parentFrame: p.frame,
 	})
 
 	return {
@@ -38,9 +49,9 @@ export const actions = {
 	}) => {
 		const p = await parent()
 		const cursor = url.searchParams.get('cursor') ?? undefined
-		const { casts, nextCursor } = await getDemoCastsByFid({
+		const { casts, nextCursor } = await getDemoCastsByFidOrEmpty({
 			fid: p.user.fid,
-			limit: 6,
+			limit: CASTS_SNAP_PAGE_SIZE,
 			cursor,
 		})
 		const { snap, frame } = buildCastsSnapPage({
@@ -48,7 +59,6 @@ export const actions = {
 			casts,
 			nextCursor,
 			parentSnap: p.snap,
-			parentFrame: p.frame,
 		})
 
 		return {

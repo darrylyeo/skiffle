@@ -1,9 +1,9 @@
 <script lang="ts">
-	// Components
-	import FarcasterCastList from '$/lib/FarcasterCastList.svelte'
-
 	// Types
 	import type { PageData } from './$types'
+
+	// Components
+	import FarcasterCastList from '$/lib/FarcasterCastList.svelte'
 
 
 	// Props
@@ -33,22 +33,26 @@
 	.card {
 		padding: 1.25em;
 		border-radius: 1em;
-		background-color: rgba(255, 255, 255, 0.05);
+		background-color: rgb(52, 42, 86);
 		overflow: hidden;
 		gap: 1em;
 	}
 
-	.more {
-		justify-content: center;
-	}
-
 	.more a {
+		display: flex;
+		align-items: center;
 		padding: 0.65em 1em;
 		border: 1px solid rgba(255, 255, 255, 0.16);
 		border-radius: 999px;
-		background: rgba(255, 255, 255, 0.06);
+		background-color: rgb(68, 56, 108);
 		color: rgba(255, 255, 255, 0.9);
 		text-decoration: none;
+		font-weight: 600;
+		font-size: 0.9em;
+	}
+
+	.more {
+		justify-content: center;
 	}
 
 </style>

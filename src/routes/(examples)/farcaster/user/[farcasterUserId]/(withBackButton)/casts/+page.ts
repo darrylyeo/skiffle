@@ -6,6 +6,6 @@ export const load: PageLoad = async ({
 }) => (
 	{
 		...data,
-		title: `${data.user.display_name} casts`,
+		title: `${data.user.display_name}'s casts`,
 	}
 )

@@ -66,11 +66,8 @@
 		padding: 1em;
 		border: 1px solid rgba(255, 255, 255, 0.08);
 		border-radius: 1em;
-		background-image: linear-gradient(
-			180deg,
-			rgba(255, 255, 255, 0.08),
-			rgba(255, 255, 255, 0.03)
-		);
+		/* Opaque fill — translucent gradients fail in Satori’s gradient parser for frame PNGs */
+		background-color: rgb(62, 50, 98);
 	}
 
 	.cast-top {
@@ -102,7 +99,7 @@
 		justify-content: center;
 		box-sizing: border-box;
 		border: 1px solid rgba(255, 255, 255, 0.12);
-		background: rgba(255, 255, 255, 0.1);
+		background-color: rgb(88, 74, 128);
 		color: rgba(255, 255, 255, 0.9);
 		font-size: 0.6rem;
 		font-weight: 600;
@@ -133,7 +130,7 @@
 	.counts > span {
 		padding: 0.28em 0.6em;
 		border-radius: 999px;
-		background: rgba(255, 255, 255, 0.06);
+		background-color: rgb(78, 64, 118);
 		border: 1px solid rgba(255, 255, 255, 0.08);
 	}
 

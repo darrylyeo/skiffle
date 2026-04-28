@@ -2,6 +2,7 @@
 	// Types/constants
 	import FarcasterCastList from '$/lib/FarcasterCastList.svelte'
 	import { farcasterInitials } from '$/lib/farcaster-casts'
+	import { CHANNEL_CASTS_WEB_STEP } from './channel-frame'
 	import { resolve } from '$app/paths'
 	import type { PageData } from './$types'
 
@@ -75,7 +76,7 @@
 			<form class="more row" method="GET" action={resolve('/(examples)/farcaster/channels/channel/[channelId]', {
 				channelId: data.channel.id,
 			})}>
-				<button name="count" value={data.visibleCount + 5}>Load more casts</button>
+				<button name="count" value={data.visibleCount + CHANNEL_CASTS_WEB_STEP}>Load more casts</button>
 			</form>
 		{/if}
 	</section>
@@ -99,7 +100,7 @@
 
 	.banner {
 		width: 100%;
-		height: 10rem;
+		height: 6.5rem;
 		object-fit: cover;
 	}
 
@@ -112,8 +113,8 @@
 	}
 
 	.hero-body {
-		padding: 1.15em;
-		gap: 0.9em;
+		padding: 0.85em 1em;
+		gap: 0.65em;
 	}
 
 	.hero-top {
@@ -121,14 +122,14 @@
 	}
 
 	.identity {
-		gap: 0.75em;
+		gap: 0.6em;
 		align-items: center;
 	}
 
 	.icon {
-		width: 4rem;
-		height: 4rem;
-		border-radius: 0.9rem;
+		width: 3rem;
+		height: 3rem;
+		border-radius: 0.7rem;
 	}
 
 	.icon-placeholder {
@@ -174,8 +175,10 @@
 	}
 
 	.description {
+		margin: 0;
 		line-height: 1.35;
 		color: rgba(255, 255, 255, 0.85);
+		font-size: 0.95em;
 	}
 
 	.annotation {
@@ -184,6 +187,7 @@
 
 	.stats {
 		justify-content: flex-end;
+		font-size: 0.9em;
 	}
 
 	.casts {

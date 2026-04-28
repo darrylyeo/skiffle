@@ -1,6 +1,6 @@
 // Types
 import type { DemoUser } from '$/routes/(examples)/farcaster/api/farcaster-client'
-import type { FrameMeta } from '$/lib/frame'
+import { frameButtons, type FrameMeta } from '$/lib/frame'
 import type { SnapExtraElements } from '$/lib/snap-page-extra'
 import type { AppSnapPage } from '$/lib/snap-components'
 
@@ -8,7 +8,12 @@ import type { AppSnapPage } from '$/lib/snap-components'
 import { AppSnapButtonRoles } from '$/lib/app-snap-tokens'
 import type { DemoFarcasterCast } from '$/lib/farcaster-casts'
 import { farcasterCastContent } from '$/lib/farcaster-casts'
-import { findSnapButtonByRole, snapButtonGroup, snapTargetButton } from '$/lib/snap-components'
+import {
+	findSnapButtonByRole,
+	snapBackButton,
+	snapButtonGroup,
+	snapTargetButton,
+} from '$/lib/snap-components'
 import { isTruthy } from '$/lib/isTruthy'
 import {
 	SnapActions,
@@ -22,7 +27,7 @@ import {
 } from '$/lib/snap-spec'
 
 /** `item_group` allows at most 6 children (@see https://docs.farcaster.xyz/snap/constraints). */
-export const CASTS_SNAP_PAGE_SIZE = 6
+export const CASTS_SNAP_PAGE_SIZE = 3
 
 const CASTS_SNAP_ITEM_TITLE_MAX = 30
 
@@ -70,7 +75,7 @@ export const castsSnapExtraElements = (
 		elements[btnId] = {
 			type: SnapElementTypes.Button,
 			props: {
-				label: 'View cast',
+				label: 'View',
 				variant: SnapButtonVariants.Secondary,
 			},
 			on: {
@@ -103,23 +108,29 @@ export const buildCastsSnapPage = ({
 	casts,
 	nextCursor,
 	parentSnap,
-	parentFrame,
 }: {
 	user: DemoUser,
 	casts: DemoFarcasterCast[],
 	nextCursor?: string,
 	parentSnap?: AppSnapPage,
-	parentFrame?: FrameMeta,
 }): {
 	snap: AppSnapPage,
 	frame: FrameMeta,
 } => {
-	const back = findSnapButtonByRole(parentSnap?.buttons, AppSnapButtonRoles.Back)
+	const backFromParent = findSnapButtonByRole(parentSnap?.buttons, AppSnapButtonRoles.Back)
+	const backButton = backFromParent ?? snapBackButton('..')
 	const extra = castsSnapExtraElements(casts)
+
+	const backPress = backButton.press
+	const backTargetUrl = (
+		'targetUrl' in backPress && backPress.targetUrl
+			? backPress.targetUrl
+			: '..'
+	)
 
 	const snap: AppSnapPage = {
 		castIntent: {
-			text: `Browsing ${user.display_name}'s recent casts on the SKIFFLE demo snapsite 🗨️`,
+			text: `Browsing ${user.display_name}'s casts on the SKIFFLE demo snapsite 🗨️`,
 		},
 		theme: {
 			accent: SnapPaletteColors.Blue,
@@ -131,7 +142,7 @@ export const buildCastsSnapPage = ({
 				justify: SnapJustifyValues.Center,
 				children: (
 					[
-						back,
+						backButton,
 						...(nextCursor
 							? [
 								snapTargetButton({
@@ -154,11 +165,11 @@ export const buildCastsSnapPage = ({
 		image: {
 			aspectRatio: '1:1',
 		},
-		buttons: (
-			parentFrame?.buttons?.[0]
-				? [parentFrame.buttons[0]]
-				: []
-		) as FrameMeta['buttons'],
+		buttons: frameButtons({
+			label: '‹ Back',
+			action: 'post',
+			targetUrl: backTargetUrl,
+		}),
 	}
 
 	return { snap, frame }

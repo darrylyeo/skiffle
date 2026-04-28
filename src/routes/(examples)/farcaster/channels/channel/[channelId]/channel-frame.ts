@@ -1,18 +1,31 @@
 // Types/constants
 import { AppSnapButtonRoles } from '$/lib/app-snap-tokens'
 import type { DemoFarcasterCast } from '$/lib/farcaster-casts'
+import { farcasterCastContent } from '$/lib/farcaster-casts'
 import type { AppSnapPage } from '$/lib/snap-components'
+import type { SnapExtraElements } from '$/lib/snap-page-extra'
 import type { FrameMeta } from '$/lib/frame'
 
 // Functions
 import { isTruthy } from '$/lib/isTruthy'
 import { snapButtonGroup, snapTargetButton } from '$/lib/snap-components'
-import { SnapButtonVariants, SnapDirections, SnapGaps, SnapJustifyValues, SnapPaletteColors } from '$/lib/snap-spec'
+import {
+	SnapActions,
+	SnapButtonVariants,
+	SnapDirections,
+	SnapElementTypes,
+	SnapEvents,
+	SnapGaps,
+	SnapJustifyValues,
+	SnapPaletteColors,
+} from '$/lib/snap-spec'
 
 import type { DemoChannel } from '$/routes/(examples)/farcaster/api/farcaster-client'
 
-export const CHANNEL_CASTS_WEB_STEP = 5
+export const CHANNEL_CASTS_WEB_STEP = 3
 export const CHANNEL_CASTS_FRAME_STEP = 3
+const CHANNEL_CASTS_SNAP_PAGE_SIZE = 3
+const CHANNEL_CASTS_SNAP_ITEM_TITLE_MAX = 30
 
 const normalizedVisibleCount = (
 	count: number,
@@ -36,10 +49,11 @@ export const channelPagination = (
 ) => {
 	const visibleCount = normalizedVisibleCount(Number(url.searchParams.get('count') ?? CHANNEL_CASTS_WEB_STEP), CHANNEL_CASTS_WEB_STEP, casts.length)
 	const frameVisibleCount = normalizedVisibleCount(Number(url.searchParams.get('page') ?? CHANNEL_CASTS_FRAME_STEP), CHANNEL_CASTS_FRAME_STEP, casts.length)
+	const framePageStart = Math.max(0, frameVisibleCount - CHANNEL_CASTS_FRAME_STEP)
 
 	return {
 		displayCasts: casts.slice(0, visibleCount),
-		frameCasts: casts.slice(0, frameVisibleCount),
+		frameCasts: casts.slice(framePageStart, frameVisibleCount),
 		frameVisibleCount,
 		hasMoreCasts: visibleCount < casts.length,
 		hasMoreFrameCasts: frameVisibleCount < casts.length,
@@ -98,93 +112,126 @@ const snapFromPaginationState = (
 		frameVisibleCount,
 		hasMoreFrameCasts,
 	}: ReturnType<typeof channelPagination>,
-): AppSnapPage => ({
-	castIntent: {
-		text: `Browsing recent casts in /${channel.key} on the SKIFFLE demo snapsite 📡`,
-	},
-	theme: {
-		accent: SnapPaletteColors.Purple,
-	},
-	buttons: [
-		snapButtonGroup({
-			direction: SnapDirections.Horizontal,
-			gap: SnapGaps.Sm,
-			justify: SnapJustifyValues.Center,
-			children: [
-				snapTargetButton({
-					label: '‹ Channels',
-					role: AppSnapButtonRoles.Back,
-					action: 'post',
-					targetUrl: '/farcaster/channels',
-				}),
-				snapTargetButton({
-					label: 'Visit',
-					role: AppSnapButtonRoles.External,
-					variant: SnapButtonVariants.Secondary,
-					action: 'link',
-					targetUrl: channel.url,
-				}),
-			].filter(isTruthy),
-		}),
-		...(
-			frameCasts.length > 0 ?
-				[
-					snapButtonGroup({
-						direction: SnapDirections.Horizontal,
-						gap: SnapGaps.Sm,
-						justify: SnapJustifyValues.Center,
-						children: frameCasts.map((cast) => (
-							snapTargetButton({
-								label: `@${cast.authorUsername}`,
-								role: AppSnapButtonRoles.External,
-								variant: SnapButtonVariants.Primary,
-								action: 'link',
-								targetUrl: cast.url,
-							})
-						)),
-					}),
-				]
+): AppSnapPage => {
+	const castItemIds: string[] = []
+	const extraElements: SnapExtraElements['elements'] = {}
+
+	for (const cast of frameCasts.slice(0, CHANNEL_CASTS_SNAP_PAGE_SIZE)) {
+		const safeHash = cast.hash.replace(/^0x/i, '').slice(0, 20)
+		const itemId = `channel-cast-item-${safeHash}`
+		const buttonId = `channel-cast-open-${safeHash}`
+		castItemIds.push(itemId)
+
+		const castText = farcasterCastContent(cast.content)
+		const title = (
+			castText ?
+				(
+					castText.length > CHANNEL_CASTS_SNAP_ITEM_TITLE_MAX ?
+						`${castText.slice(0, CHANNEL_CASTS_SNAP_ITEM_TITLE_MAX)}…`
+					:
+						castText
+				)
 			:
-				[]
-		),
-		...(
-			frameCasts.length > 0 && hasMoreFrameCasts ?
-				[
-					snapButtonGroup({
-						direction: SnapDirections.Horizontal,
-						gap: SnapGaps.Sm,
-						justify: SnapJustifyValues.Center,
-						children: [
+				'Cast'
+		)
+		const description = farcasterCastContent(
+			`@${cast.authorUsername} · ${cast.reactionCount} reactions · ${cast.replyCount} replies`,
+			160,
+		)
+
+		extraElements[itemId] = {
+			type: SnapElementTypes.Item,
+			props: {
+				title,
+				description,
+			},
+			children: [buttonId],
+		}
+		extraElements[buttonId] = {
+			type: SnapElementTypes.Button,
+			props: {
+				label: 'View',
+				variant: SnapButtonVariants.Secondary,
+			},
+			on: {
+				[SnapEvents.Press]: {
+					action: SnapActions.OpenUrl,
+					params: { target: cast.url },
+				},
+			},
+		}
+	}
+
+	if (castItemIds.length > 0) {
+		extraElements['channel-cast-item-group'] = {
+			type: SnapElementTypes.ItemGroup,
+			props: {
+				separator: true,
+				border: true,
+				gap: SnapGaps.Sm,
+			},
+			children: castItemIds,
+		}
+	}
+
+	return {
+		castIntent: {
+			text: `Browsing recent casts in /${channel.key} on the SKIFFLE demo snapsite 📡`,
+		},
+		theme: {
+			accent: SnapPaletteColors.Purple,
+		},
+		buttons: [
+			snapButtonGroup({
+				direction: SnapDirections.Horizontal,
+				gap: SnapGaps.Sm,
+				justify: SnapJustifyValues.Center,
+				children: [
+					snapTargetButton({
+						label: '‹ Channels',
+						role: AppSnapButtonRoles.Back,
+						action: 'post',
+						targetUrl: '/farcaster/channels',
+					}),
+					snapTargetButton({
+						label: 'Visit',
+						role: AppSnapButtonRoles.External,
+						variant: SnapButtonVariants.Secondary,
+						action: 'link',
+						targetUrl: channel.url,
+					}),
+					...(frameCasts.length > 0 && hasMoreFrameCasts
+						? [
 							snapTargetButton({
-								label: 'More Casts ›',
+								label: 'More ›',
 								role: AppSnapButtonRoles.Pager,
 								action: 'post',
 								targetUrl: `${channelRoute(channel.id)}?/paginate&page=${frameVisibleCount + CHANNEL_CASTS_FRAME_STEP}`,
 							}),
-						],
-					}),
-				]
-			: frameCasts.length > 0 && frameVisibleCount > CHANNEL_CASTS_FRAME_STEP ?
-				[
-					snapButtonGroup({
-						direction: SnapDirections.Horizontal,
-						gap: SnapGaps.Sm,
-						justify: SnapJustifyValues.Center,
-						children: [
+						]
+					: frameCasts.length > 0 && frameVisibleCount > CHANNEL_CASTS_FRAME_STEP
+						? [
 							snapTargetButton({
 								label: 'Back to Top ›',
 								role: AppSnapButtonRoles.Pager,
 								action: 'post',
 								targetUrl: `${channelRoute(channel.id)}?/paginate&page=${CHANNEL_CASTS_FRAME_STEP}`,
 							}),
-						],
-					}),
-				]
-			:
-				[]
-		),
-	],
-})
+						]
+					: []),
+				].filter(isTruthy),
+			}),
+		],
+		...(castItemIds.length > 0
+			? {
+				extraElements: {
+					children: ['channel-cast-item-group'],
+					elements: extraElements,
+				},
+			}
+			: {}),
+	}
+}
 
 export const channelPageView = (
 	channel: DemoChannel,
