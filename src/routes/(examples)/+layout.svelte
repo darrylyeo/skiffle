@@ -25,7 +25,7 @@
 			u.pathname.replace(/\/$/, '').replace(/%2f/gi, '/')
 	))
 	const displayQueryAndHash = $derived(
-		`${u.search}${u.hash}`.replaceAll('&amp;', '&')
+		`${u.search}${u.hash}`.replaceAll(/&(?:amp;)+/g, '&')
 	)
 </script>
 
@@ -50,7 +50,9 @@
 					{/if}
 
 					{#if displayQueryAndHash}
-						<span class="query-line">{displayQueryAndHash}</span>
+						<span class="query-line">
+							{@html displayQueryAndHash.replaceAll('<', '&lt;').replaceAll('>', '&gt;')}
+						</span>
 					{/if}
 				</output>
 			</p>
@@ -103,9 +105,8 @@
 	}
 
 	.url-badge {
-		display: flex;
-		flex-wrap: wrap;
-		width: fit-content;
+		display: block;
+		width: auto;
 		max-width: 100%;
 		padding: 0.35em 0.65em;
 		border: 1px solid rgba(255, 255, 255, 0.26);

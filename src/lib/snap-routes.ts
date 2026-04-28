@@ -91,12 +91,17 @@ export const snapOptionsResponse = () => (
 	)
 )
 
+const decodeHtmlAmp = (value: string) => (
+	value.replaceAll(/&(?:amp;)+/g, '&')
+)
+
 const decodeHtml = (value: string) => (
-	value
+	decodeHtmlAmp(
+		value
 		.replaceAll('&quot;', '"')
-		.replaceAll('&amp;', '&')
 		.replaceAll('&lt;', '<')
 		.replaceAll('&gt;', '>')
+	)
 )
 
 const FRAME_BUTTON_ACTIONS = [

@@ -342,6 +342,10 @@ const snapFooterContextUrl = (
 	)
 }
 
+const normalizeHtmlAmp = (value: string) => (
+	value.replaceAll(/&(?:amp;)+/g, '&')
+)
+
 const snapExtraElementProviders = [
 	coinFlipSnapExtraElements,
 	hangmanSnapExtraElements,
@@ -561,11 +565,11 @@ export const framePageToSnap = (
 								: out.pathname.replace(/\/$/, '')
 						)
 						return (
-							`${out.host}${path}${out.search}${out.hash}`
+							normalizeHtmlAmp(`${out.host}${path}${out.search}${out.hash}`)
 								.replace(/%2f/gi, '/')
 						)
 					} catch {
-						return currentPageUrl
+						return normalizeHtmlAmp(currentPageUrl)
 							.replace(/^https?:\/\//i, '')
 							.replace(/%2f/gi, '/')
 							.replace(/\/+$/, '')
