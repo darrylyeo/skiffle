@@ -34,19 +34,6 @@
 
 	<div class="meta">
 		<div class="panel">
-			<p>Used</p>
-			<div class="used" aria-label="Used guesses">
-				{#if data.usedLetters.length}
-					{#each data.usedLetters as letter (letter.id)}
-						<span data-hit={letter.hit}>{letter.label}</span>
-					{/each}
-				{:else}
-					<em>None yet</em>
-				{/if}
-			</div>
-		</div>
-
-		<div class="panel">
 			<p>Misses</p>
 			<div class="misses" aria-label="Missed guesses">
 				{#if data.misses.length}
@@ -90,7 +77,7 @@
 		display: flex;
 		flex-direction: row-reverse;
 		justify-content: space-between;
-		align-items: flex-start;
+		align-items: center;
 		gap: 6px;
 	}
 
@@ -144,7 +131,7 @@
 		align-items: center;
 		justify-content: center;
 		width: 1.35em;
-		font-size: 30px;
+		font-size: 36px;
 		line-height: 1;
 	}
 
@@ -168,8 +155,8 @@
 		border-radius: 12px;
 		border: 1px solid rgba(255, 209, 191, 0.18);
 		background:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05)),
-			rgba(55, 23, 95, 0.28);
+			linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.04)),
+			rgba(25, 30, 38, 0.34);
 		font-size: 28px;
 		font-weight: 800;
 		letter-spacing: 0.08em;
@@ -180,7 +167,7 @@
 	}
 
 	.word > span[data-revealed="false"] {
-		color: rgba(255, 231, 218, 0.84);
+		color: rgba(255, 244, 239, 0.84);
 	}
 
 	.meta {
@@ -221,15 +208,6 @@
 		min-height: 24px;
 	}
 
-	.used {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 6px;
-		min-height: 24px;
-	}
-
-	.used > span,
-	.used > em,
 	.misses > span,
 	.misses > em {
 		display: flex;
@@ -243,31 +221,13 @@
 		font-style: normal;
 	}
 
-	.used > span[data-hit="true"] {
-		background: rgba(138, 99, 210, 0.22);
-		color: #f0e7ff;
-		border: 1px solid rgba(203, 172, 255, 0.3);
-	}
-
-	.used > span[data-hit="false"] {
-		background: rgba(255, 109, 53, 0.2);
-		color: #ffd9cb;
-		border: 1px solid rgba(255, 176, 143, 0.3);
-	}
-
-	.used > em,
 	.misses > span {
-		background: rgba(255, 109, 53, 0.2);
-		color: #ffd9cb;
-		border: 1px solid rgba(255, 176, 143, 0.3);
+		background: rgba(239, 68, 68, 0.2);
+		color: #fee2e2;
+		border: 1px solid rgba(252, 165, 165, 0.32);
 	}
 
 	.misses > em {
-		color: rgba(255, 233, 224, 0.7);
-		background: rgba(255, 255, 255, 0.08);
-	}
-
-	.used > em {
 		color: rgba(255, 233, 224, 0.7);
 		background: rgba(255, 255, 255, 0.08);
 	}

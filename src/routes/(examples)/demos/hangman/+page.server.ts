@@ -14,7 +14,6 @@ import {
 	hangmanLives,
 	hangmanMessage,
 	hangmanStateFromHref,
-	hangmanUsedLetters,
 	hangmanMisses,
 	nextHangmanState,
 	parseHangmanState,
@@ -103,7 +102,6 @@ export const load: PageServerLoad = ({ url }) => {
 		lives: hangmanLives(state),
 		message: hangmanMessage(state),
 		misses: hangmanMisses(state),
-		usedLetters: hangmanUsedLetters(state),
 		frame: buildHangmanFrame(state),
 		snap: buildHangmanSnap(state),
 	}

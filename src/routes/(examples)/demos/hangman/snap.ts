@@ -50,7 +50,6 @@ export const hangmanSnapExtraElements = (
 								'hangman-picker-grid',
 							]
 							: []),
-						'hangman-used',
 						...(misses.length ? ['hangman-misses'] : []),
 					],
 				},
@@ -90,14 +89,6 @@ export const hangmanSnapExtraElements = (
 						},
 					}
 					: {}),
-				'hangman-used': {
-					type: 'text',
-					props: {
-						content: `Used: ${[...state.guesses.toUpperCase()].join(' ') || 'None yet'}`,
-						size: SnapTextSizes.Sm,
-						align: SnapAlignments.Center,
-					},
-				},
 				...(misses.length ?
 					{
 						'hangman-misses': {
