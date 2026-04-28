@@ -93,7 +93,7 @@
 
 			<p>Check out SKIFFLE on GitHub – <b>github.com/darrylyeo/skiffle</b></p>
 
-			<p>Follow <b>@darrylyeo</b> on Farcaster and GitHub for project updates.</p>
+			<p>Follow <b>@darrylyeo</b> on Farcaster, X and GitHub for project updates.</p>
 
 		{:else if data.currentPage === 5}
 			<span>You've reached the last page. Want to read it again?</span>
