@@ -4,6 +4,7 @@
 
 	// Components
 	import FarcasterCastList from '$/lib/FarcasterCastList.svelte'
+	import farcasterLogoUrl from '$lib/assets/branding/farcaster-logo.svg'
 
 
 	// Props
@@ -16,6 +17,13 @@
 
 
 <div class="column card">
+	<img
+		class="card-watermark"
+		src={farcasterLogoUrl}
+		alt=""
+		aria-hidden="true"
+	/>
+
 	<FarcasterCastList casts={data.casts} />
 
 	<!-- load more disabled: change #if false -> #if data.nextCursor to re-enable -->
@@ -31,11 +39,24 @@
 
 <style>
 	.card {
+		position: relative;
 		padding: 1.25em;
 		border-radius: 1em;
-		background-color: rgb(52, 42, 86);
+		background-color: rgba(58, 38, 98, 0.62);
+		background-image: linear-gradient(180deg, rgba(126, 90, 197, 0.22), rgba(40, 26, 68, 0.2));
 		overflow: hidden;
 		gap: 1em;
+	}
+
+	.card-watermark {
+		position: absolute;
+		top: -2.1em;
+		right: -2.4em;
+		width: 12em;
+		height: 12em;
+		opacity: 0.08;
+		transform: rotate(9deg);
+		pointer-events: none;
 	}
 
 	.more a {
@@ -44,7 +65,8 @@
 		padding: 0.65em 1em;
 		border: 1px solid rgba(255, 255, 255, 0.16);
 		border-radius: 999px;
-		background-color: rgb(68, 56, 108);
+		background-color: rgba(78, 54, 122, 0.62);
+		background-image: linear-gradient(180deg, rgba(178, 146, 255, 0.2), rgba(65, 44, 101, 0.18));
 		color: rgba(255, 255, 255, 0.9);
 		text-decoration: none;
 		font-weight: 600;
