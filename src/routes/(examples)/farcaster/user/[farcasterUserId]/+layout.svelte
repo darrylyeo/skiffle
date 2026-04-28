@@ -5,6 +5,7 @@
 
 	// Context
 	import { page } from '$app/state'
+	import farcasterLogoUrl from '$lib/assets/branding/farcaster-logo.svg'
 
 
 	// Props
@@ -46,6 +47,13 @@
 {:else}
 <article class="profile column">
 	<div class="profile-hero column">
+		<img
+			class="profile-watermark"
+			src={farcasterLogoUrl}
+			alt=""
+			aria-hidden="true"
+		/>
+
 		<div class="profile-top row wrap">
 			<div class="profile-identity row">
 				<img
@@ -212,14 +220,27 @@
 	.profile-hero {
 		flex-grow: 1;
 		flex-shrink: 0;
+		position: relative;
 		padding: 1.35em 1.5em;
 		border-radius: 22px;
 		border: 1px solid rgba(200, 175, 255, 0.18);
-		/* Solid only — Satori’s bundled css-gradient-parser throws on some linear-gradient() in dev SSR */
-		background-color: rgb(58, 38, 98);
+		background-color: rgba(58, 38, 98, 0.62);
+		background-image: linear-gradient(180deg, rgba(126, 90, 197, 0.22), rgba(40, 26, 68, 0.2));
 		box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
 		row-gap: 1.1em;
 		justify-content: space-between;
+		overflow: hidden;
+	}
+
+	.profile-watermark {
+		position: absolute;
+		top: -2.8em;
+		right: -2.4em;
+		width: 17.5em;
+		height: 17.5em;
+		opacity: 0.09;
+		transform: rotate(9deg);
+		pointer-events: none;
 	}
 
 	.profile-top {
@@ -313,7 +334,8 @@
 		align-items: flex-end;
 		padding: 0.5em 0.85em;
 		border-radius: 14px;
-		background-color: rgb(78, 54, 122);
+		background-color: rgba(78, 54, 122, 0.62);
+		background-image: linear-gradient(180deg, rgba(178, 146, 255, 0.2), rgba(65, 44, 101, 0.18));
 		border: 1px solid rgba(190, 165, 255, 0.16);
 		row-gap: 0.2em;
 	}
@@ -371,7 +393,8 @@
 		flex-shrink: 1;
 		padding: 0.65em 0.75em;
 		border-radius: 14px;
-		background-color: rgb(70, 48, 110);
+		background-color: rgba(70, 48, 110, 0.62);
+		background-image: linear-gradient(180deg, rgba(169, 132, 245, 0.2), rgba(62, 42, 98, 0.18));
 		border: 1px solid rgba(190, 165, 255, 0.12);
 		row-gap: 0.2em;
 		align-items: flex-start;
