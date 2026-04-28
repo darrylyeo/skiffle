@@ -265,6 +265,12 @@ export const buildWordleSnap = ({
 			justify: SnapJustifyValues.Center,
 			children: (
 				[
+					snapTargetButton({
+						label: '‹ Demos',
+						role: AppSnapButtonRoles.Back,
+						action: 'post',
+						targetUrl: demosBackUrl('wordle'),
+					}),
 					...(canGuess(status)
 						? [
 							snapTargetButton({
@@ -276,12 +282,6 @@ export const buildWordleSnap = ({
 							}),
 						]
 						: []),
-					snapTargetButton({
-						label: '‹ Demos',
-						role: AppSnapButtonRoles.Back,
-						action: 'post',
-						targetUrl: demosBackUrl('wordle'),
-					}),
 					...(guesses.length > 0 || !canGuess(status)
 						? [
 							snapTargetButton({

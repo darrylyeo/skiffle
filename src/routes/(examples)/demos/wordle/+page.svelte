@@ -61,6 +61,8 @@
 	}
 
 	header > strong {
+		align-self: flex-end;
+		text-align: right;
 		font-size: 18px;
 		line-height: 1.3;
 		color: rgba(255, 244, 239, 0.95);
