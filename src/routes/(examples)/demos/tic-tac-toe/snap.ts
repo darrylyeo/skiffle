@@ -5,10 +5,8 @@ import type { SnapExtraElements } from '$/lib/snap-page-extra'
 // Functions
 import { frameStateUrlFromFrame } from '$/lib/snap-page-extra'
 import {
-	SnapAlignments,
 	SnapElementTypes,
 	SnapPaletteColors,
-	SnapTextSizes,
 } from '$/lib/snap-spec'
 
 const EMPTY_BOARD = '---------'
@@ -98,25 +96,16 @@ export const ticTacToeSnapExtraElements = (
 		return {
 			hideInput: true,
 			children: [
-				'tic-tac-toe-picker-label',
 				'tic-tac-toe-picker-grid',
 			],
 			elements: {
-				'tic-tac-toe-picker-label': {
-					type: SnapElementTypes.Text,
-					props: {
-						content: 'Pick a square',
-						size: SnapTextSizes.Sm,
-						align: SnapAlignments.Center,
-					},
-				},
 				'tic-tac-toe-picker-grid': {
 					type: SnapElementTypes.CellGrid,
 					props: {
 						name: 'ticTacToeCell',
 						cols: 3,
 						rows: 3,
-						rowHeight: 54,
+						rowHeight: 68,
 						select: 'single',
 						gap: 'sm',
 						cells: Array.from({ length: 9 }, (_, index) => ({
@@ -125,11 +114,11 @@ export const ticTacToeSnapExtraElements = (
 							content: state.board[index] === '-' ? String(index + 1) : state.board[index],
 							color: (
 								highlights.includes(index) ?
-									SnapPaletteColors.Green
+									SnapPaletteColors.Amber
 								: state.board[index] === 'X' ?
-									SnapPaletteColors.Purple
+									SnapPaletteColors.Blue
 								: state.board[index] === 'O' ?
-									SnapPaletteColors.Red
+									SnapPaletteColors.Amber
 								:
 									SnapPaletteColors.Gray
 							),
