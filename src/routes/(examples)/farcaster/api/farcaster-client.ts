@@ -60,6 +60,7 @@ export type DemoUser = {
 	solana_wallet_count: number,
 	custody_address_short: string,
 	collections_owned_count: number,
+	neynar_score?: number,
 }
 
 const shortHexAddress = (addr: string) => (
@@ -90,16 +91,29 @@ export const getDemoUserByFid = async ({
 				followingCount: number,
 				connectedAccounts?: unknown[],
 				collectionsOwned?: unknown[],
+				score?: number,
+				experimental?: {
+					neynar_user_score?: number,
+				},
 				extras?: {
 					custodyAddress?: string,
 					ethWallets?: unknown[],
 					solanaWallets?: unknown[],
+					publicSpamLabel?: string,
 				},
 			},
 		},
 	}>(`/v2/user?fid=${fid}`)
 		.then(({ result: { user } }) => {
 			const custody = user.extras?.custodyAddress ?? ''
+			const publicSpamScore = Number(
+				(
+					user.extras?.publicSpamLabel
+						?.match(/^\s*(-?\d+(?:\.\d+)?)/)
+						?.[1]
+				)
+				?? Number.NaN
+			)
 			return {
 				fid: user.fid,
 				username: user.username,
@@ -117,6 +131,16 @@ export const getDemoUserByFid = async ({
 				solana_wallet_count: user.extras?.solanaWallets?.length ?? 0,
 				custody_address_short: custody ? shortHexAddress(custody) : '',
 				collections_owned_count: user.collectionsOwned?.length ?? 0,
+				neynar_score: (
+					typeof user.experimental?.neynar_user_score === 'number'
+						? user.experimental.neynar_user_score
+					: typeof user.score === 'number'
+						? user.score
+					: Number.isFinite(publicSpamScore)
+						? publicSpamScore
+					:
+						undefined
+				),
 			} satisfies DemoUser
 		})
 )
