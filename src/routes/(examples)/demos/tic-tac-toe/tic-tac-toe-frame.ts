@@ -134,7 +134,7 @@ export const parseTicTacToeState = (url: URL): TicTacToeState => {
 
 export const ticTacToeMessage = (status: TicTacToeStatus) => (
 	status === 'x-win'
-		? 'I win.'
+		? 'You win.'
 	: status === 'o-win'
 		? 'Computer wins.'
 	: status === 'draw'

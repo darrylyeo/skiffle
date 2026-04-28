@@ -137,7 +137,7 @@ const parseTicTacToeState = (url: URL): TicTacToeState => {
 
 const ticTacToeMessage = (status: TicTacToeStatus) => (
 	status === 'x-win'
-		? 'I win.'
+		? 'You win.'
 	: status === 'o-win'
 		? 'Computer wins.'
 	: status === 'draw'
