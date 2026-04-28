@@ -1,6 +1,9 @@
 import { resolve } from '$app/paths'
 
 export const DEMOS_SNAP_PAGE_SIZE = 4
+export const DEMOS_DEFAULT_CAST_INTENT_EMBEDS: readonly string[] = [
+	'https://farcaster.xyz/darrylyeo/0xf7a9cf9d',
+]
 
 const rows = [
 	{

@@ -14,6 +14,7 @@ import type { FrameButton, FrameMeta } from '$/lib/frame'
 import type { SnapExtraElements } from '$/lib/snap-page-extra'
 
 import { resolveUrl } from '$/lib/resolveUrl'
+import { DEMOS_DEFAULT_CAST_INTENT_EMBEDS } from '$/routes/(examples)/demos'
 import { coinFlipSnapExtraElements } from '$/routes/(examples)/demos/coin-flip/snap'
 import { hangmanSnapExtraElements } from '$/routes/(examples)/demos/hangman/snap'
 import { ticTacToeSnapExtraElements } from '$/routes/(examples)/demos/tic-tac-toe/snap'
@@ -199,7 +200,10 @@ const snapPressFromButton = (
 	baseUrl: URL | string,
 ): SnapPressAction | undefined => {
 	if (press.action === SnapActions.ComposeCast) {
-		const embeds = castIntentEmbeds({ pageEmbeds: press.embeds })
+		const embeds = castIntentEmbeds({
+			pageEmbeds: press.embeds,
+			defaultEmbeds: DEMOS_DEFAULT_CAST_INTENT_EMBEDS,
+		})
 
 		return {
 			action: SnapActions.ComposeCast,
@@ -447,6 +451,7 @@ export const framePageToSnap = (
 	const shareComposeEmbeds = castIntentEmbeds({
 		pageEmbeds: snap?.castIntent?.embeds,
 		currentPageUrl,
+		defaultEmbeds: DEMOS_DEFAULT_CAST_INTENT_EMBEDS,
 	})
 	const providerExtra = snapExtraElementProviders
 		.map((provider) => provider(frame, baseUrl))
