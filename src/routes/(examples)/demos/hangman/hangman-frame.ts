@@ -13,7 +13,7 @@ import { SnapButtonVariants, SnapDirections, SnapEffects, SnapGaps, SnapJustifyV
 type HangmanStatus = 'turn' | 'invalid' | 'repeat' | 'win' | 'loss'
 
 type HangmanState = {
-	word: number,
+	word: string,
 	guesses: string,
 	status: HangmanStatus,
 }
@@ -50,6 +50,7 @@ const WORDS = [
 	'recast',
 ] as const
 
+const WORD_HASH_SALT = 'SKIFFLE'
 const MAX_MISSES = 6
 
 export const hangmanCanGuess = (status: HangmanStatus) => (
@@ -58,6 +59,29 @@ export const hangmanCanGuess = (status: HangmanStatus) => (
 
 const normalizeWordIndex = (value: number) => (
 	((Number.isFinite(value) ? Math.floor(value) : 0) % WORDS.length + WORDS.length) % WORDS.length
+)
+
+const saltedWordHash = (word: string) => (
+	[...`${WORD_HASH_SALT}:${word}`]
+		.reduce((hash, char) => (
+			Math.imul(hash ^ char.charCodeAt(0), 16777619) >>> 0
+		), 2166136261)
+		.toString(10)
+)
+
+const WORD_INDEX_BY_HASH = new Map(
+	WORDS.map((word, index) => [saltedWordHash(word), index] as const)
+)
+
+const normalizeWordRef = (value: string | null | undefined) => (
+	value && WORD_INDEX_BY_HASH.has(value)
+		? WORDS[WORD_INDEX_BY_HASH.get(value) ?? 0]
+	:
+		WORDS[0]
+)
+
+const wordRef = (word: string) => (
+	saltedWordHash(word)
 )
 
 const normalizeGuesses = (value: string | null | undefined) => (
@@ -77,31 +101,31 @@ const normalizeStatus = (value: string | null | undefined): HangmanStatus => (
 		'turn'
 )
 
-const lettersForWord = (wordIndex: number) => (
-	[...WORDS[normalizeWordIndex(wordIndex)]]
+const lettersForWord = (word: string) => (
+	[...word]
 )
 
 const missesForState = (
-	wordIndex: number,
+	word: string,
 	guesses: string,
 ) => (
-	[...guesses].filter((letter) => !WORDS[normalizeWordIndex(wordIndex)].includes(letter))
+	[...guesses].filter((letter) => !word.includes(letter))
 )
 
 const terminalStatus = (
-	wordIndex: number,
+	word: string,
 	guesses: string,
 ) => (
-	lettersForWord(wordIndex).every((letter) => guesses.includes(letter))
+	lettersForWord(word).every((letter) => guesses.includes(letter))
 		? 'win'
-	: missesForState(wordIndex, guesses).length >= MAX_MISSES
+	: missesForState(word, guesses).length >= MAX_MISSES
 		? 'loss'
 	:
 		'turn'
 ) satisfies HangmanStatus
 
 export const parseHangmanState = (url: URL): HangmanState => {
-	const word = normalizeWordIndex(Number(url.searchParams.get('word') ?? 0))
+	const word = normalizeWordRef(url.searchParams.get('word'))
 	const guesses = normalizeGuesses(url.searchParams.get('guesses'))
 	const terminal = terminalStatus(word, guesses)
 
@@ -122,7 +146,7 @@ export const hangmanMessage = ({
 	status === 'win'
 		? 'You solved the word!'
 	: status === 'loss'
-		? `Out of lives. The word was: ${WORDS[word].toUpperCase()}.`
+		? 'Out of lives. The word was:'
 	: status === 'invalid'
 		? 'Enter one unused letter from A to Z.'
 	: status === 'repeat'
@@ -159,7 +183,7 @@ export const hangmanUsedLetters = ({
 	[...guesses].map((letter, index) => ({
 		id: `${letter}:${index}`,
 		label: letter.toUpperCase(),
-		hit: WORDS[normalizeWordIndex(word)].includes(letter),
+		hit: word.includes(letter),
 	}))
 )
 
@@ -181,7 +205,7 @@ export const buildHangmanFrame = ({
 	status,
 }: HangmanState): FrameMeta => ({
 	image: {
-		url: `/demos/hangman?word=${word}&guesses=${guesses}&status=${status}`,
+		url: `/demos/hangman?word=${wordRef(word)}&guesses=${guesses}&status=${status}`,
 		aspectRatio: '16:9',
 	},
 	textInput: hangmanCanGuess(status) ? 'Guess a letter' : undefined,
@@ -194,7 +218,7 @@ export const buildHangmanFrame = ({
 		hangmanCanGuess(status) && {
 			label: status === 'invalid' || status === 'repeat' ? 'Try Again' : 'Guess',
 			action: 'post',
-			targetUrl: `/demos/hangman?/guess&word=${word}&guesses=${guesses}`,
+			targetUrl: `/demos/hangman?/guess&word=${wordRef(word)}&guesses=${guesses}`,
 		},
 		(guesses.length > 0 || !hangmanCanGuess(status)) && {
 			label: status === 'win' || status === 'loss' ? 'Play Again' : 'Reset',
@@ -240,7 +264,7 @@ export const buildHangmanSnap = ({
 					role: AppSnapButtonRoles.Cta,
 					variant: SnapButtonVariants.Primary,
 					action: 'post',
-					targetUrl: `/demos/hangman?/guess&word=${word}&guesses=${guesses}`,
+					targetUrl: `/demos/hangman?/guess&word=${wordRef(word)}&guesses=${guesses}`,
 				}),
 			].filter(isTruthy),
 		}),
@@ -253,6 +277,12 @@ export const buildHangmanSnap = ({
 					children: [
 						snapTargetButton({
 							label: status === 'win' || status === 'loss' ? 'Play Again' : 'Reset',
+							variant: (
+								!hangmanCanGuess(status) ?
+									SnapButtonVariants.Primary
+								:
+									SnapButtonVariants.Secondary
+							),
 							action: 'post',
 							targetUrl: '/demos/hangman?/start',
 						}),
@@ -309,7 +339,7 @@ export const hangmanStateFromHref = (href: string | undefined) => {
 }
 
 export const freshHangmanState = (seed: number) => ({
-	word: normalizeWordIndex(seed),
+	word: WORDS[normalizeWordIndex(seed)],
 	guesses: '',
 	status: 'turn',
 }) satisfies HangmanState

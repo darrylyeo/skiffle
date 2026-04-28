@@ -12,7 +12,7 @@ import { SnapButtonVariants, SnapDirections, SnapEffects, SnapGaps, SnapJustifyV
 type WordleStatus = 'turn' | 'invalid' | 'repeat' | 'win' | 'loss'
 
 type WordleState = {
-	word: number,
+	word: string,
 	guesses: string[],
 	status: WordleStatus,
 }
@@ -48,6 +48,7 @@ const WORDS = [
 	'nodes',
 ] as const
 
+const WORD_HASH_SALT = 'SKIFFLE'
 const MAX_GUESSES = 6
 
 const canGuess = (status: WordleStatus) => (
@@ -56,6 +57,29 @@ const canGuess = (status: WordleStatus) => (
 
 const normalizeWordIndex = (value: number) => (
 	((Number.isFinite(value) ? Math.floor(value) : 0) % WORDS.length + WORDS.length) % WORDS.length
+)
+
+const saltedWordHash = (word: string) => (
+	[...`${WORD_HASH_SALT}:${word}`]
+		.reduce((hash, char) => (
+			Math.imul(hash ^ char.charCodeAt(0), 16777619) >>> 0
+		), 2166136261)
+		.toString(10)
+)
+
+const WORD_INDEX_BY_HASH = new Map(
+	WORDS.map((word, index) => [saltedWordHash(word), index] as const)
+)
+
+const normalizeWordRef = (value: string | null | undefined) => (
+	value && WORD_INDEX_BY_HASH.has(value)
+		? WORDS[WORD_INDEX_BY_HASH.get(value) ?? 0]
+	:
+		WORDS[0]
+)
+
+const wordRef = (word: string) => (
+	saltedWordHash(word)
 )
 
 const normalizeGuess = (value: string) => (
@@ -80,15 +104,11 @@ const normalizeStatus = (value: string | null | undefined): WordleStatus => (
 		'turn'
 )
 
-const wordForIndex = (wordIndex: number) => (
-	WORDS[normalizeWordIndex(wordIndex)]
-)
-
 const terminalStatus = (
-	wordIndex: number,
+	word: string,
 	guesses: string[],
 ) => (
-	guesses.at(-1) === wordForIndex(wordIndex)
+	guesses.at(-1) === word
 		? 'win'
 	: guesses.length >= MAX_GUESSES
 		? 'loss'
@@ -97,7 +117,7 @@ const terminalStatus = (
 ) satisfies WordleStatus
 
 export const parseWordleState = (url: URL): WordleState => {
-	const word = normalizeWordIndex(Number(url.searchParams.get('word') ?? 0))
+	const word = normalizeWordRef(url.searchParams.get('word'))
 	const guesses = normalizeGuesses(url.searchParams.get('guesses'))
 	const terminal = terminalStatus(word, guesses)
 
@@ -157,7 +177,7 @@ export const wordleRows = ({
 	word,
 	guesses,
 }: WordleState): WordleCell[][] => {
-	const target = wordForIndex(word)
+	const target = word
 
 	return Array.from({ length: MAX_GUESSES }, (_, rowIndex) => {
 		const guess = guesses[rowIndex] ?? ''
@@ -178,7 +198,7 @@ export const wordleUsedLetters = ({
 	guesses,
 }: WordleState): WordleUsedLetter[] => {
 	const letters = new Map<string, WordleUsedLetter['state']>()
-	const target = wordForIndex(word)
+	const target = word
 
 	for (const guess of guesses) {
 		for (const [index, letter] of [...guess.toUpperCase()].entries()) {
@@ -211,7 +231,7 @@ export const wordleMessage = ({
 	status === 'win'
 		? `Solved in ${guesses.length} guess${guesses.length === 1 ? '' : 'es'}.`
 	: status === 'loss'
-		? `Out of rows. The word was ${wordForIndex(word).toUpperCase()}.`
+		? `Out of rows. The word was ${word.toUpperCase()}.`
 	: status === 'invalid'
 		? 'Enter one 5-letter word.'
 	: status === 'repeat'
@@ -226,7 +246,7 @@ export const buildWordleFrame = ({
 	status,
 }: WordleState): FrameMeta => ({
 	image: {
-		url: `/demos/wordle?word=${word}&guesses=${guesses.join(',')}&status=${status}`,
+		url: `/demos/wordle?word=${wordRef(word)}&guesses=${guesses.join(',')}&status=${status}`,
 		aspectRatio: '1:1',
 	},
 	textInput: canGuess(status) ? 'Enter a 5-letter word' : undefined,
@@ -239,7 +259,7 @@ export const buildWordleFrame = ({
 		canGuess(status) && {
 			label: status === 'invalid' || status === 'repeat' ? 'Try Again' : 'Guess',
 			action: 'post',
-			targetUrl: `/demos/wordle?/guess&word=${word}&guesses=${guesses.join(',')}`,
+			targetUrl: `/demos/wordle?/guess&word=${wordRef(word)}&guesses=${guesses.join(',')}`,
 		},
 		(guesses.length > 0 || !canGuess(status)) && {
 			label: status === 'win' || status === 'loss' ? 'Play Again' : 'Reset',
@@ -288,7 +308,7 @@ export const buildWordleSnap = ({
 								role: AppSnapButtonRoles.Cta,
 								variant: SnapButtonVariants.Primary,
 								action: 'post',
-								targetUrl: `/demos/wordle?/guess&word=${word}&guesses=${guesses.join(',')}`,
+								targetUrl: `/demos/wordle?/guess&word=${wordRef(word)}&guesses=${guesses.join(',')}`,
 							}),
 						]
 						: []),
@@ -296,6 +316,12 @@ export const buildWordleSnap = ({
 						? [
 							snapTargetButton({
 								label: status === 'win' || status === 'loss' ? 'Play Again' : 'Reset',
+								variant: (
+									!canGuess(status) ?
+										SnapButtonVariants.Primary
+									:
+										SnapButtonVariants.Secondary
+								),
 								action: 'post',
 								targetUrl: '/demos/wordle?/start',
 							}),
@@ -353,7 +379,7 @@ export const wordleStateFromHref = (href: string | undefined) => {
 }
 
 export const freshWordleState = (seed: number) => ({
-	word: normalizeWordIndex(seed),
+	word: WORDS[normalizeWordIndex(seed)],
 	guesses: [],
 	status: 'turn',
 }) satisfies WordleState

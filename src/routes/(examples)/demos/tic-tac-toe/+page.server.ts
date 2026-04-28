@@ -243,6 +243,12 @@ const buildTicTacToeSnap = ({ board, status }: TicTacToeState): AppSnapPage => (
 					children: [
 						snapTargetButton({
 							label: canPlay(status) ? 'Reset' : 'Play Again',
+							variant: (
+								canPlay(status) ?
+									SnapButtonVariants.Secondary
+								:
+									SnapButtonVariants.Primary
+							),
 							action: 'post',
 							targetUrl: '/demos/tic-tac-toe?/start',
 						}),
