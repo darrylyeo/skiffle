@@ -14,7 +14,11 @@ export const actions: Actions = {
 		url,
 		locals: { farcasterViewerFid },
 	}) => {
-		const farcasterUserId = farcasterViewerFid ?? 1
+		const farcasterUserId = (
+			Number.isFinite(farcasterViewerFid) && Number(farcasterViewerFid) > 0
+				? Math.trunc(Number(farcasterViewerFid))
+				: 5650
+		)
 
 		const currentPage = Number.isFinite(Number(url.searchParams.get('page') ?? 0))
 			? Math.max(0, Math.trunc(Number(url.searchParams.get('page') ?? 0)))
