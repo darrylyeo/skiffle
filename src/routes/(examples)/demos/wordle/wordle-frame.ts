@@ -5,7 +5,6 @@ import type { FrameMeta } from '$/lib/frame'
 import { demosBackUrl } from '$/routes/(examples)/demos'
 
 // Functions
-import { isTruthy } from '$/lib/isTruthy'
 import { snapButtonGroup, snapTargetButton } from '$/lib/snap-components'
 import { frameButtons } from '$/lib/frame'
 import { SnapButtonVariants, SnapDirections, SnapEffects, SnapGaps, SnapJustifyValues, SnapPaletteColors } from '$/lib/snap-spec'
@@ -260,41 +259,40 @@ export const buildWordleSnap = ({
 		),
 	},
 	buttons: [
-		...(canGuess(status)
-			? [
-				snapButtonGroup({
-					direction: SnapDirections.Horizontal,
-					gap: SnapGaps.Sm,
-					justify: SnapJustifyValues.Center,
-					children: [
-						snapTargetButton({
-							label: status === 'invalid' || status === 'repeat' ? 'Try Again' : 'Guess',
-							role: AppSnapButtonRoles.Cta,
-							variant: SnapButtonVariants.Primary,
-							action: 'post',
-							targetUrl: `/demos/wordle?/guess&word=${word}&guesses=${guesses.join(',')}`,
-						}),
-					],
-				}),
-			]
-			: []),
 		snapButtonGroup({
 			direction: SnapDirections.Horizontal,
 			gap: SnapGaps.Sm,
 			justify: SnapJustifyValues.Center,
-			children: [
-				snapTargetButton({
-					label: '‹ Demos',
-					role: AppSnapButtonRoles.Back,
-					action: 'post',
-					targetUrl: demosBackUrl('wordle'),
-				}),
-				(guesses.length > 0 || !canGuess(status)) && snapTargetButton({
-					label: status === 'win' || status === 'loss' ? 'Play Again' : 'Reset',
-					action: 'post',
-					targetUrl: '/demos/wordle?/open',
-				}),
-			].filter(isTruthy),
+			children: (
+				[
+					...(canGuess(status)
+						? [
+							snapTargetButton({
+								label: status === 'invalid' || status === 'repeat' ? 'Try Again' : 'Guess',
+								role: AppSnapButtonRoles.Cta,
+								variant: SnapButtonVariants.Primary,
+								action: 'post',
+								targetUrl: `/demos/wordle?/guess&word=${word}&guesses=${guesses.join(',')}`,
+							}),
+						]
+						: []),
+					snapTargetButton({
+						label: '‹ Demos',
+						role: AppSnapButtonRoles.Back,
+						action: 'post',
+						targetUrl: demosBackUrl('wordle'),
+					}),
+					...(guesses.length > 0 || !canGuess(status)
+						? [
+							snapTargetButton({
+								label: status === 'win' || status === 'loss' ? 'Play Again' : 'Reset',
+								action: 'post',
+								targetUrl: '/demos/wordle?/open',
+							}),
+						]
+						: []),
+				]
+			),
 		}),
 	],
 })
