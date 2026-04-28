@@ -149,7 +149,7 @@ export const buildCastsSnapPage = ({
 									label: 'More ›',
 									role: AppSnapButtonRoles.Pager,
 									action: 'post',
-									targetUrl: `./casts?/paginate&cursor=${encodeURIComponent(nextCursor)}`,
+									targetUrl: `?/paginate&cursor=${encodeURIComponent(nextCursor)}`,
 								}),
 							]
 							: []),
