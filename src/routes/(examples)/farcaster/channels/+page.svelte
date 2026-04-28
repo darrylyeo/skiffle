@@ -34,8 +34,10 @@
 		`/farcaster/channels/channel/${encodeURIComponent(channelId)}`
 	)
 
-	const channelImageSrc = (url: string) => (
-		url.trim() ? url.trim() : ''
+	const channelImageSrc = (url: string | null | undefined) => (
+		typeof url === 'string' && url.trim()
+			? url.trim()
+			: ''
 	)
 
 	// Props

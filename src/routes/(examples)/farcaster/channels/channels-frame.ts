@@ -103,7 +103,7 @@ const frameMetaFromPaginationState = ({
 				...shownForFrame.map((channel) => ({
 					label: channel.name.slice(0, 32),
 					action: 'post' as const,
-					targetUrl: `${channelDetailUrl(channel.id)}?/open`,
+					targetUrl: channelDetailUrl(channel.id),
 				})),
 				currentPage < totalPages - 1
 					? {
@@ -170,7 +170,7 @@ const snapFromPaginationState = ({
 				role: AppSnapButtonRoles.Cta,
 				variant: SnapButtonVariants.Primary,
 				action: 'post',
-				targetUrl: `${channelDetailUrl(channel.id)}?/open`,
+				targetUrl: channelDetailUrl(channel.id),
 			})),
 		})),
 	],

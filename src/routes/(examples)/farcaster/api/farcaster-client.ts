@@ -52,7 +52,7 @@ export type DemoUser = {
 	bio: string,
 	follower_count: number,
 	following_count: number,
-	profile_url_hostname: string,
+	profile_url: string,
 	account_level: string,
 	early_wallet_adopter: boolean,
 	connected_account_count: number,
@@ -67,16 +67,6 @@ const shortHexAddress = (addr: string) => (
 		? `${addr.slice(0, 6)}...${addr.slice(-4)}`
 		: addr
 )
-
-const hostnameFromUrl = (raw: string | undefined) => {
-	if (!raw?.trim())
-		return ''
-	try {
-		return new URL(raw).hostname
-	} catch {
-		return ''
-	}
-}
 
 export const getDemoUserByFid = async ({
 	fid,
@@ -119,7 +109,7 @@ export const getDemoUserByFid = async ({
 				bio: user.profile.bio?.text ?? '',
 				follower_count: user.followerCount,
 				following_count: user.followingCount,
-				profile_url_hostname: hostnameFromUrl(user.profile.url),
+				profile_url: user.profile.url,
 				account_level: user.profile.accountLevel ?? '',
 				early_wallet_adopter: user.profile.earlyWalletAdopter ?? false,
 				connected_account_count: user.connectedAccounts?.length ?? 0,
@@ -220,75 +210,6 @@ export type DemoChannelLead = {
 	bio: string,
 }
 
-const fallbackPopularChannels = [
-	{
-		id: 'base',
-		key: 'base',
-		name: 'Base',
-		url: 'https://onchainsummer.xyz',
-		description: 'Bringing the world onchain - a community of builders on Base',
-		followerCount: 480695,
-		memberCount: 813,
-		imageUrl: '',
-		headerImageUrl: '',
-	},
-	{
-		id: 'ethereum',
-		key: 'ethereum',
-		name: 'Ethereum',
-		url: 'https://ethereum.org',
-		description: 'Discussions about Ethereum.',
-		followerCount: 334197,
-		memberCount: 3105,
-		imageUrl: '',
-		headerImageUrl: '',
-	},
-	{
-		id: 'founders',
-		key: 'founders',
-		name: 'Founders',
-		url: 'https://farcaster.group',
-		description: 'A space for founders',
-		followerCount: 234543,
-		memberCount: 516,
-		imageUrl: '',
-		headerImageUrl: '',
-	},
-	{
-		id: 'fc-updates',
-		key: 'fc-updates',
-		name: 'fc-updates',
-		url: 'https://warpcast.com/~/channel/fc-updates',
-		description: 'Important updates about things happening in Farcaster',
-		followerCount: 140610,
-		memberCount: 5,
-		imageUrl: '',
-		headerImageUrl: '',
-	},
-	{
-		id: 'frames',
-		key: 'frames',
-		name: 'frames',
-		url: 'https://warpcast.com/~/channel/frames',
-		description: 'Discussion about Farcaster Frames.',
-		followerCount: 101427,
-		memberCount: 90,
-		imageUrl: '',
-		headerImageUrl: '',
-	},
-	{
-		id: 'superrare',
-		key: 'superrare',
-		name: 'SuperRare',
-		url: 'https://superrare.com',
-		description: 'The culture exchange',
-		followerCount: 96857,
-		memberCount: 873,
-		imageUrl: '',
-		headerImageUrl: '',
-	},
-] satisfies DemoChannel[]
-
 export const isValidHttpUrl = (href: string) => {
 	try {
 		const u = new URL(href)
@@ -310,6 +231,7 @@ export const getPopularChannels = async () => (
 				memberCount: number,
 				imageUrl: string,
 				headerImageUrl?: string,
+				publicCasting?: boolean,
 			}[],
 		},
 	}>('/v2/all-channels')
@@ -322,25 +244,20 @@ export const getPopularChannels = async () => (
 						key: channel.id,
 						name: channel.name,
 						url: channel.url,
-						description: channel.description,
+						description: channel.description ?? '',
 						followerCount: channel.followerCount,
 						memberCount: channel.memberCount,
-						imageUrl: channel.imageUrl,
+						imageUrl: channel.imageUrl ?? '',
 						headerImageUrl: channel.headerImageUrl ?? '',
-						publicCasting: true,
+						publicCasting: channel.publicCasting ?? true,
 					} satisfies DemoChannel
 				))
 				.filter((channel) => (
 					channel.name.trim()
-					&& channel.description.trim()
 					&& isValidHttpUrl(channel.url)
 				))
 				.slice(0, 120)
 		))
-		.catch((error) => {
-			console.error('popular channels fetch failed', error)
-			return fallbackPopularChannels
-		})
 )
 
 export const getDemoChannelById = async ({

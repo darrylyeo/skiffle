@@ -66,7 +66,7 @@ const frameMetaFromPaginationState = (
 		{
 			label: '‹ Channels',
 			action: 'post',
-			targetUrl: '/farcaster/channels?/open',
+			targetUrl: '/farcaster/channels',
 		},
 		{
 			label: 'Visit',
@@ -115,7 +115,7 @@ const snapFromPaginationState = (
 					label: '‹ Channels',
 					role: AppSnapButtonRoles.Back,
 					action: 'post',
-					targetUrl: '/farcaster/channels?/open',
+					targetUrl: '/farcaster/channels',
 				}),
 				snapTargetButton({
 					label: 'Visit',
