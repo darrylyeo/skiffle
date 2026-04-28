@@ -125,10 +125,8 @@
 		letter-spacing: -0.1em;
 		line-height: 1;
 		color: #fff7f0;
-		text-shadow:
-			0 0.02em 0 rgba(255, 255, 255, 0.24),
-			0 0.08em 0.18em rgba(0, 0, 0, 0.28),
-			0 0.28em 0.5em rgba(255, 96, 46, 0.2);
+		/* Single shadow only — multiple text-shadows crash Resvg after Satori */
+		text-shadow: 0 0.08em 0.18em rgba(0, 0, 0, 0.35);
 	}
 
 	.value--tight {
