@@ -1,4 +1,5 @@
 import { snapBackButton } from '$/lib/snap-components'
+import { demosBackUrl } from '$/routes/(examples)/demos'
 import type { LayoutLoad } from './$types'
 
 export const load: LayoutLoad = async ({
@@ -9,7 +10,7 @@ export const load: LayoutLoad = async ({
 
 		snap: {
 			buttons: [
-				snapBackButton('/'),
+				snapBackButton(demosBackUrl('profile')),
 			],
 		},
 
@@ -18,7 +19,7 @@ export const load: LayoutLoad = async ({
 				{
 					label: '‹ Back',
 					action: 'post',
-					targetUrl: '/',
+					targetUrl: demosBackUrl('profile'),
 				},
 			]
 		}
