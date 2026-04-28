@@ -16,24 +16,15 @@
 		data: PageData,
 	} = $props()
 
-	const u = $derived((() => {
-		const out = new URL(page.url.href)
-		for (let i = 0; i < 10; i++) {
-			const s = out.search
-			const h = out.hash
-			if (!s.includes('&amp;') && !h.includes('&amp;')) {
-				break
-			}
-			if (s.includes('&amp;')) {
-				out.search = s.replaceAll('&amp;', '&')
-			}
-			if (h.includes('&amp;')) {
-				out.hash = h.replaceAll('&amp;', '&')
-			}
-		}
-		return out
-	})())
-	const displayUrl = $derived(u.href)
+	const u = $derived(page.url)
+	const displayHost = $derived(u.host.replace(/%2f/gi, '/'))
+	const displayPath = $derived((
+		u.pathname === '/' ?
+			''
+		:
+			u.pathname.replace(/\/$/, '').replace(/%2f/gi, '/')
+	))
+	const displayQueryAndHash = $derived(`${u.search}${u.hash}`)
 </script>
 
 
@@ -48,9 +39,17 @@
 		</main>
 
 		<footer class="footer row">
-			<p>
+			<p class="url-wrap">
 				<output class="url-badge">
-					<span class="url-line">{displayUrl.replace(/%2f/gi, '/')}</span>
+					<span>{displayHost}</span>
+
+					{#if displayPath}
+						<span class="path-line">{displayPath}</span>
+					{/if}
+
+					{#if displayQueryAndHash}
+						<span class="query-line">{displayQueryAndHash}</span>
+					{/if}
 				</output>
 			</p>
 
@@ -95,8 +94,17 @@
 		gap: 1em;
 	}
 
+	.url-wrap {
+		flex: 1;
+		min-width: 0;
+		display: flex;
+	}
+
 	.url-badge {
-		display: block;
+		display: flex;
+		flex-wrap: wrap;
+		width: fit-content;
+		max-width: 100%;
 		padding: 0.35em 0.65em;
 		border: 1px solid rgba(255, 255, 255, 0.26);
 		border-radius: 999px;
@@ -113,9 +121,14 @@
 		display: block;
 	}
 
-	.url-line {
+	.path-line {
+		opacity: 0.8;
+		word-break: break-all;
+	}
+
+	.query-line {
 		font-size: 0.82em;
-		opacity: 0.9;
+		opacity: 0.82;
 		word-break: break-all;
 	}
 
