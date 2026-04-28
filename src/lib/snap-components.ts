@@ -15,6 +15,7 @@ import {
 	type SnapPaletteColor,
 } from './snap-spec'
 import type { SnapExtraElements } from './snap-page-extra'
+import { isTruthy } from './isTruthy'
 
 export type AppSnapButtonPress = (
 	| {
@@ -70,12 +71,12 @@ export const castIntentEmbeds = ({
 	defaultEmbeds?: readonly string[]
 }) => (
 	[
-		...(pageEmbeds ?? []),
-		...(currentPageUrl ? [currentPageUrl] : []),
-		...(defaultEmbeds ?? []),
+		...new Set([
+			...(pageEmbeds ?? []).filter(isTruthy),
+			...[currentPageUrl].filter(isTruthy),
+			...(defaultEmbeds ?? []).filter(isTruthy),
+		]),
 	]
-		.map((url) => url.trim())
-		.filter((url) => url.length > 0)
 )
 
 export type AppSnapPage = {
