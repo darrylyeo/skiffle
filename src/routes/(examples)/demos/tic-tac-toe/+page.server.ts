@@ -143,9 +143,9 @@ const ticTacToeMessage = (status: TicTacToeStatus) => (
 	: status === 'draw'
 		? "It's a draw."
 	: status === 'invalid'
-		? 'Pick an open square.'
+		? 'Your turn (X) — pick an empty square. CPU is O.'
 	:
-		'Pick a square.'
+		'Your turn (X). CPU is O.'
 )
 
 const ticTacToeBoardRows = (board: string) => (
@@ -204,11 +204,13 @@ const buildTicTacToeSnap = ({ board, status }: TicTacToeState): AppSnapPage => (
 	theme: {
 		accent: (
 			status === 'x-win' ?
-				SnapPaletteColors.Green
+				SnapPaletteColors.Blue
 			: status === 'o-win' || status === 'invalid' ?
 				SnapPaletteColors.Red
+			: status === 'draw' ?
+				SnapPaletteColors.Gray
 			:
-				SnapPaletteColors.Purple
+				SnapPaletteColors.Amber
 		),
 	},
 	buttons: [
